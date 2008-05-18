@@ -1,7 +1,6 @@
 # Outstanding bugs:
 #   * a;b;c printing output
 # 
-# source("parse-helpers.r")
 
 nice_parse <- function(string, local=FALSE) {
   envir <- if (local) parent.frame() else .GlobalEnv
