@@ -1,16 +1,16 @@
 f <- function() {
-	cat("One\n")
-	print("Two")
-	warning("Three")
-	print("Four")
-	message("Five")
-	stop("Six")
+  cat("One\n")
+  print("Two")
+  warning("Three")
+  print("Four")
+  message("Five")
+  stop("Six")
 }
 # 
 # g <- function() {
-# 	cat("One\n")
-# 	warning("Two")
-# 	"Three"
+#   cat("One\n")
+#   warning("Two")
+#   "Three"
 # }
 # 
 # eval.with.details(print("hello"))
