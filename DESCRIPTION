@@ -1,0 +1,11 @@
+Package: eval.with.details
+Type: Package
+Title: A version of eval that returns more details about what happened
+Version: 0.1
+Date: 2008-05-18
+Author: Hadley Wickham <h.wickham@gmail.com>
+Maintainer: Hadley Wickham <h.wickham@gmail.com>
+Description: 
+Depends: digest
+License: GPL
+LazyData: true
