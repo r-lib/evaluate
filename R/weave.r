@@ -1,5 +1,4 @@
-weave <- function(input, file = NULL, format = NULL) {
-  
+weave <- function(input, file = NULL, format = NULL) {  
   if (is.null(file)) {
     format <- interactive
     path <- NA

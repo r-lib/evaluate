@@ -1,48 +1,13 @@
-# Outstanding bugs:
-#   * a;b;c printing output
-# 
+parse_all <- function(x) UseMethod("parse_all")
 
-nice_parse <- function(string, local=FALSE) {
-  envir <- if (local) parent.frame() else .GlobalEnv
-
-  parsed <- parse_text(string)
-
-  parsed_obj <- lapply(1:nrow(parsed), function(i) {
-    expr <- if (parsed[i, "type"] == "expr") parsed[i, "expr"] else NULL
-    obj <- c(
-      list(y1 = parsed[i, "y1"], expr = expr, src = parsed[i, "src"]), 
-      if (!is.null(expr)) eval.with.details(expr, envir)
-    )
-    class(obj) <- "expr-eval"
-    obj
-  })
-
-  trailingnl <- grep("\n$", sapply(parsed_obj, "[[", "src"))
-
-  parsed_obj[trailingnl] <- lapply(parsed_obj[trailingnl], function(x) {
-    replace(x, "src", gsub("\n$", "", x$src))
-  })
+# Parses a string, returning everything
+# Contrast to \code{\link{parse}} which only returns expressions
+parse_all.character <- function(x) {
+  string <- paste(x, collapse = "\n")
   
-  new <- intersect(c(1, trailingnl + 1), 1:length(parsed_obj))
-  parsed_obj[new] <- lapply(parsed_obj[new], function(x) {
-    replace(x, "src", paste("\n", x$src, sep=""))
-  })
-
-  parsed_obj
-}
-
-parse_text <- function(string) {
   expr <- parse(text=string)
   srcref <- attr(expr, "srcref")
   srcfile <- attr(srcref[[1]], "srcfile")
-
-  get_region <- function(x1, x2, y1, y2) {
-    data.frame(
-      x1, x2, y1, y2, 
-      src = getSrcRegion(srcfile, x1, x2, y1, y2), 
-      expr=NA, type="text", stringsAsFactors=FALSE
-    )
-  }
 
   # Create data frame containing each expression and its 
   # location in the original source
@@ -51,18 +16,70 @@ parse_text <- function(string) {
   colnames(pos) <- c("x1", "y1", "x2", "y2")
   pos <- as.data.frame(pos)[c("x1","x2","y1","y2")]
 
-  parsed <- data.frame(pos, src=src, expr=I(expr), type="expr", stringsAsFactors=FALSE)
-
-  # Extract unparsed text, in the same format as above
-  breaks <- data.frame(
-    x1 = parsed[, "x2"],
-    x2 = c(parsed[-1, "x1"], 1e6),
-    y1 = parsed[, "y2"] + 1,
-    y2 = c(parsed[-1, "y1"] - 1, 1e6)
+  parsed <- data.frame(
+    pos, src=src, expr=I(expr), text = FALSE, 
+    stringsAsFactors = FALSE
   )
-  unparsed <- do.call("rbind", apply(breaks, 1, function(row) do.call("get_region", as.list(row))))
+
+  # Extract unparsed text ----------------------------------------------------
+  # Unparsed text includes:
+  #  * text before first expression
+  #  * text between expressions
+  #  * text after last expression
+
+  get_region <- function(x1, x2, y1, y2) {
+    data.frame(
+      x1, x2, y1, y2, 
+      src = getSrcRegion(srcfile, x1, x2, y1, y2), 
+      expr = I(list(NULL)), stringsAsFactors=FALSE
+    )
+  }
+  breaks <- data.frame(
+    x1 = c(0, parsed[, "x2"]),
+    x2 = c(parsed[1, "x1"] - 1, parsed[-1, "x1"], Inf),
+    y1 = c(0, parsed[, "y2"] + 1),
+    y2 = c(parsed[, "y1"] - 1, Inf)
+  )
+  unparsed <- do.call("rbind", 
+    apply(breaks, 1, function(row) do.call("get_region", as.list(row)))
+  )
+  unparsed <- subset(unparsed, src != "")
+  unparsed$text <- TRUE
 
   all <- rbind(parsed, unparsed)
+  all <- all[do.call("order", all[,c("x1","x2","y1","y2")]), ]
+  rownames(all) <- NULL
   
-  all[do.call("order", all[,c("x1","x2","y1","y2")]), ]
+  # Connect unparsed text to parsed text -------------------------------------
+  
+  pos <- which(all$text)
+  pos <- pos[pos != 1]
+  
+  all[pos - 1, "src"] <- paste(all[pos - 1, "src"], all[pos, "src"], sep ="")
+  all[pos - 1, c("x2", "y2")] <- all[pos, c("x2", "y2")]
+  all <- all[-pos, ]
+  
+  all$text <- NULL
+  all$cr <- FALSE
+  all$cr[grep("\n$", all$src)] <- TRUE
+  
+  all  
+}
+
+
+parse_all.connection <- function(x) {
+  if (!isOpen(x, "r")) {
+      open(x, "r")
+      on.exit(close(x))
+  }
+  parse_all(readLines(x))
+}
+parse_all.function <- function(x) {
+  src <- attr(x, "source")
+  src <- gsub("^function\\(\\)\\s*\\{", "", src)
+  src <- gsub("\\}$", "", src)
+  parse_all(src)
+}
+parse_all.default <- function(x) {
+  parse_all(deparse(x))
 }
