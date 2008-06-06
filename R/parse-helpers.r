@@ -26,7 +26,11 @@ parse_text <- function(string) {
   srcfile <- attr(srcref[[1]], "srcfile")
 
   get_region <- function(x1, x2, y1, y2) {
-    data.frame(x1, x2, y1, y2, src = getSrcRegion(srcfile, x1, x2, y1, y2), expr=NA, type="text", stringsAsFactors=FALSE)
+    data.frame(
+      x1, x2, y1, y2, 
+      src = getSrcRegion(srcfile, x1, x2, y1, y2), 
+      expr=NA, type="text", stringsAsFactors=FALSE
+    )
   }
 
   # Create data frame containing each expression and its 
