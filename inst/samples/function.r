@@ -1,4 +1,4 @@
-f <- function() {
+weave_f <- function() {
   # Comment
   a <- 1
   a

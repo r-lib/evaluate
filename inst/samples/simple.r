@@ -1,5 +1,9 @@
-# Comment
+# Comment a
+# Comment b
 a <- 1
-a
+a # Printing a
 b <- 2
-b
+b # Printing b
+# Ending comment
+
+a;b
