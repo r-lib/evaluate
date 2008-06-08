@@ -1,9 +1,10 @@
 sep <- function(...) cat(rep("-", options("width")), sep = "")
+nul <- function(...) {}
 
 
 interactive <- list(
-  start = sep,
-  end = sep,
+  start = nul,
+  stop   = nul,
   message = function(x) {
     message(gsub("\n^", "", x))
   },
@@ -21,6 +22,7 @@ interactive <- list(
     print(x)
   },
   src = function(x) {
+    # browser()
     cat(gsub("^\n", "\n\\> ", gsub("(.)\n", "\\1\n+ ", x)), "\n")
   }
 )

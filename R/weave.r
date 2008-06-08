@@ -1,4 +1,4 @@
-weave <- function(input, file = NULL, format = NULL) {  
+weave <- function(input, file = NULL, format = NULL, envir = parent.frame(), enclos = NULL) {  
   if (is.null(file)) {
     format <- interactive
     path <- NA
@@ -6,15 +6,15 @@ weave <- function(input, file = NULL, format = NULL) {
     path <- dirname(file)
   }
  
-  if (is.function(input) && length(formals(input)) == 0) {
-    expr <- do.call("expression",as.list(substitute(input)[[3]][-1]))
-  } else {
-    expr <- substitute(input)
+  parsed <- parse_all(input)
+  
+  evaluate <- function(expr, src) {
+    eval.with.details(expr, envir = envir, enclos = enclos, src = src)
   }
- 
-  details <- do.call("eval.with.details", list(expr))
-  browser()
-  lapply(details, function(x) weave.out(x, format))
+  
+  lapply(1:nrow(parsed), function(i) {
+    with(parsed[i,], evaluate(expr, src))
+  })
 }
 
 weave.out <- function(x, f) {
