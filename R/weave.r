@@ -12,9 +12,12 @@ weave <- function(input, file = NULL, format = NULL, envir = parent.frame(), enc
     eval.with.details(expr, envir = envir, enclos = enclos, src = src)
   }
   
-  lapply(1:nrow(parsed), function(i) {
-    with(parsed[i,], evaluate(expr, src))
-  })
+  structure(
+    lapply(1:nrow(parsed), function(i) {
+      with(parsed[i,], evaluate(expr, src))
+    }),
+    class = "ewd-list"
+  )
 }
 
 weave.out <- function(x, f) {

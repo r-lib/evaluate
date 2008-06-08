@@ -3,8 +3,8 @@ nul <- function(...) {}
 
 
 interactive <- list(
-  start = nul,
-  stop   = nul,
+  start = sep,
+  stop  = sep,
   message = function(x) {
     message(gsub("\n^", "", x))
   },

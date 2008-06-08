@@ -3,7 +3,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   if (is.null(expr)) {
     return(structure(
       list(value = NULL, visible = NULL, src = src),
-      class = "expr-eval"
+      class = "ewd"
     ))
   }
   
@@ -36,7 +36,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   
   structure(
     list(value = ev$value, visible = ev$visible, output=output, src=src),
-    class = "expr-eval"
+    class = "ewd"
   )
 }
 
