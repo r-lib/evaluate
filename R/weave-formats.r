@@ -22,7 +22,12 @@ interactive <- list(
     print(x)
   },
   src = function(x) {
-    # browser()
-    cat(gsub("^\n", "\n\\> ", gsub("(.)\n", "\\1\n+ ", x)), "\n")
+    lines <- strsplit(x, "\n")[[1]]
+    n <- length(lines)
+    lines[1] <-   paste(options("prompt"),   lines[1], sep="")
+    if (n > 1)
+      lines[2:n] <- paste(options("continue"), lines[2:n], sep="")
+    
+    cat(paste(lines, "\n", collapse=""), sep="")
   }
 )

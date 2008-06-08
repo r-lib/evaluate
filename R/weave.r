@@ -14,7 +14,7 @@ weave <- function(input, file = NULL, format = NULL, envir = parent.frame(), enc
   
   structure(
     lapply(1:nrow(parsed), function(i) {
-      with(parsed[i,], evaluate(expr, src))
+      with(parsed[i,], evaluate(expr[[1]], src[[1]]))
     }),
     class = "ewd-list"
   )
