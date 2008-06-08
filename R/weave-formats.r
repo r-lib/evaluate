@@ -1,6 +1,20 @@
 sep <- function(...) cat(rep("-", options("width")), sep = "")
 nul <- function(...) {}
 
+line_prompt <- function(x, is.expr = TRUE) {
+  lines <- strsplit(x, "\n")[[1]]
+  n <- length(lines)
+
+  if (is.expr) {
+    lines[1] <- paste(options("prompt"),   lines[1], sep="")
+    if (n > 1)
+      lines[2:n] <- paste(options("continue"), lines[2:n], sep="")    
+  } else {
+    lines <- paste(options("prompt"),   lines, sep="")
+  }
+  
+  cat(paste(lines, "\n", collapse=""), sep="")
+}
 
 interactive <- list(
   start = sep,
@@ -21,13 +35,6 @@ interactive <- list(
   value = function(x, path) {
     print(x)
   },
-  src = function(x) {
-    lines <- strsplit(x, "\n")[[1]]
-    n <- length(lines)
-    lines[1] <-   paste(options("prompt"),   lines[1], sep="")
-    if (n > 1)
-      lines[2:n] <- paste(options("continue"), lines[2:n], sep="")
-    
-    cat(paste(lines, "\n", collapse=""), sep="")
-  }
+  src = line_prompt
 )
+

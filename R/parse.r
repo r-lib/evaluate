@@ -26,6 +26,10 @@ parse_all.character <- function(x) {
   #  * text before first expression
   #  * text between expressions
   #  * text after last expression
+  # 
+  # Unparsed text does not contain any expressions, so can
+  # be split into individual lines
+  # TODO: split each unparsed region into individual lines
 
   get_region <- function(x1, x2, y1, y2) {
     data.frame(
@@ -50,8 +54,11 @@ parse_all.character <- function(x) {
   all <- all[do.call("order", all[,c("x1","x2","y1","y2")]), ]
   rownames(all) <- NULL
   
-  # Connect unparsed text to parsed text -------------------------------------
-  
+  # Join lines ---------------------------------------------------------------
+  # TODO:
+  #  * join multiple expressions on single line: a; b; c
+  #  * expression + comment: a # comment
+
   pos <- which(all$text)
   pos <- pos[pos != 1]
   

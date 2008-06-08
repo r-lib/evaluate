@@ -21,7 +21,7 @@ weave <- function(input, file = NULL, format = NULL, envir = parent.frame(), enc
 }
 
 weave.out <- function(x, f) {
-  f$src(x$src)
+  f$src(x$src, !is.null(x$visible))
 
   if (is.null(x$visible)) return()
 
