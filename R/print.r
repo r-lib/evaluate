@@ -1,12 +1,12 @@
 "print.ewd" <- function(x, ...) {
   interactive$start()
-  weave.out(x, interactive)
+  weave_out(x, interactive)
   interactive$stop()
 }
 
 "print.ewd-list" <- function(x, ...) {
   interactive$start()
-  lapply(x, function(x) weave.out(x, interactive))
+  lapply(x, function(x) weave_out(x, interactive))
   interactive$stop()
 }
 

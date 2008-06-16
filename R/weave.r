@@ -13,7 +13,7 @@ weave <- function(input, envir = parent.frame(), enclos = NULL) {
   )
 }
 
-weave.out <- function(x, f, ...) {
+weave_out <- function(x, f, ...) {
   f$src(x$src, !is.null(x$visible))
 
   if (is.null(x$visible)) return()
