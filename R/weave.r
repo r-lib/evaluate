@@ -13,7 +13,13 @@ weave <- function(input, envir = parent.frame(), enclos = NULL) {
   )
 }
 
-weave_out <- function(x, f, ...) {
+weave_out <- function(x, format, ...) {
+  format$start(...)
+  lapply(x, function(x) weave_out_single(x, format, ...))
+  format$stop(...)
+}
+
+weave_out_single <- function(x, f, ...) {
   f$src(x$src, !is.null(x$visible))
 
   if (is.null(x$visible)) return()
@@ -34,3 +40,8 @@ weave_out <- function(x, f, ...) {
     f$value(x$value, ...)
   }
 }
+
+"print.ewd-list" <- function(x, ...) {
+  weave_out(x, interactive)
+}
+

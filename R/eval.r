@@ -40,4 +40,6 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   )
 }
 
-deparse
+"print.ewd" <- function(x, ...) {
+  weave_out(x, interactive)
+}
