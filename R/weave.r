@@ -1,11 +1,4 @@
-weave <- function(input, file = NULL, format = NULL, envir = parent.frame(), enclos = NULL) {  
-  if (is.null(file)) {
-    format <- interactive
-    path <- NA
-  } else {
-    path <- dirname(file)
-  }
- 
+weave <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
   
   evaluate <- function(expr, src) {
