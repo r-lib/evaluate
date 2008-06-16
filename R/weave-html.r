@@ -11,7 +11,7 @@ escape_html <- function(x, newlines = FALSE) {
 }
 
 highlight_html <- function(x) {
-	ps(system("highlight --syntax r -f", intern=TRUE, input=x), collapse="\n")
+	ps(system("highlight --syntax r --quiet --wrap-simple -f", intern=TRUE, input=x), collapse="\n")
 }
 
 code_tex <- function(string) {

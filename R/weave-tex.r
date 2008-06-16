@@ -21,6 +21,11 @@ code_tex <- function(string) {
   )
 }
 
+highlight_latex <- function(x) {
+	ps(system("highlight -L --quiet --syntax r -f", intern=TRUE, input=x), collapse="\n")
+}
+
+
 
 # Include graphics in a latex file
 # Given a list of files, this function prints the latex code necessary (ie. includegraphics) to include in the file.
