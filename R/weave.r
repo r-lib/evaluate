@@ -14,17 +14,19 @@ weave <- function(input, envir = parent.frame(), enclos = NULL) {
 }
 
 weave_out <- function(x, format, ...) {
-  format$start(...)
-  lapply(x, function(x) weave_out_single(x, format, ...))
-  format$stop(...)
+  c(
+    format$start(...),
+    sapply(x, function(x) weave_out_single(x, format, ...)),
+    format$stop(...)
+  )
 }
 
 weave_out_single <- function(x, f, ...) {
-  f$src(x$src, !is.null(x$visible))
+  out <- f$src(x$src, !is.null(x$visible))
 
   if (is.null(x$visible)) return()
 
-  lapply(x$output, function(x) {
+  out <- paste(out, lapply(x$output, function(x) {
     if (inherits(x, "message")) {
       f$message(x$message, ...)
     } else if (inherits(x, "warning")) {
@@ -34,14 +36,15 @@ weave_out_single <- function(x, f, ...) {
     } else {
       f$out(x, ...)
     }
-  })
+  }), collapse = "", sep="")
   
   if(x$visible) {
-    f$value(x$value, ...)
+    out <- paste(out, f$value(x$value, ...), sep="")
   }
+  out
 }
 
 "print.ewd-list" <- function(x, ...) {
-  weave_out(x, interactive)
+  invisible(weave_out(x, interactive))  
 }
 

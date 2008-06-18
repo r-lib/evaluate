@@ -7,7 +7,7 @@
 # @seealso \url{http://ebooks.du.ac.in/latex/ltx-164.html}
 escape_tex <- function(x, newlines = FALSE) {
 	x <- gsub("\\\\", "$\\backslash$", x)
-	x <- gsub("([#$%&_{}])", "\\\\\\1", x)
+	x <- gsub("([#$%&_{}<>+])", "\\\\\\1", x)
 	if (newlines) x <- gsub("\n", " \\\\\\\\ \n", x)
 	x
 }
@@ -21,7 +21,7 @@ code_tex <- function(string) {
   )
 }
 
-highlight_latex <- function(x) {
+highlight_tex <- function(x) {
 	ps(system("highlight -L --quiet --syntax r -f", intern=TRUE, input=x), collapse="\n")
 }
 

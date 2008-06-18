@@ -13,7 +13,7 @@ line_prompt <- function(x, is.expr = TRUE, ...) {
     lines <- paste(options("prompt"),   lines, sep="")
   }
   
-  cat(paste(lines, "\n", collapse=""), sep="")
+  paste(lines, "\n", collapse="")
 }
 
 interactive <- list(
@@ -35,6 +35,6 @@ interactive <- list(
   value = function(x, path, ...) {
     print(x)
   },
-  src = line_prompt
+  src = function(x, ...) cat(line_prompt, sep="")
 )
 
