@@ -48,9 +48,14 @@ parse_all.character <- function(x) {
     apply(breaks, 1, function(row) do.call("get_region", as.list(row)))
   )
   unparsed <- subset(unparsed, src != "")
-  unparsed$text <- TRUE
 
-  all <- rbind(parsed, unparsed)
+  if (nrow(unparsed) > 0) {    
+    unparsed$text <- TRUE
+    all <- rbind(parsed, unparsed)
+  } else {
+    all <- parsed
+  }
+
   all <- all[do.call("order", all[,c("x1","x2","y1","y2")]), ]
   rownames(all) <- NULL
   
@@ -62,9 +67,12 @@ parse_all.character <- function(x) {
   pos <- which(all$text)
   pos <- pos[pos != 1]
   
-  all[pos - 1, "src"] <- paste(all[pos - 1, "src"], all[pos, "src"], sep ="")
-  all[pos - 1, c("x2", "y2")] <- all[pos, c("x2", "y2")]
-  all <- all[-pos, ]
+  if (length(pos) > 0) {
+    all[pos - 1, "src"] <- paste(all[pos - 1, "src"], all[pos, "src"], sep ="")
+    all[pos - 1, c("x2", "y2")] <- all[pos, c("x2", "y2")]
+    all <- all[-pos, ]  
+  }
+  
   
   all$text <- NULL
   all$cr <- FALSE
