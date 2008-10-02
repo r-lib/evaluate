@@ -5,7 +5,20 @@ parse_all <- function(x) UseMethod("parse_all")
 parse_all.character <- function(x) {
   string <- paste(x, collapse = "\n")
   
-  expr <- parse(text=string)
+  expr <- parse(text = string)
+  # No code, all comments
+  if (length(expr) == 0) {
+    lines <- strsplit(string, "\n")[[1]]
+    n <- length(lines)
+    return(data.frame(
+      x1 = seq_along(lines), x2 = seq_along(lines), 
+      y1 = rep(0, n), y2 = nchar(lines),
+      src = lines, text = rep(TRUE, n),
+      expr = I(rep(list(NULL), n)), visible = rep(FALSE, n), 
+      stringsAsFactors = FALSE
+    ))
+  }
+  
   srcref <- attr(expr, "srcref")
   srcfile <- attr(srcref[[1]], "srcfile")
 
