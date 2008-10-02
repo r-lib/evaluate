@@ -42,13 +42,18 @@ parse_all.character <- function(x) {
   # 
   # Unparsed text does not contain any expressions, so can
   # be split into individual lines
-  # TODO: split each unparsed region into individual lines
 
   get_region <- function(x1, x2, y1, y2) {
+    string <- getSrcRegion(srcfile, x1, x2, y1, y2)
+    lines <- strsplit(string, "(?<=\n)", perl=TRUE)[[1]]
+    n <- length(lines)
+
     data.frame(
-      x1, x2, y1, y2, 
-      src = getSrcRegion(srcfile, x1, x2, y1, y2), 
-      expr = I(list(NULL)), stringsAsFactors=FALSE
+      x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(0, n - 1)), 
+      x2 = x1 + seq_len(n), y2 = rep(0, n), 
+      src = lines, 
+      expr = I(rep(list(NULL), n)),
+      stringsAsFactors=FALSE
     )
   }
   breaks <- data.frame(
