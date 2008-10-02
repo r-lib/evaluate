@@ -1,3 +1,6 @@
+# Should be able to control what gets records - only output, no messages etc.
+# 
+
 eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = paste(deparse(expr), collapse="")) {
   
   if (is.null(expr)) {
