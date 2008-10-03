@@ -14,11 +14,11 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
   }
   
-  w <- watchout(split=TRUE)
+  w <- watchout(split=FALSE)
   output <- list()
   
-  wHandler <- function(w) {
-    output <<- c(output, w$get_new(), list(w))
+  wHandler <- function(wn) {
+    output <<- c(output, w$get_new(), list(wn))
     invokeRestart("muffleWarning")
   }
   eHandler <- function(e) {
@@ -37,7 +37,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     warning = wHandler, error = eHandler, message = mHandler), silent=TRUE
   )
   output <- c(output, w$get_new())
-  all <- w$close()  
+  all <- w$close()
   
   structure(
     list(value = ev$value, visible = ev$visible, output=output, src=src),
