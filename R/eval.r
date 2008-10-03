@@ -1,7 +1,7 @@
-# Should be able to control what gets records - only output, no messages etc.
-# 
-
-eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = paste(deparse(expr), collapse="")) {
+eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL) {
+  if (missing(src)) {
+    src <- paste(deparse(substitute(expr)), collapse="")
+  }
   
   if (is.null(expr)) {
     return(structure(
@@ -46,5 +46,5 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
 }
 
 "print.ewd" <- function(x, ...) {
-  weave_out(x, interactive)
+  weave_out(list(x), weave_r)
 }
