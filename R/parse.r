@@ -47,7 +47,11 @@ parse_all.character <- function(x) {
     string <- getSrcRegion(srcfile, x1, x2, y1, y2)
     lines <- strsplit(string, "(?<=\n)", perl=TRUE)[[1]]
     n <- length(lines)
-
+    if (n == 0) {
+      lines <- ""
+      n <- 1
+    }
+    
     data.frame(
       x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(1, n - 1)), 
       x2 = x1 + seq_len(n), y2 = rep(1, n), 
@@ -101,15 +105,17 @@ parse_all.character <- function(x) {
   
   # Add in missing lines
   missing <- which(with(combined, c(F, tail(x1, -1) != head(x2, -1))))
-  extra <- with(combined, data.frame(
-    x1 = x2[missing - 1],
-    x2 = x1[missing],
-    src = rep("\n", x1[missing] - x2[missing - 1]),
-    expr = I(rep(list(NULL), length(missing))),
-    stringsAsFactors = FALSE
-  ))
+  if (length(missing) > 0) {
+    extra <- with(combined, data.frame(
+      x1 = x2[missing - 1],
+      x2 = x1[missing],
+      src = rep("\n", x1[missing] - x2[missing - 1]),
+      expr = I(rep(list(NULL), length(missing))),
+      stringsAsFactors = FALSE
+    ))
+    combined <- rbind(combined, extra)
+  }
   
-  combined <- rbind(combined, extra)
   combined[order(combined$x1), ]
 }
 
