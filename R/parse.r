@@ -27,7 +27,7 @@ parse_all.character <- function(x) {
   src <- sapply(srcref, function(src) paste(as.character(src), collapse="\n"))
   pos <- t(sapply(srcref, unclass))
   colnames(pos) <- c("x1", "y1", "x2", "y2")
-  pos <- as.data.frame(pos)[c("x1","x2","y1","y2")]
+  pos <- as.data.frame(pos)[c("x1","y1","x2","y2")]
 
   parsed <- data.frame(
     pos, src=src, expr=I(expr), text = FALSE, 
@@ -49,17 +49,17 @@ parse_all.character <- function(x) {
     n <- length(lines)
 
     data.frame(
-      x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(0, n - 1)), 
-      x2 = x1 + seq_len(n), y2 = rep(0, n), 
+      x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(1, n - 1)), 
+      x2 = x1 + seq_len(n), y2 = rep(1, n), 
       src = lines, 
       expr = I(rep(list(NULL), n)),
       stringsAsFactors=FALSE
     )
   }
   breaks <- data.frame(
-    x1 = c(0, parsed[, "x2"]),
+    x1 = c(1, parsed[, "x2"]),
+    y1 = c(1, parsed[, "y2"] + 1),
     x2 = c(parsed[1, "x1"] - 1, parsed[-1, "x1"], Inf),
-    y1 = c(0, parsed[, "y2"] + 1),
     y2 = c(parsed[, "y1"] - 1, Inf)
   )
   unparsed <- do.call("rbind", 
@@ -74,29 +74,38 @@ parse_all.character <- function(x) {
     all <- parsed
   }
 
-  all <- all[do.call("order", all[,c("x1","x2","y1","y2")]), ]
+  all <- all[do.call("order", all[,c("x1","y1", "x2","y2")]), ]
   rownames(all) <- NULL
+  all$eol <- FALSE
+  all$eol[grep("\n$", all$src)] <- TRUE
   
   # Join lines ---------------------------------------------------------------
-  # TODO:
-  #  * join multiple expressions on single line: a; b; c
-  #  * expression + comment: a # comment
-
-  pos <- which(all$text)
-  pos <- pos[pos != 1]
+  # Expressions need to be combined to create a complete line
+  # Some expressions already span multiple lines, and these should be 
+  # left alone
   
-  if (length(pos) > 0) {
-    all[pos - 1, "src"] <- paste(all[pos - 1, "src"], all[pos, "src"], sep ="")
-    all[pos - 1, c("x2", "y2")] <- all[pos, c("x2", "y2")]
-    all <- all[-pos, ]  
+  lines <- split(all, all$x1)
+  join_pieces <- function(df) {
+    n <- nrow(df)
+    with(df, data.frame(
+      x1 = x1[1], x2 = x2[n],
+      src = paste(src, collapse = ""),
+      expr = I(list(compact(expr)))
+    ))
   }
+  combined <- do.call("rbind", lapply(lines, join_pieces))
   
+  # Add in missing lines
+  missing <- which(with(combined, c(F, tail(x1, -1) != head(x2, -1))))
+  extra <- with(combined, data.frame(
+    x1 = x2[missing - 1],
+    x2 = x1[missing],
+    src = rep("\n", x1[missing] - x2[missing - 1]),
+    expr = I(rep(list(expression()), length(missing)))
+  ))
   
-  all$text <- NULL
-  all$cr <- FALSE
-  all$cr[grep("\n$", all$src)] <- TRUE
-  
-  all  
+  combined <- rbind(combined, extra)
+  combined[order(combined$x1), ]
 }
 
 
