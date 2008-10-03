@@ -73,11 +73,7 @@ parse_all.character <- function(x) {
   } else {
     all <- parsed
   }
-
   all <- all[do.call("order", all[,c("x1","y1", "x2","y2")]), ]
-  rownames(all) <- NULL
-  all$eol <- FALSE
-  all$eol[grep("\n$", all$src)] <- TRUE
   
   # Join lines ---------------------------------------------------------------
   # Expressions need to be combined to create a complete line
@@ -87,10 +83,18 @@ parse_all.character <- function(x) {
   lines <- split(all, all$x1)
   join_pieces <- function(df) {
     n <- nrow(df)
+    clean_expr <- compact(as.list(df$expr))
+    if (length(clean_expr) == 0) {
+      clean_expr <- list(NULL) 
+    } else {
+      clean_expr <- list(clean_expr)
+    }
+    
     with(df, data.frame(
       x1 = x1[1], x2 = x2[n],
       src = paste(src, collapse = ""),
-      expr = I(list(compact(expr)))
+      expr = I(clean_expr),
+      stringsAsFactors = FALSE
     ))
   }
   combined <- do.call("rbind", lapply(lines, join_pieces))
@@ -101,7 +105,8 @@ parse_all.character <- function(x) {
     x1 = x2[missing - 1],
     x2 = x1[missing],
     src = rep("\n", x1[missing] - x2[missing - 1]),
-    expr = I(rep(list(expression()), length(missing)))
+    expr = I(rep(list(NULL), length(missing))),
+    stringsAsFactors = FALSE
   ))
   
   combined <- rbind(combined, extra)

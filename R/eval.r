@@ -30,6 +30,8 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   }
   ev <- list(value=NULL, visible=FALSE)
   
+  expr <- as.expression(expr)
+  
   try(ev <- withCallingHandlers(
     .Internal(eval.with.vis(expr, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent=TRUE
