@@ -1,0 +1,6 @@
+cat("One\n")
+print("Two")
+warning("Three")
+print("Four")
+message("Five")
+stop("Six")
