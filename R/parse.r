@@ -33,7 +33,6 @@ parse_all.character <- function(x) {
     pos, src=src, expr=I(expr), text = FALSE, 
     stringsAsFactors = FALSE
   )
-
   # Extract unparsed text ----------------------------------------------------
   # Unparsed text includes:
   #  * text before first expression
@@ -43,7 +42,7 @@ parse_all.character <- function(x) {
   # Unparsed text does not contain any expressions, so can
   # be split into individual lines
 
-  get_region <- function(x1, x2, y1, y2) {
+  get_region <- function(x1, y1, x2, y2) {
     string <- getSrcRegion(srcfile, x1, x2, y1, y2)
     lines <- strsplit(string, "(?<=\n)", perl=TRUE)[[1]]
     n <- length(lines)
@@ -63,8 +62,8 @@ parse_all.character <- function(x) {
   breaks <- data.frame(
     x1 = c(1, parsed[, "x2"]),
     y1 = c(1, parsed[, "y2"] + 1),
-    x2 = c(parsed[1, "x1"] - 1, parsed[-1, "x1"], Inf),
-    y2 = c(parsed[, "y1"] - 1, Inf)
+    x2 = c(parsed[1, "x1"], parsed[-1, "x1"], Inf),
+    y2 = c(parsed[, "y1"], Inf)
   )
   unparsed <- do.call("rbind", 
     apply(breaks, 1, function(row) do.call("get_region", as.list(row)))
@@ -79,12 +78,16 @@ parse_all.character <- function(x) {
   }
   all <- all[do.call("order", all[,c("x1","y1", "x2","y2")]), ]
   
+  all$eol <- FALSE
+  all$eol[grep("\n$", all$src)] <- TRUE
+  all$block <- c(0, cumsum(all$eol)[-nrow(all)])
+  
   # Join lines ---------------------------------------------------------------
   # Expressions need to be combined to create a complete line
   # Some expressions already span multiple lines, and these should be 
   # left alone
   
-  lines <- split(all, all$x1)
+  lines <- split(all, all$block)
   join_pieces <- function(df) {
     n <- nrow(df)
     clean_expr <- compact(as.list(df$expr))
@@ -102,19 +105,6 @@ parse_all.character <- function(x) {
     ))
   }
   combined <- do.call("rbind", lapply(lines, join_pieces))
-  
-  # Add in missing lines
-  missing <- which(with(combined, c(F, tail(x1, -1) != head(x2, -1))))
-  if (length(missing) > 0) {
-    extra <- with(combined, data.frame(
-      x1 = x2[missing - 1],
-      x2 = x1[missing],
-      src = rep("\n", x1[missing] - x2[missing - 1]),
-      expr = I(rep(list(NULL), length(missing))),
-      stringsAsFactors = FALSE
-    ))
-    combined <- rbind(combined, extra)
-  }
   
   combined[order(combined$x1), ]
 }
