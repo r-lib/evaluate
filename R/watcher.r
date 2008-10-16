@@ -19,7 +19,7 @@ watchout <- function(split = FALSE) {
     unpause = function() sink(con, split=split),
     close = function() {
       sink()
-      close(con)
+      close(con)      
       output
     }
   )

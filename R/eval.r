@@ -15,6 +15,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   }
   
   w <- watchout(split=FALSE)
+  on.exit(w$close())
   output <- list()
   
   wHandler <- function(wn) {
@@ -37,7 +38,6 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     warning = wHandler, error = eHandler, message = mHandler), silent=TRUE
   )
   output <- c(output, w$get_new())
-  all <- w$close()
   
   structure(
     list(value = ev$value, visible = ev$visible, output=output, src=src),
