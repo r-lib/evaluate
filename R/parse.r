@@ -25,7 +25,7 @@ parse_all.character <- function(x) {
   # Create data frame containing each expression and its 
   # location in the original source
   src <- sapply(srcref, function(src) paste(as.character(src), collapse="\n"))
-  pos <- t(sapply(srcref, unclass))
+  pos <- t(sapply(srcref, unclass))[, 1:4, drop = FALSE]
   colnames(pos) <- c("x1", "y1", "x2", "y2")
   pos <- as.data.frame(pos)[c("x1","y1","x2","y2")]
 
