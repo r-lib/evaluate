@@ -15,3 +15,10 @@
   they occured. It stores the final result, whether or not it should be
   visible, and the contents of the current graphics device.
 }
+\arguments{
+  \item{input}{input object to be parsed an evaluated.  Maybe a string, 
+file connection or function.}
+  \item{envir}{environment in which to evaluate expressions}
+  \item{enclos}{when \code{envir} is a list or data frame, this is treated
+as the parent environment to \code{envir}.}
+}

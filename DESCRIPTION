@@ -1,11 +1,12 @@
-Package: eval.with.details
+Package: evaluate
 Type: Package
-Title: A version of eval that returns more details about what happened
+Title: Parsing and evaluation tools that provide more details than the
+    default.
 Version: 0.1
-Date: 2008-05-18
 Author: Hadley Wickham <h.wickham@gmail.com>
 Maintainer: Hadley Wickham <h.wickham@gmail.com>
-Description:
+Description: Parsing and evaluation tools that make it easy to recreate
+    the command line behaviour of R.
 License: GPL
 LazyData: true
 Collate: 'eval.r' 'graphics.r' 'output.r' 'parse.r' 'replay.r'

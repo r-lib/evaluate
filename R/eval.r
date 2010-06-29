@@ -8,6 +8,11 @@
 #' contents of the current graphics device.
 #'
 #' @export
+#' @param input input object to be parsed an evaluated.  Maybe a string, 
+#'   file connection or function.
+#' @param envir environment in which to evaluate expressions
+#' @param enclos when \code{envir} is a list or data frame, this is treated
+#'   as the parent environment to \code{envir}.
 evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
   unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
