@@ -58,5 +58,5 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   )
   output <- c(output, w$get_new())
   
-  new_result(ev$value, ev$visible, output, src, recordPlot())
+  new_result(ev$value, ev$visible, output, src, plot_snapshot())
 }
