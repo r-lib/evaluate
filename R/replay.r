@@ -1,6 +1,13 @@
 #' Replay a list of evaluated results.
 #' Replay a list of evaluated results, just like you'd run them in a R
 #' terminal.
+#'
+#' @param x result from \code{\link{evaluate}}
+#' @examples
+#' samples <- system.file("tests", package = "eval.with.details")
+#' replay(evaluate(file(file.path(samples, "test-1.r"))))
+#' replay(evaluate(file(file.path(samples, "test-2.r"))))
+#' replay(evaluate(file(file.path(samples, "eval-output.r"))))
 replay <- function(x) UseMethod("replay", x)
 
 replay.list <- function(x) invisible(lapply(x, replay))
