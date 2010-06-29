@@ -1,4 +1,6 @@
-# Extract the given region out of the srcfile
+#' Extract a rectangular region of a srcfile
+#'
+#' @return a string
 getSrcRegion <- function(srcfile, x1, x2, y1, y2) {
   if (is.infinite(x2)) x2 <- 1e6
   if (is.infinite(y2)) y2 <- 1e6
@@ -16,8 +18,3 @@ getSrcRegion <- function(srcfile, x1, x2, y1, y2) {
   }
   paste(text, collapse="\n")
 }
-
-
-
-
-

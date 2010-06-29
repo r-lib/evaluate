@@ -6,8 +6,7 @@ Date: 2008-05-18
 Author: Hadley Wickham <h.wickham@gmail.com>
 Maintainer: Hadley Wickham <h.wickham@gmail.com>
 Description:
-Imports: plyr
 License: GPL
 LazyData: true
-Collate: 'capture.r' 'eval.r' 'graphics.r' 'output.r' 'parse.r'
-    'replay.r' 'src-region.r' 'watcher.r'
+Collate: 'eval.r' 'graphics.r' 'output.r' 'parse.r' 'replay.r'
+    'src-region.r' 'watcher.r'

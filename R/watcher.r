@@ -1,10 +1,15 @@
-# Watch for changes in output, text and graphical
-watchout <- function(split = FALSE) {
+#' Watch for changes in output, text and graphical.
+#'
+#' @param debug activate debug mode where output will be both printed to
+#'   screen and captured.
+#' @return list containing four functions: \code{get_new}, \code{pause}, 
+#'  \code{unpause}, \code{close}.
+watchout <- function(debug = FALSE) {
   output <- vector("character")
   prev   <- vector("character")
 
   con <- textConnection("output", "wr", local=TRUE)
-  sink(con, split=split)
+  sink(con, split = debug)
   
   list(
     get_new = function() {
@@ -23,7 +28,7 @@ watchout <- function(split = FALSE) {
       }
     },
     pause = function() sink(),
-    unpause = function() sink(con, split=split),
+    unpause = function() sink(con, split = debug),
     close = function() {
       sink()
       close(con)      

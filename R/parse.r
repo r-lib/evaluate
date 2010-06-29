@@ -1,3 +1,11 @@
+#' Parse, retaining comments.
+#' Works very similarly to parse, but keeps all associated comments, so that
+#' output can be fully reconstructed.
+#'
+#' @param x object to parse.  Can be a string, a file connection, or a
+#'   function
+#' @return a data.frame
+#' @export
 parse_all <- function(x) UseMethod("parse_all")
 
 # Parses a string, returning everything
@@ -80,17 +88,14 @@ parse_all.character <- function(x) {
   
   all$eol <- FALSE
   all$eol[grep("\n$", all$src)] <- TRUE
-  all$block <- c(0, cumsum(all$eol)[-nrow(all)])
   
   # Join lines ---------------------------------------------------------------
   # Expressions need to be combined to create a complete line
   # Some expressions already span multiple lines, and these should be 
   # left alone
   
-  lines <- split(all, all$block)
   join_pieces <- function(df) {
-    n <- nrow(df)
-    clean_expr <- plyr::compact(as.list(df$expr))
+    clean_expr <- Filter(Negate(is.null), as.list(df$expr))
     if (length(clean_expr) == 0) {
       clean_expr <- list(NULL) 
     } else {
@@ -98,15 +103,14 @@ parse_all.character <- function(x) {
     }
     
     with(df, data.frame(
-      x1 = x1[1], x2 = x2[n],
       src = paste(src, collapse = ""),
       expr = I(clean_expr),
       stringsAsFactors = FALSE
     ))
   }
-  combined <- plyr::rbind.fill(join_pieces)
-  
-  combined[order(combined$x1), ]
+  block <- c(0, cumsum(all$eol)[-nrow(all)])
+  lines <- split(all, block)
+  do.call("rbind", lapply(lines, join_pieces))
 }
 
 
