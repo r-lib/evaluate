@@ -7,7 +7,7 @@
 #'   replay.message replay.error replay.value replay.recordedplot
 #' @export
 #' @examples
-#' samples <- system.file("tests", package = "eval.with.details")
+#' samples <- system.file("tests", package = "evaluate")
 #' replay(evaluate(file(file.path(samples, "test-1.r"))))
 #' replay(evaluate(file(file.path(samples, "test-2.r"))))
 #' replay(evaluate(file(file.path(samples, "eval-output.r"))))
@@ -50,7 +50,7 @@ replay.value <- function(x) {
   if (x$visible) print(x$value)
 }
 
-reply.recordedplot <- function(x) {
+replay.recordedplot <- function(x) {
   print(x)
 }
 
@@ -61,7 +61,7 @@ reply.recordedplot <- function(x) {
 #' @param prompt prompt for first line
 #' @param continue prompt for subsequent lines
 #' @return a string
-line_prompt <- function(x, prompt = options("prompt"), continue = options("continue"), ...) {
+line_prompt <- function(x, prompt = options("prompt"), continue = options("continue")) {
   lines <- strsplit(x, "\n")[[1]]
   n <- length(lines)
 

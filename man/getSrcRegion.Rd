@@ -7,3 +7,10 @@
   Extract a rectangular region of a srcfile
 }
 \value{a string}
+\arguments{
+  \item{srcfile}{string}
+  \item{x1}{start line}
+  \item{x2}{end line}
+  \item{y1}{start col}
+  \item{y2}{end col}
+}

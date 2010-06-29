@@ -36,7 +36,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   }
   
   # Record output correctly interleaved with messages, warnings and errors.
-  w <- watchout(split = FALSE)
+  w <- watchout()
   on.exit(w$close())
   output <- list()
   
@@ -47,7 +47,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   eHandler <- function(e) {
     # Capture call stack, removing last two calls, which are added by
     # withCallingHandlers
-    e$calls <- head(sys.calls(), -2)
+    # e$calls <- head(sys.calls(), -2)
     output <<- c(output, w$get_new(), list(e))
   }
   mHandler <- function(m) {
