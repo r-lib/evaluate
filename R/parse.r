@@ -1,15 +1,14 @@
 #' Parse, retaining comments.
-#' Works very similarly to parse, but keeps all associated comments, so that
-#' output can be fully reconstructed.
+#' Works very similarly to parse, but also keeps original formatting and
+#' comments.
 #'
 #' @param x object to parse.  Can be a string, a file connection, or a
 #'   function
-#' @return a data.frame
+#' @return a data.frame with columns \code{src}, the source code, and 
+#'   \code{eval}
 #' @export
 parse_all <- function(x) UseMethod("parse_all")
 
-# Parses a string, returning everything
-# Contrast to \code{\link{parse}} which only returns expressions
 parse_all.character <- function(x) {
   string <- paste(x, collapse = "\n")
   
@@ -121,12 +120,14 @@ parse_all.connection <- function(x) {
   }
   parse_all(readLines(x))
 }
+
 parse_all.function <- function(x) {
   src <- attr(x, "source")
   src <- gsub("^function\\(\\)\\s*\\{", "", src)
   src <- gsub("\\}$", "", src)
   parse_all(src)
 }
+
 parse_all.default <- function(x) {
   parse_all(deparse(x))
 }
