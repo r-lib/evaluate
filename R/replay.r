@@ -32,6 +32,9 @@ replay.error <- function(x) {
 }
 replay.default <- function(x) {}
 
+replay.value <- function(x) {
+  if (x$visible) print(x$value)
+}
 
 line_prompt <- function(x, prompt = options("prompt"), continue = options("continue"), ...) {
   lines <- strsplit(x, "\n")[[1]]
