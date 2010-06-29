@@ -1,20 +1,38 @@
+#' Evaluate input and return all details of evaluation.
+#'
+#' Compare to \code{\link{eval}}, \code{evaluate} captures all of the 
+#' information necessary to recreate the output as if you had copied and 
+#' pasted the code into a R terminal. It captures messages, warnings, errors
+#' and output, all correctly interleaved in the order in which they occured.
+#' It stores the final result, whether or not it should be visible, and the
+#' contents of the current graphics device.
+#'
+#' @export
+evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
+  parsed <- parse_all(input)
+  results <- mapply(eval.with.details, parsed$expr, parsed$src, 
+    MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE)
+  
+  structure(results, class = "eval-results")
+}
+
 eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL) {
   if (missing(src)) {
     src <- paste(deparse(substitute(expr)), collapse="")
   }
   
+  # No expression, just source code
   if (is.null(expr)) {
-    return(structure(
-      list(value = NULL, visible = NULL, src = src),
-      class = "ewd"
-    ))
+    return(new_result(src = src))
   }
+  expr <- as.expression(expr)
   
   if (is.null(enclos)) {
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
   }
   
-  w <- watchout(split=FALSE)
+  # Record output correctly interleaved with messages, warnings and errors.
+  w <- watchout(split = FALSE)
   on.exit(w$close())
   output <- list()
   
@@ -23,28 +41,22 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     invokeRestart("muffleWarning")
   }
   eHandler <- function(e) {
+    # Capture call stack, removing last two calls, which are added by
+    # withCallingHandlers
+    e$calls <- head(sys.calls(), -2)
     output <<- c(output, w$get_new(), list(e))
   }
   mHandler <- function(m) {
     output <<- c(output, w$get_new(), list(m))
     invokeRestart("muffleMessage")
   }
-  ev <- list(value=NULL, visible=FALSE)
-  
-  expr <- as.expression(expr)
-  
+
+  ev <- list(value = NULL, visible = FALSE)  
   try(ev <- withCallingHandlers(
     .Internal(eval.with.vis(expr, envir, enclos)),
-    warning = wHandler, error = eHandler, message = mHandler), silent=TRUE
+    warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
   output <- c(output, w$get_new())
   
-  structure(
-    list(value = ev$value, visible = ev$visible, output=output, src=src),
-    class = "ewd"
-  )
-}
-
-"print.ewd" <- function(x, ...) {
-  weave_out(list(x), weave_r)
+  new_result(ev$value, ev$visible, output, src, recordPlot())
 }
