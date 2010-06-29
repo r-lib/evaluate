@@ -3,8 +3,6 @@
 #' terminal.
 #'
 #' @param x result from \code{\link{evaluate}}
-#' @aliases replay replay.list replay.character replay.source replay.warning
-#'   replay.message replay.error replay.value replay.recordedplot
 #' @export
 #' @examples
 #' samples <- system.file("tests", package = "evaluate")
@@ -40,10 +38,6 @@ replay.error <- function(x) {
     call <- deparse(x$call)
     message("Error in ", call, ": ", x$message)    
   }
-}
-
-replay.value <- function(x) {
-  if (x$visible) print(x$value)
 }
 
 replay.value <- function(x) {
