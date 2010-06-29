@@ -10,10 +10,9 @@
 #' @export
 evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
-  results <- mapply(eval.with.details, parsed$expr, parsed$src, 
-    MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE)
-  
-  structure(results, class = "eval-results")
+  unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
+    MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE), 
+    recursive = FALSE)
 }
 
 eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL) {
@@ -23,7 +22,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   
   # No expression, just source code
   if (is.null(expr)) {
-    return(new_result(src = src))
+    return(list(new_source(src)))
   }
   expr <- as.expression(expr)
   
@@ -58,5 +57,5 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   )
   output <- c(output, w$get_new())
   
-  new_result(ev$value, ev$visible, output, src, plot_snapshot())
+  c(list(new_source(src)), output, list(new_value(ev$value, ev$visible)))
 }
