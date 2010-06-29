@@ -9,6 +9,14 @@
 #' replay(evaluate(file(file.path(samples, "test-1.r"))))
 #' replay(evaluate(file(file.path(samples, "test-2.r"))))
 #' replay(evaluate(file(file.path(samples, "eval-output.r"))))
+#' @S3method replay list
+#' @S3method replay character
+#' @S3method replay source
+#' @S3method replay warning
+#' @S3method replay message
+#' @S3method replay error
+#' @S3method replay value
+#' @S3method replay recordedplot
 replay <- function(x) UseMethod("replay", x)
 
 replay.list <- function(x) {

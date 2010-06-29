@@ -7,6 +7,10 @@
 #' @return a data.frame with columns \code{src}, the source code, and 
 #'   \code{eval}
 #' @export
+#' @S3method parse_all character
+#' @S3method parse_all "function"
+#' @S3method parse_all connection
+#' @S3method parse_all default
 parse_all <- function(x) UseMethod("parse_all")
 
 parse_all.character <- function(x) {
