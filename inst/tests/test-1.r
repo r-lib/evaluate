@@ -1,4 +1,3 @@
-# interweave(file("inst/tests/test-1.r"))
 # These test cases check that interweave
 # works for a variety of situations
 
