@@ -90,7 +90,7 @@ parse_all.character <- function(x) {
   lines <- split(all, all$block)
   join_pieces <- function(df) {
     n <- nrow(df)
-    clean_expr <- compact(as.list(df$expr))
+    clean_expr <- plyr::compact(as.list(df$expr))
     if (length(clean_expr) == 0) {
       clean_expr <- list(NULL) 
     } else {
@@ -104,7 +104,7 @@ parse_all.character <- function(x) {
       stringsAsFactors = FALSE
     ))
   }
-  combined <- do.call("rbind", lapply(lines, join_pieces))
+  combined <- plyr::rbind.fill(join_pieces)
   
   combined[order(combined$x1), ]
 }
