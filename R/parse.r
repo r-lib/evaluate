@@ -15,8 +15,9 @@ parse_all <- function(x) UseMethod("parse_all")
 
 parse_all.character <- function(x) {
   string <- paste(x, collapse = "\n")
+  src <- srcfilecopy("<text>", string)
   
-  expr <- parse(text = string)
+  expr <- parse(text = string, src = src)
   # No code, all comments
   if (length(expr) == 0) {
     lines <- strsplit(string, "\n")[[1]]
@@ -122,7 +123,8 @@ parse_all.connection <- function(x) {
       open(x, "r")
       on.exit(close(x))
   }
-  parse_all(readLines(x))
+  text <- readLines(x)
+  parse_all(text)
 }
 
 parse_all.function <- function(x) {
