@@ -8,6 +8,5 @@ Maintainer: Hadley Wickham <h.wickham@gmail.com>
 Description: Parsing and evaluation tools that make it easy to recreate
     the command line behaviour of R.
 License: GPL
-LazyData: true
 Collate: 'eval.r' 'graphics.r' 'output.r' 'parse.r' 'replay.r'
     'src-region.r' 'watcher.r'
