@@ -24,7 +24,13 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   if (missing(src)) {
     src <- paste(deparse(substitute(expr)), collapse="")
   }
-  
+
+  # Use undocumented null graphics device to avoid plot windows opening
+  # Thanks to Paul Murrell
+  .Call("R_GD_nullDevice")
+  dev.control("enable")
+  on.exit(dev.off())
+
   # No expression, just source code
   if (is.null(expr)) {
     return(list(new_source(src)))
