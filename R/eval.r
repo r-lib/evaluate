@@ -43,7 +43,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   
   # Record output correctly interleaved with messages, warnings and errors.
   w <- watchout()
-  on.exit(w$close())
+  on.exit(c(dev.off(),w$close()))
   output <- list()
   
   wHandler <- function(wn) {
