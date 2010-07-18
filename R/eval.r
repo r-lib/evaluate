@@ -15,6 +15,7 @@
 #'   as the parent environment to \code{envir}.
 evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
+  
   unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
     MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE), 
     recursive = FALSE)
@@ -24,12 +25,6 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   if (missing(src)) {
     src <- paste(deparse(substitute(expr)), collapse="")
   }
-
-  # Use undocumented null graphics device to avoid plot windows opening
-  # Thanks to Paul Murrell
-  .Call("R_GD_nullDevice")
-  dev.control("enable")
-  on.exit(dev.off())
 
   # No expression, just source code
   if (is.null(expr)) {
@@ -43,7 +38,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   
   # Record output correctly interleaved with messages, warnings and errors.
   w <- watchout()
-  on.exit(w$close(), add = TRUE)
+  on.exit(w$close())
   output <- list()
   
   wHandler <- function(wn) {
