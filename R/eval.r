@@ -39,7 +39,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   # Record output correctly interleaved with messages, warnings and errors.
   w <- watchout()
   on.exit(w$close())
-  output <- list()
+  output <- list(new_source(src))
   
   wHandler <- function(wn) {
     output <<- c(output, w$get_new(), list(wn))
@@ -61,7 +61,10 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     .Internal(eval.with.vis(expr, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
+
   output <- c(output, w$get_new())
-  
-  c(list(new_source(src)), output, list(new_value(ev$value, ev$visible)))
+  if (ev$visible) {
+    output <- c(output, new_value(ev$value))
+  }
+  output
 }

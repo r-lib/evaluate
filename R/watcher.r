@@ -12,25 +12,26 @@ watchout <- function(debug = FALSE) {
   # Thanks to Paul Murrell
   .Call("R_GD_nullDevice")
   dev.control("enable")
+  plot_snapshot()
 
   con <- textConnection("output", "wr", local=TRUE)
   sink(con, split = debug)
   
   list(
     get_new = function() {
-      if (length(output) == length(prev)) return()
-
-      new <- output[setdiff(seq_along(output), seq_along(prev))]
-      prev <<- output
-      
-      graphics <- plot_snapshot()
-      text <- paste(paste(new, collapse="\n"), "\n", sep="")
-      
-      if (!is.null(graphics)) {
-        c(list(graphics), text)
-      } else {
-        as.list(text)
+      out <- list()
+      if (length(output) != length(prev)) {
+        new <- output[setdiff(seq_along(output), seq_along(prev))]
+        prev <<- output
+        
+        out$text <- paste(paste(new, collapse="\n"), "\n", sep = "")
       }
+
+      graphics <- plot_snapshot()
+      if (!is.null(graphics)) {
+        out$graphics <- graphics
+      }
+      unname(out)
     },
     pause = function() sink(),
     unpause = function() sink(con, split = debug),

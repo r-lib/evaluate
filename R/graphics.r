@@ -6,7 +6,7 @@
 #' @return \code{NULL} if plot is blank or unchanged, otherwise the output of
 #'   \code{\link[grDevices]{recordPlot}}.
 plot_snapshot <- local({ 
-  last_plot <- NULL
+  last_plot <- empty_plot
   
   take_snapshot <- function() {
     structure(
