@@ -41,3 +41,9 @@ test_that("no plot windows open", {
   evaluate(file("plot.r"))
   expect_that(length(dev.list()), equals(0))
 })
+
+test_that("data sets loaded", {
+  ev <- evaluate(file("data.r"))
+  expect_that(length(ev), equals(3))
+  
+})

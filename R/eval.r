@@ -71,7 +71,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
 
   output <- c(output, w$get_new())
   if (ev$visible) {
-    output <- c(output, new_value(ev$value))
+    output <- c(output, list(new_value(ev$value)))
   }
   output
 }
