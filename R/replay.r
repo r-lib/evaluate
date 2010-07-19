@@ -6,9 +6,9 @@
 #' @export
 #' @examples
 #' samples <- system.file("tests", package = "evaluate")
-#' replay(evaluate(file(file.path(samples, "test-1.r"))))
-#' replay(evaluate(file(file.path(samples, "test-2.r"))))
-#' replay(evaluate(file(file.path(samples, "eval-output.r"))))
+#' replay(evaluate(file(file.path(samples, "order.r"))))
+#' replay(evaluate(file(file.path(samples, "plot.r"))))
+#' replay(evaluate(file(file.path(samples, "data.r"))))
 #' @S3method replay list
 #' @S3method replay character
 #' @S3method replay source

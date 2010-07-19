@@ -18,7 +18,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL) {
   
   # Use undocumented null graphics device to avoid plot windows opening
   # Thanks to Paul Murrell
-  .Call("R_GD_nullDevice")
+  .Call("R_GD_nullDevice", PACKAGE = "grDevices")
   dev.control("enable")
   plot_snapshot()
   on.exit(dev.off())

@@ -11,6 +11,6 @@
   \item{x}{result from \code{\link{evaluate}}}
 }
 \examples{samples <- system.file("tests", package = "evaluate")
-replay(evaluate(file(file.path(samples, "test-1.r"))))
-replay(evaluate(file(file.path(samples, "test-2.r"))))
-replay(evaluate(file(file.path(samples, "eval-output.r"))))}
+replay(evaluate(file(file.path(samples, "order.r"))))
+replay(evaluate(file(file.path(samples, "plot.r"))))
+replay(evaluate(file(file.path(samples, "data.r"))))}
