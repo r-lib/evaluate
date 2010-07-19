@@ -6,7 +6,7 @@
 #' @return \code{NULL} if plot is blank or unchanged, otherwise the output of
 #'   \code{\link[grDevices]{recordPlot}}.
 plot_snapshot <- local({ 
-  last_plot <- empty_plot
+  last_plot <- NULL
   
   take_snapshot <- function() {
     structure(
@@ -21,8 +21,21 @@ plot_snapshot <- local({
     if (identical(plot, last_plot)) return(NULL)
     
     last_plot <<- plot
-    if (identical(plot, empty_plot)) return(NULL)
+    if (is.empty(plot)) return(NULL)
     plot
   }
 })
 
+is.empty <- function(x) {
+  if(is.null(x)) return(TRUE)
+  
+  drawing <- setdiff(plot_calls(x), c("plot.new", "plot.window", "par"))
+  length(drawing) == 0
+}
+
+plot_calls <- function(plot) {
+  prims <- lapply(plot[[1]], "[[", 1)
+  chars <- sapply(prims, deparse)
+  
+  gsub(".Primitive\\(\"|\"\\)", "", chars)
+}
