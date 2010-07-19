@@ -4,7 +4,7 @@ is.error <- function(x) inherits(x, "error")
 is.value <- function(x) inherits(x, "value")
 is.source <- function(x) inherits(x, "source")
 
-new_value <- function(value, visible = FALSE) {
+new_value <- function(value, visible = TRUE) {
   structure(list(value = value, visible = visible), class = "value")
 }
 
