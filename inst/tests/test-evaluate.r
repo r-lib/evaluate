@@ -16,6 +16,16 @@ test_that("single plot is captured", {
   expect_that(classes, equals(c("source", "recordedplot")))
 })
 
+test_that("plot additions are captured", {
+  ev <- evaluate(file("plot-additions.r"))
+  expect_that(length(ev), equals(4))
+  
+  classes <- sapply(ev, class)
+  expect_that(classes, 
+    equals(c("source", "recordedplot", "source", "recordedplot")))
+})
+
+
 test_that("no plot windows open", {
   graphics.off()
   expect_that(length(dev.list()), equals(0))

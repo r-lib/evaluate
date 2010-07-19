@@ -8,12 +8,6 @@ watchout <- function(debug = FALSE) {
   output <- vector("character")
   prev   <- vector("character")
 
-  # Use undocumented null graphics device to avoid plot windows opening
-  # Thanks to Paul Murrell
-  .Call("R_GD_nullDevice")
-  dev.control("enable")
-  plot_snapshot()
-
   con <- textConnection("output", "wr", local=TRUE)
   sink(con, split = debug)
   
@@ -38,7 +32,6 @@ watchout <- function(debug = FALSE) {
     close = function() {
       sink()
       close(con)
-      dev.off()
       output
     }
   )

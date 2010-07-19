@@ -16,6 +16,13 @@
 evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
   
+  # Use undocumented null graphics device to avoid plot windows opening
+  # Thanks to Paul Murrell
+  .Call("R_GD_nullDevice")
+  dev.control("enable")
+  plot_snapshot()
+  on.exit(dev.off())
+  
   unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
     MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE), 
     recursive = FALSE)
