@@ -1,4 +1,5 @@
 export(evaluate)
+export(is.message, is.warning, is.error, is.value, is.source)
 export(parse_all)
 S3method(parse_all, character)
 S3method(parse_all, "function")

@@ -1,3 +1,14 @@
+#' Object class tests
+#'
+#' @usage 
+#'   is.error(x)
+#'   is.message(x)
+#'   is.source(x)
+#'   is.value(x)
+#'   is.warning(x)
+#' @export is.message is.warning is.error is.value is.source
+#' @aliases is.message is.warning is.error is.value is.source
+#' @keywords internal
 is.message <- function(x) inherits(x, "message")
 is.warning <- function(x) inherits(x, "warning")
 is.error <- function(x) inherits(x, "error")
