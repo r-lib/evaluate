@@ -4,7 +4,8 @@
 is.message(x)
 is.source(x)
 is.value(x)
-is.warning(x)}
+is.warning(x)
+is.recordedplot(x)}
 
 \description{
   Object class tests
@@ -14,4 +15,5 @@ is.warning(x)}
 \alias{is.error}
 \alias{is.value}
 \alias{is.source}
+\alias{is.recordedplot}
 \keyword{internal}
