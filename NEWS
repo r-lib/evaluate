@@ -1,1 +1,3 @@
 Changes in version 0.2 -----------------------------------------------------------------
+
+* visible results are automatically evaluated and their visible results are capture.  This is particularly important for lattice and ggplot graphics, which otherwise require special handling.  It also correctly captures warnings, errors and messages raised by the print method.

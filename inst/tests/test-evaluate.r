@@ -16,6 +16,14 @@ test_that("single plot is captured", {
   expect_that(classes, equals(c("source", "recordedplot")))
 })
 
+test_that("ggplot is captured", {
+  ev <- evaluate(file("ggplot.r"))
+  expect_that(length(ev), equals(3))
+  
+  classes <- sapply(ev, class)
+  expect_that(classes, equals(c("source", "source", "recordedplot")))
+})
+
 test_that("plot additions are captured", {
   ev <- evaluate(file("plot-additions.r"))
   expect_that(length(ev), equals(4))

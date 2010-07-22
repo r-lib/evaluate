@@ -68,10 +68,14 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     .Internal(eval.with.vis(expr, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
-
   output <- c(output, w$get_new())
+
+  # If visible, print and capture output
   if (ev$visible) {
-    output <- c(output, list(new_value(ev$value)))
+    try(withCallingHandlers(print(ev$value), warning = wHandler, 
+      error = eHandler, message = mHandler), silent = TRUE)
+    output <- c(output, w$get_new())
   }
+    
   output
 }
