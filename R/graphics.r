@@ -8,16 +8,8 @@
 plot_snapshot <- local({ 
   last_plot <- NULL
   
-  take_snapshot <- function() {
-    structure(
-      .Internal(getSnapshot()),
-      version = grDevices:::rversion(),
-      class = "recordedplot"
-    )
-  }
-  
   function() {
-    plot <- take_snapshot()
+    plot <- recordPlot()
     if (identical(plot, last_plot)) return(NULL)
     
     last_plot <<- plot
