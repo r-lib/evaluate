@@ -21,10 +21,8 @@ watchout <- function(debug = FALSE) {
         out$text <- paste(paste(new, collapse="\n"), "\n", sep = "")
       }
 
-      graphics <- plot_snapshot()
-      if (!is.null(graphics)) {
-        out$graphics <- graphics
-      }
+      out$graphics <- plot_snapshot()
+
       unname(out)
     },
     pause = function() sink(),
