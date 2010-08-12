@@ -60,3 +60,9 @@ test_that("data sets loaded", {
 #   ev <- evaluate("cat('foo\n')")
 #   expect_that(ev[[1]]$src, equals("cat('foo\\n'))"))
 # })
+
+test_that("terminal newline not needed", {
+  ev <- evaluate("cat('foo')")
+  expect_that(length(ev), equals(2))
+  expect_that(ev[[2]], equals("foo"))
+})
