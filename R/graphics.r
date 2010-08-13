@@ -9,7 +9,7 @@ plot_snapshot <- local({
   last_plot <- NULL
   
   function() {
-    if (is.null(dev.list()) return(NULL)
+    if (is.null(dev.list())) return(NULL)
     
     plot <- recordPlot()
     if (identical(plot, last_plot)) return(NULL)
