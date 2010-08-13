@@ -14,7 +14,7 @@
 parse_all <- function(x) UseMethod("parse_all")
 
 parse_all.character <- function(x) {
-  string <- paste(x, collapse = "\n")
+  string <- str_c(x, collapse = "\n")
   src <- srcfilecopy("<text>", string)
   
   expr <- parse(text = string, src = src)
@@ -36,7 +36,7 @@ parse_all.character <- function(x) {
 
   # Create data frame containing each expression and its 
   # location in the original source
-  src <- sapply(srcref, function(src) paste(as.character(src), collapse="\n"))
+  src <- sapply(srcref, function(src) str_c(as.character(src), collapse="\n"))
   pos <- t(sapply(srcref, unclass))[, 1:4, drop = FALSE]
   colnames(pos) <- c("x1", "y1", "x2", "y2")
   pos <- as.data.frame(pos)[c("x1","y1","x2","y2")]
@@ -107,7 +107,7 @@ parse_all.character <- function(x) {
     }
     
     with(df, data.frame(
-      src = paste(src, collapse = ""),
+      src = str_c(src, collapse = ""),
       expr = I(clean_expr),
       stringsAsFactors = FALSE
     ))
@@ -129,8 +129,8 @@ parse_all.connection <- function(x) {
 
 parse_all.function <- function(x) {
   src <- attr(x, "source")
-  src <- gsub("^function\\(\\)\\s*\\{", "", src)
-  src <- gsub("\\}$", "", src)
+  src <- str_replace(src, "^function\\(\\)\\s*\\{", "")
+  src <- str_replace(src, "\\}$", "")
   parse_all(src)
 }
 

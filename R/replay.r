@@ -36,7 +36,7 @@ replay.warning <- function(x) {
 }
 
 replay.message <- function(x) {
-  message(gsub("\n$", "", x$message))
+  message(str_replace(x$message, "\n$", ""))
 }
 
 replay.error <- function(x) {
@@ -63,13 +63,13 @@ replay.recordedplot <- function(x) {
 #' @param prompt prompt for first line
 #' @param continue prompt for subsequent lines
 #' @return a string
-line_prompt <- function(x, prompt = options("prompt"), continue = options("continue")) {
+line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("continue")) {
   lines <- strsplit(x, "\n")[[1]]
   n <- length(lines)
 
-  lines[1] <- paste(prompt, lines[1], sep="")
+  lines[1] <- str_c(prompt, lines[1])
   if (n > 1)
-    lines[2:n] <- paste(continue, lines[2:n], sep="")    
+    lines[2:n] <- str_c(continue, lines[2:n])
   
-  paste(lines, "\n", collapse="")
+  str_c(lines, "\n", collapse = "")
 }

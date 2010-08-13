@@ -29,5 +29,5 @@ plot_calls <- function(plot) {
   prims <- lapply(plot[[1]], "[[", 1)
   chars <- sapply(prims, deparse)
   
-  gsub(".Primitive\\(\"|\"\\)", "", chars)
+  str_replace(chars, ".Primitive\\(\"|\"\\)", "")
 }

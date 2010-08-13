@@ -6,14 +6,14 @@
 #' @export
 create_traceback <- function(callstack) {
   calls <- lapply(callstack, deparse, width = 500)
-  calls <- sapply(calls, paste, collapse = "\n")
+  calls <- sapply(calls, str_c, collapse = "\n")
   first_eval <- match("eval(expr, envir, enclos)", calls, 0)[1]
   
   if (first_eval == length(calls)) return()
   
   user_calls <- calls[-seq_len(first_eval)]
-  user_calls <- paste(seq_along(user_calls), ": ", user_calls, sep = "")
-  user_calls <- gsub("\n", "\n   ", user_calls)
+  user_calls <- str_c(seq_along(user_calls), ": ", user_calls, sep = "")
+  user_calls <- str_replace(user_calls, "\n", "\n   ")
   user_calls 
 }
 

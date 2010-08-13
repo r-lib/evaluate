@@ -30,7 +30,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL) {
 
 eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL) {
   if (missing(src)) {
-    src <- paste(deparse(substitute(expr)), collapse="")
+    src <- str_c(deparse(substitute(expr)), collapse="")
   }
 
   # No expression, just source code
