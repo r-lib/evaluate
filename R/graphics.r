@@ -29,7 +29,8 @@ is.empty <- function(x) {
 
 plot_calls <- function(plot) {
   prims <- lapply(plot[[1]], "[[", 1)
-  chars <- sapply(prims, deparse)
+  if (length(prims) == 0) return()
   
+  chars <- sapply(prims, deparse)
   str_replace(chars, ".Primitive\\(\"|\"\\)", "")
 }
