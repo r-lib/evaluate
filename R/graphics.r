@@ -32,5 +32,5 @@ plot_calls <- function(plot) {
   if (length(prims) == 0) return()
   
   chars <- sapply(prims, deparse)
-  str_replace(chars, ".Primitive\\(\"|\"\\)", "")
+  str_replace_all(chars, ".Primitive\\(\"|\"\\)", "")
 }
