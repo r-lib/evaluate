@@ -1,7 +1,8 @@
 \name{line_prompt}
 \alias{line_prompt}
 \title{Line prompt.}
-\usage{line_prompt(x, prompt=options("prompt"), continue=options("continue"))}
+\usage{line_prompt(x, prompt=getOption("prompt"),
+    continue=getOption("continue"))}
 
 \description{
   Line prompt. Format a single expression as if it had been entered at
