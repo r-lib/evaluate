@@ -5,19 +5,19 @@
 #' @keywords internal
 #' @export
 create_traceback <- function(callstack) {
+  if (length(callstack) == 0) return()
+
+  # Convert to text
   calls <- lapply(callstack, deparse, width = 500)
   calls <- sapply(calls, str_c, collapse = "\n")
-  first_eval <- match("eval(expr, envir, enclos)", calls, 0)[1]
   
-  if (first_eval == length(calls)) return()
-  
-  user_calls <- calls[-seq_len(first_eval)]
-  user_calls <- str_c(seq_along(user_calls), ": ", user_calls, sep = "")
-  user_calls <- str_replace(user_calls, "\n", "\n   ")
-  user_calls 
+  # Number and indent
+  calls <- str_c(seq_along(calls), ": ", calls)
+  calls <- str_replace(calls, "\n", "\n   ")
+  calls 
 }
 
-#' Try, capture stack on error.
+#' Try, capturing stack on error.
 #'
 #' This is a variant of \code{\link{tryCatch}} that also captures the call
 #' stack if an error occurs.
@@ -28,11 +28,13 @@ create_traceback <- function(callstack) {
 #' @export
 try_capture_stack <- function(quoted_code, env) {
   capture_calls <- function(e) {
-    # Capture call stack, removing last two calls, which are added by
-    # withCallingHandlers
-    e$calls <- head(sys.calls(), -2)
+    # Capture call stack, removing last two calls from end (added by  
+    # withCallingHandlers), and first frame + 7 calls from start (added by
+    # tryCatch etc)
+    e$calls <- head(sys.calls()[-seq_len(frame + 7)], -2)
     signalCondition(e)
   }
+  frame <- sys.nframe()
   
   tryCatch(
     withCallingHandlers(eval(quoted_code, env), error = capture_calls),
