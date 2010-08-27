@@ -1,3 +1,6 @@
+Changes in version 0.3 -----------------------------------------------------------------
+
+
 Changes in version 0.2 -----------------------------------------------------------------
 
 * try_capture_stack and create_traceback do a much better job of removing
