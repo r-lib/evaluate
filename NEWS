@@ -1,5 +1,8 @@
 Changes in version 0.3 -----------------------------------------------------------------
 
+* Import stringr instead of depending on it
+
+* Test plot recording only in the presence of interactive devices.
 
 Changes in version 0.2 -----------------------------------------------------------------
 
