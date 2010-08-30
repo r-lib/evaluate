@@ -13,6 +13,7 @@
 #' @param envir environment in which to evaluate expressions
 #' @param enclos when \code{envir} is a list or data frame, this is treated
 #'   as the parent environment to \code{envir}.
+#' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
   
