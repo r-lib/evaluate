@@ -129,9 +129,9 @@ parse_all.connection <- function(x) {
 
 parse_all.function <- function(x) {
   src <- attr(x, "source")
-  src <- str_replace(src, "^function\\(\\)\\s*\\{", "")
-  src <- str_replace(src, "\\}$", "")
-  parse_all(src)
+  # Remove first, function() {,  and last lines, }
+  n <- length(src)
+  parse_all(src[-c(1, n)])
 }
 
 parse_all.default <- function(x) {
