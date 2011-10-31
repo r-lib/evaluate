@@ -64,6 +64,13 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     invokeRestart("muffleMessage")
   }
 
+  # set hooks to record all new plots
+  hooks <- c("before.plot.new", "before.grid.newpage")
+  hook_new_plot <- function() {
+    output <<- c(output, w$get_new())
+  }
+  for (h in hooks) setHook(h, hook_new_plot)
+
   ev <- list(value = NULL, visible = FALSE)  
   try(ev <- withCallingHandlers(
     .Internal(eval.with.vis(expr, envir, enclos)),
@@ -77,6 +84,14 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
       error = eHandler, message = mHandler), silent = TRUE)
     output <- c(output, w$get_new())
   }
-    
+
+  # restore plot hooks: no straightforward way to do this
+  diff_hooks <- function(x) !identical(x, hook_new_plot)
+  for (h in hooks) {
+    other_hooks <- Filter(diff_hooks, getHook(h))
+    setHook(h, NULL, "replace")
+    sapply(other_hooks, setHook, hookName = h)
+  }
+
   output
 }
