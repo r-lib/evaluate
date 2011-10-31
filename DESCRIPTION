@@ -10,7 +10,8 @@ Description: Parsing and evaluation tools that make it easy
 License: GPL
 Imports:
     stringr (>= 0.4)
-Suggest: testthat
+Suggests:
+    testthat
 Collate:
     'eval.r'
     'graphics.r'
