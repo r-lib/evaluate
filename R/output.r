@@ -2,10 +2,15 @@
 #'
 #' @usage 
 #'   is.error(x)
+#'
 #'   is.message(x)
+#'
 #'   is.source(x)
+#'
 #'   is.value(x)
+#'
 #'   is.warning(x)
+#'
 #'   is.recordedplot(x)
 #' @export is.message is.warning is.error is.value is.source is.recordedplot
 #' @aliases is.message is.warning is.error is.value is.source is.recordedplot
