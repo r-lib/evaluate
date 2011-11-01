@@ -36,7 +36,7 @@ if (dev.interactive()) {
                "source", "source", "recordedplot", "source")))
   })
 
-  test_that("all plots in a single expression are captured", {
+  test_that("base plots in a single expression are captured", {
     ev <- evaluate(file("plot-loop.r"))
     expect_that(length(ev), equals(4))
 
