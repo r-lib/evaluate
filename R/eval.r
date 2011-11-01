@@ -90,7 +90,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   for (h in hooks) {
     other_hooks <- Filter(diff_hooks, getHook(h))
     setHook(h, NULL, "replace")
-    sapply(other_hooks, setHook, hookName = h)
+    lapply(other_hooks, setHook, hookName = h)
   }
 
   output
