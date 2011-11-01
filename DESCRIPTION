@@ -8,6 +8,8 @@ Maintainer: Hadley Wickham <h.wickham@gmail.com>
 Description: Parsing and evaluation tools that make it easy
     to recreate the command line behaviour of R.
 License: GPL
+Depends:
+    R (>= 2.14.0)
 Imports:
     stringr (>= 0.4)
 Suggests:
