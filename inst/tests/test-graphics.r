@@ -45,6 +45,15 @@ if (dev.interactive()) {
       equals(c("source", rep("recordedplot", 3))))
   })
 
+  test_that("ggplot2 plots in a single expression are captured", {
+    ev <- evaluate(file("ggplot-loop.r"))
+    expect_that(length(ev), equals(3))
+
+    classes <- sapply(ev, class)
+    expect_that(classes, 
+      equals(c("source", rep("recordedplot", 2))))
+  })
+
   # test_that("no plot windows open", {
   #   graphics.off()
   #   expect_that(length(dev.list()), equals(0))
