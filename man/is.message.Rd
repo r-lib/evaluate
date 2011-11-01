@@ -7,15 +7,15 @@
 \alias{is.warning}
 \title{Object class tests}
 \usage{
-  is.error(x)
-
   is.message(x)
 
-  is.source(x)
+  is.warning(x)
+
+  is.error(x)
 
   is.value(x)
 
-  is.warning(x)
+  is.source(x)
 
   is.recordedplot(x)
 }
