@@ -1,4 +1,5 @@
 #' Parse, retaining comments.
+#'
 #' Works very similarly to parse, but also keeps original formatting and
 #' comments.
 #'

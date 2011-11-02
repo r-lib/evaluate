@@ -1,4 +1,5 @@
 #' Replay a list of evaluated results.
+#'
 #' Replay a list of evaluated results, as if you'd run them in an R
 #' terminal.
 #'
@@ -57,6 +58,7 @@ replay.recordedplot <- function(x) {
 }
 
 #' Line prompt.
+#'
 #' Format a single expression as if it had been entered at the command prompt.
 #'
 #' @param x string representing a single expression

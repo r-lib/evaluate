@@ -10,11 +10,13 @@ if (dev.interactive()) {
   })
 
   test_that("ggplot is captured", {
-    ev <- evaluate(file("ggplot.r"))
-    expect_that(length(ev), equals(3))
+    if (require("ggplot2")) {
+      ev <- evaluate(file("ggplot.r"))
+      expect_that(length(ev), equals(3))
 
-    classes <- sapply(ev, class)
-    expect_that(classes, equals(c("source", "source", "recordedplot")))
+      classes <- sapply(ev, class)
+      expect_that(classes, equals(c("source", "source", "recordedplot")))
+    }
   })
 
   test_that("plot additions are captured", {
@@ -34,6 +36,26 @@ if (dev.interactive()) {
     expect_that(classes, 
       equals(c("source", "source", "recordedplot", 
                "source", "source", "recordedplot", "source")))
+  })
+
+  test_that("base plots in a single expression are captured", {
+    ev <- evaluate(file("plot-loop.r"))
+    expect_that(length(ev), equals(4))
+
+    classes <- sapply(ev, class)
+    expect_that(classes, 
+      equals(c("source", rep("recordedplot", 3))))
+  })
+
+  test_that("ggplot2 plots in a single expression are captured", {
+    if (require("ggplot2")) {
+      ev <- evaluate(file("ggplot-loop.r"))
+      expect_that(length(ev), equals(4))
+
+      classes <- sapply(ev, class)
+      expect_that(classes, 
+        equals(c(rep("source", 2), rep("recordedplot", 2))))
+    }
   })
 
   # test_that("no plot windows open", {

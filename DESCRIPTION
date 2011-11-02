@@ -1,14 +1,26 @@
 Package: evaluate
 Type: Package
-Title: Parsing and evaluation tools that provide more details than the
-    default.
+Title: Parsing and evaluation tools that provide more
+    details than the default.
 Version: 0.3
 Author: Hadley Wickham <h.wickham@gmail.com>
 Maintainer: Hadley Wickham <h.wickham@gmail.com>
-Description: Parsing and evaluation tools that make it easy to recreate
-    the command line behaviour of R.
+Description: Parsing and evaluation tools that make it easy
+    to recreate the command line behaviour of R.
 License: GPL
-Imports: stringr (>= 0.4)
-Suggest: testthat
-Collate: 'eval.r' 'graphics.r' 'output.r' 'parse.r' 'replay.r'
-    'src-region.r' 'traceback.r' 'watcher.r'
+Depends:
+    R (>= 2.14.0)
+Imports:
+    stringr (>= 0.4)
+Suggests:
+    testthat,
+    ggplot2
+Collate:
+    'eval.r'
+    'graphics.r'
+    'output.r'
+    'parse.r'
+    'replay.r'
+    'src-region.r'
+    'traceback.r'
+    'watcher.r'
