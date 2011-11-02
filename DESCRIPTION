@@ -13,7 +13,8 @@ Depends:
 Imports:
     stringr (>= 0.4)
 Suggests:
-    testthat
+    testthat,
+    ggplot2
 Collate:
     'eval.r'
     'graphics.r'
