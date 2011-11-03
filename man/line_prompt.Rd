@@ -3,7 +3,7 @@
 \title{Line prompt.}
 \usage{
   line_prompt(x, prompt = getOption("prompt"),
-  continue = getOption("continue"))
+    continue = getOption("continue"))
 }
 \arguments{
   \item{x}{string representing a single expression}
