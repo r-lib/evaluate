@@ -1,19 +1,26 @@
 \name{is.message}
-\title{Object class tests...}
-\usage{is.error(x)
-is.message(x)
-is.source(x)
-is.value(x)
-is.warning(x)
-is.recordedplot(x)}
+\alias{is.error}
+\alias{is.message}
+\alias{is.recordedplot}
+\alias{is.source}
+\alias{is.value}
+\alias{is.warning}
+\title{Object class tests}
+\usage{
+  is.message(x)
 
+  is.warning(x)
+
+  is.error(x)
+
+  is.value(x)
+
+  is.source(x)
+
+  is.recordedplot(x)
+}
 \description{
   Object class tests
 }
-\alias{is.message}
-\alias{is.warning}
-\alias{is.error}
-\alias{is.value}
-\alias{is.source}
-\alias{is.recordedplot}
 \keyword{internal}
+
