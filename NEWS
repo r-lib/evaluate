@@ -1,3 +1,6 @@
+* Use plot hooks to capture multiple plots created in a loop or within a
+  function.  (Contributed by Yihui Xie)
+
 Changes in version 0.3 -----------------------------------------------------------------
 
 * Import stringr instead of depending on it
