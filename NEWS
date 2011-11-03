@@ -1,13 +1,15 @@
 * Use plot hooks to capture multiple plots created in a loop or within a
   function.  (Contributed by Yihui Xie)
 
-Changes in version 0.3 -----------------------------------------------------------------
+evaluate 0.3 
+============
 
-* Import stringr instead of depending on it
+* Import `stringr` instead of depending on it.
 
 * Test plot recording only in the presence of interactive devices.
 
-Changes in version 0.2 -----------------------------------------------------------------
+evaluate 0.2
+============
 
 * try_capture_stack and create_traceback do a much better job of removing
   infrastructure calls from the captured traceback
