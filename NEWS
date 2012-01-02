@@ -1,3 +1,8 @@
+Version 0.4.1
+------------------------------------------------------------------------------
+
+* use `test_package` to avoid problems with latest version of `testthat`
+
 evaluate 0.4 (2011-11-03) 
 =========================
 
