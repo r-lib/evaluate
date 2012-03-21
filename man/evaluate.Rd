@@ -2,7 +2,8 @@
 \alias{evaluate}
 \title{Evaluate input and return all details of evaluation.}
 \usage{
-  evaluate(input, envir = parent.frame(), enclos = NULL)
+  evaluate(input, envir = parent.frame(), enclos = NULL,
+    debug = FALSE)
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.
@@ -14,6 +15,10 @@
   \item{enclos}{when \code{envir} is a list or data frame,
   this is treated as the parent environment to
   \code{envir}.}
+
+  \item{debug}{if \code{TRUE}, displays information useful
+  for debugging, including all output that evaluate
+  captures}
 }
 \description{
   Compare to \code{\link{eval}}, \code{evaluate} captures

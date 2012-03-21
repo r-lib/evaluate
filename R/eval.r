@@ -13,8 +13,10 @@
 #' @param envir environment in which to evaluate expressions
 #' @param enclos when \code{envir} is a list or data frame, this is treated
 #'   as the parent environment to \code{envir}.
+#' @param debug if \code{TRUE}, displays information useful for debugging,
+#'   including all output that evaluate captures
 #' @import stringr
-evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
+evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE) {  
   parsed <- parse_all(input)
   
   # Use undocumented null graphics device to avoid plot windows opening
@@ -23,15 +25,17 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL) {
   # dev.control("enable")
   # plot_snapshot()
   # on.exit(dev.off())
-  
   unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
-    MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE), 
-    recursive = FALSE)
+    MoreArgs = list(envir = envir, enclos = enclos, debug = debug), 
+    SIMPLIFY = FALSE), recursive = FALSE)
 }
 
-eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL) {
+eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL, debug = FALSE) {
   if (missing(src)) {
     src <- str_c(deparse(substitute(expr)), collapse="")
+  }
+  if (debug) {
+    message(src)
   }
 
   # No expression, just source code
@@ -45,7 +49,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   }
   
   # Record output correctly interleaved with messages, warnings and errors.
-  w <- watchout()
+  w <- watchout(debug)
   on.exit(w$close())
   output <- list(new_source(src))
   
