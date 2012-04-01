@@ -77,7 +77,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
 
   ev <- list(value = NULL, visible = FALSE)  
   try(ev <- withCallingHandlers(
-    .Internal(eval.with.vis(expr, envir, enclos)),
+    withVisible(eval(expr, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
   output <- c(output, w$get_new())
