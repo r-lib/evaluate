@@ -1,3 +1,5 @@
+* replace deprecated `.Internal(eval.with.vis)` with correct `withVisible`
+
 * `evaluate` gains `debug` argument
 
 Version 0.4.1
