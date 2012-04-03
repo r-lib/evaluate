@@ -18,7 +18,7 @@ parse_all.character <- function(x) {
   string <- str_c(x, collapse = "\n")
   src <- srcfilecopy("<text>", string)
   
-  expr <- parse(text = string, src = src)
+  expr <- parse(text = string, srcfile = src)
   # No code, all comments
   if (length(expr) == 0) {
     lines <- strsplit(string, "\n")[[1]]
