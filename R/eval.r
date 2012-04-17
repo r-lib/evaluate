@@ -84,7 +84,9 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
 
   # If visible, print and capture output
   if (ev$visible) {
-    try(withCallingHandlers(print(ev$value), warning = wHandler, 
+    render <- if (isS4(ev$value)) show else print
+    
+    try(withCallingHandlers(render(ev$value), warning = wHandler, 
       error = eHandler, message = mHandler), silent = TRUE)
     output <- c(output, w$get_new())
   }

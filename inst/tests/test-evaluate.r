@@ -24,3 +24,12 @@ test_that("terminal newline not needed", {
   expect_that(length(ev), equals(2))
   expect_that(ev[[2]], equals("foo"))
 })
+
+test_that("S4 methods are displayed with show, not print", {
+  setClass("A", contains = "function")
+  setMethod("show", "A", function(object) cat("B"))
+  a <- new('A', function() b)
+  
+  ev <- evaluate("a")
+  expect_equal(ev[[2]], "B")
+})
