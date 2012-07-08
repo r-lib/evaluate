@@ -20,12 +20,11 @@ parse_all.character <- function(x) {
   expr <- parse(text = x, srcfile = src)
   # No code, all comments
   if (length(expr) == 0) {
-    lines <- x
-    n <- length(lines)
+    n <- length(x)
     return(data.frame(
-      x1 = seq_along(lines), x2 = seq_along(lines), 
-      y1 = rep(0, n), y2 = nchar(lines),
-      src = lines, text = rep(TRUE, n),
+      x1 = seq_along(x), x2 = seq_along(x), 
+      y1 = rep(0, n), y2 = nchar(x),
+      src = x, text = rep(TRUE, n),
       expr = I(rep(list(NULL), n)), visible = rep(FALSE, n), 
       stringsAsFactors = FALSE
     ))
