@@ -15,6 +15,7 @@
 parse_all <- function(x) UseMethod("parse_all")
 
 parse_all.character <- function(x) {
+  x <- unlist(strsplit(x, "\n"), recursive = FALSE, use.names = FALSE)
   src <- srcfilecopy("<text>", x)
   
   expr <- parse(text = x, srcfile = src)
