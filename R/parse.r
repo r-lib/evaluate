@@ -15,13 +15,12 @@
 parse_all <- function(x) UseMethod("parse_all")
 
 parse_all.character <- function(x) {
-  string <- str_c(x, collapse = "\n")
-  src <- srcfilecopy("<text>", string)
+  src <- srcfilecopy("<text>", x)
   
-  expr <- parse(text = string, srcfile = src)
+  expr <- parse(text = x, srcfile = src)
   # No code, all comments
   if (length(expr) == 0) {
-    lines <- strsplit(string, "\n")[[1]]
+    lines <- x
     n <- length(lines)
     return(data.frame(
       x1 = seq_along(lines), x2 = seq_along(lines), 
