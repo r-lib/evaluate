@@ -12,12 +12,15 @@ watchout <- function(debug = FALSE) {
   sink(con, split = debug)
 
   list(
-    get_new = function() {
+    get_new = function(plot = FALSE, incomplete_plots = FALSE) {
       incomplete <- isIncomplete(con)
       if (incomplete) cat("\n")
 
       out <- list()
-      out$graphics <- plot_snapshot()
+
+      if (plot) {
+        out$graphics <- plot_snapshot(incomplete_plots)
+      }
 
       if (length(output) != length(prev)) {
         new <- output[setdiff(seq_along(output), seq_along(prev))]
@@ -26,7 +29,6 @@ watchout <- function(debug = FALSE) {
         out$text <- str_c(new, collapse = "\n")
         if (!incomplete) out$text <- str_c(out$text, "\n")
       }
-
 
       unname(out)
     },

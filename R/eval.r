@@ -27,10 +27,15 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
   }
 
+  # Start new graphics device and clean up afterwards
+  dev.new()
+  dev <- dev.cur()
+  on.exit(dev.off(dev))
+
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
     out[[i]] <- evaluate_call(parsed$expr[[i]][[1]], parsed$src[[i]],
-      envir = envir, enclos = enclos, debug = debug)
+      envir = envir, enclos = enclos, debug = debug, last = i == length(out))
 
     if (stop_on_error) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -42,7 +47,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 }
 
 evaluate_call <- function(call, src = NULL, envir = parent.frame(),
-                          enclos = NULL, debug = FALSE) {
+                          enclos = NULL, debug = FALSE, last = FALSE) {
   if (debug) message(src)
 
   if (is.null(call)) {
@@ -57,7 +62,7 @@ evaluate_call <- function(call, src = NULL, envir = parent.frame(),
 
   # Hooks to capture plot creation
   capture_plot <- function() {
-    output <<- c(output, w$get_new())
+    output <<- c(output, w$get_new(TRUE))
   }
   old_hooks <- set_hooks(list(
     before.plot.new = capture_plot,
@@ -82,7 +87,7 @@ evaluate_call <- function(call, src = NULL, envir = parent.frame(),
     withVisible(eval(call, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
-  output <- c(output, w$get_new())
+  output <- c(output, w$get_new(TRUE))
 
   # If visible, print and capture output
   if (ev$visible) {
@@ -90,7 +95,12 @@ evaluate_call <- function(call, src = NULL, envir = parent.frame(),
 
     try(withCallingHandlers(render(ev$value), warning = wHandler,
       error = eHandler, message = mHandler), silent = TRUE)
-    output <- c(output, w$get_new())
+    output <- c(output, w$get_new(TRUE))
+  }
+
+  # Always capture last plot, even if incomplete
+  if (last) {
+    output <- c(output, w$get_new(TRUE, TRUE))
   }
 
   output

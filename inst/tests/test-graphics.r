@@ -53,6 +53,26 @@ if (dev.interactive()) {
     }
   })
 
+  test_that("multirow graphics are captured only when complete", {
+    ev <- evaluate(file("plot-multi.r"))
+
+    expect_that(classes(ev),
+      equals(c(rep("source", 5), "recordedplot")))
+
+  })
+
+  test_that("multirow graphics are captured on close", {
+    ev <- evaluate(file("plot-multi-missing.r"))
+
+    expect_that(classes(ev),
+      equals(c(rep("source", 4), "recordedplot")))
+    })
+
+  test_that("changes in parameters don't generate new plots", {
+    ev <- evaluate(file("plot-par.r"))
+    expect_that(classes(ev),
+      equals(c("source", "recordedplot", "source", "source", "recordedplot")))
+  })
   # test_that("no plot windows open", {
   #   graphics.off()
   #   expect_that(length(dev.list()), equals(0))
