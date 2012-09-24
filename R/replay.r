@@ -42,10 +42,10 @@ replay.message <- function(x) {
 
 replay.error <- function(x) {
   if (is.null(x$call)) {
-    message("Error: ", x$message)    
+    message("Error: ", x$message)
   } else {
     call <- deparse(x$call)
-    message("Error in ", call, ": ", x$message)    
+    message("Error in ", call, ": ", x$message)
   }
 }
 
@@ -72,6 +72,6 @@ line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("c
   lines[1] <- str_c(prompt, lines[1])
   if (n > 1)
     lines[2:n] <- str_c(continue, lines[2:n])
-  
+
   str_c(lines, "\n", collapse = "")
 }

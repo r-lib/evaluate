@@ -3,7 +3,7 @@ context("Evaluation")
 test_that("file with only comments runs", {
   ev <- evaluate(file("comment.r"))
   expect_that(length(ev), equals(2))
-  
+
   classes <- sapply(ev, class)
   expect_that(classes, equals(c("source", "source")))
 })
@@ -29,7 +29,7 @@ test_that("S4 methods are displayed with show, not print", {
   setClass("A", contains = "function")
   setMethod("show", "A", function(object) cat("B"))
   a <- new('A', function() b)
-  
+
   ev <- evaluate("a")
   expect_equal(ev[[2]], "B")
 })
