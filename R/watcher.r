@@ -17,6 +17,8 @@ watchout <- function(debug = FALSE) {
       if (incomplete) cat("\n")
 
       out <- list()
+      out$graphics <- plot_snapshot()
+
       if (length(output) != length(prev)) {
         new <- output[setdiff(seq_along(output), seq_along(prev))]
         prev <<- output
@@ -25,7 +27,6 @@ watchout <- function(debug = FALSE) {
         if (!incomplete) out$text <- str_c(out$text, "\n")
       }
 
-      out$graphics <- plot_snapshot()
 
       unname(out)
     },

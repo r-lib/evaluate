@@ -43,3 +43,13 @@ test_that("code aborts on error if stop_on_error == TRUE", {
   ev <- evaluate(file("error.r"), stop_on_error = TRUE)
   expect_that(length(ev), equals(2))
 })
+
+test_that("output and plots interleaved correctly", {
+  ev <- evaluate(file("interleave-1.r"))
+  expect_equal(out_classes(ev),
+    c("source", "character", "recordedplot", "character", "recordedplot"))
+
+  ev <- evaluate(file("interleave-2.r"))
+  expect_equal(out_classes(ev),
+    c("source", "recordedplot", "character", "recordedplot", "character"))
+})
