@@ -5,8 +5,7 @@ if (dev.interactive()) {
     ev <- evaluate(file("plot.r"))
     expect_that(length(ev), equals(2))
 
-    classes <- sapply(ev, class)
-    expect_that(classes, equals(c("source", "recordedplot")))
+    expect_that(classes(ev), equals(c("source", "recordedplot")))
   })
 
   test_that("ggplot is captured", {
@@ -14,8 +13,8 @@ if (dev.interactive()) {
       ev <- evaluate(file("ggplot.r"))
       expect_that(length(ev), equals(3))
 
-      classes <- sapply(ev, class)
-      expect_that(classes, equals(c("source", "source", "recordedplot")))
+      expect_that(classes(ev),
+        equals(c("source", "source", "recordedplot")))
     }
   })
 
@@ -23,8 +22,7 @@ if (dev.interactive()) {
     ev <- evaluate(file("plot-additions.r"))
     expect_that(length(ev), equals(4))
 
-    classes <- sapply(ev, class)
-    expect_that(classes, 
+    expect_that(classes(ev),
       equals(c("source", "recordedplot", "source", "recordedplot")))
   })
 
@@ -32,9 +30,8 @@ if (dev.interactive()) {
     ev <- evaluate(file("plot-new.r"))
     expect_that(length(ev), equals(7))
 
-    classes <- sapply(ev, class)
-    expect_that(classes, 
-      equals(c("source", "source", "recordedplot", 
+    expect_that(classes(ev),
+      equals(c("source", "source", "recordedplot",
                "source", "source", "recordedplot", "source")))
   })
 
@@ -42,8 +39,7 @@ if (dev.interactive()) {
     ev <- evaluate(file("plot-loop.r"))
     expect_that(length(ev), equals(4))
 
-    classes <- sapply(ev, class)
-    expect_that(classes, 
+    expect_that(classes(ev),
       equals(c("source", rep("recordedplot", 3))))
   })
 
@@ -52,8 +48,7 @@ if (dev.interactive()) {
       ev <- evaluate(file("ggplot-loop.r"))
       expect_that(length(ev), equals(4))
 
-      classes <- sapply(ev, class)
-      expect_that(classes, 
+      expect_that(classes(ev),
         equals(c(rep("source", 2), rep("recordedplot", 2))))
     }
   })
@@ -63,5 +58,5 @@ if (dev.interactive()) {
   #   expect_that(length(dev.list()), equals(0))
   #   evaluate(file("plot.r"))
   #   expect_that(length(dev.list()), equals(0))
-  # })  
+  # })
 }

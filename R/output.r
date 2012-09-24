@@ -23,4 +23,4 @@ new_source <- function(src) {
   structure(list(src = src), class = "source")
 }
 
-out_classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
+classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
