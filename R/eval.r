@@ -1,58 +1,60 @@
 #' Evaluate input and return all details of evaluation.
 #'
-#' Compare to \code{\link{eval}}, \code{evaluate} captures all of the 
-#' information necessary to recreate the output as if you had copied and 
+#' Compare to \code{\link{eval}}, \code{evaluate} captures all of the
+#' information necessary to recreate the output as if you had copied and
 #' pasted the code into a R terminal. It captures messages, warnings, errors
 #' and output, all correctly interleaved in the order in which they occured.
 #' It stores the final result, whether or not it should be visible, and the
 #' contents of the current graphics device.
 #'
 #' @export
-#' @param input input object to be parsed an evaluated.  Maybe a string, 
+#' @param input input object to be parsed an evaluated.  Maybe a string,
 #'   file connection or function.
 #' @param envir environment in which to evaluate expressions
 #' @param enclos when \code{envir} is a list or data frame, this is treated
 #'   as the parent environment to \code{envir}.
 #' @param debug if \code{TRUE}, displays information useful for debugging,
 #'   including all output that evaluate captures
+#' @param stop_on_error if \code{TRUE}, evaluation will stop on first error.  If
+#'   \code{FALSE} will continue running all code, just as if you'd pasted the
+#'   code into the command line.
 #' @import stringr
-evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE) {  
+evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
+                     stop_on_error = FALSE) {
   parsed <- parse_all(input)
-  
-  # Use undocumented null graphics device to avoid plot windows opening
-  # Thanks to Paul Murrell
-  # .Call("R_GD_nullDevice", PACKAGE = "grDevices")
-  # dev.control("enable")
-  # plot_snapshot()
-  # on.exit(dev.off())
-  unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
-    MoreArgs = list(envir = envir, enclos = enclos, debug = debug), 
-    SIMPLIFY = FALSE), recursive = FALSE)
+
+  out <- vector("list", nrow(parsed))
+  for (i in seq_along(out)) {
+    out[[i]] <- evaluate_call(parsed$expr[[i]], parsed$src[[i]],
+      envir = envir, enclos = enclos, debug = debug)
+  }
+
+  unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
-eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL, debug = FALSE) {
+evaluate_call <- function(expr, src = NULL, envir = parent.frame(),
+                              enclos = NULL, debug = debug) {
   if (missing(src)) {
     src <- str_c(deparse(substitute(expr)), collapse="")
   }
-  if (debug) {
-    message(src)
-  }
+  if (debug) message(src)
 
   # No expression, just source code
   if (is.null(expr)) {
     return(list(new_source(src)))
   }
   expr <- as.expression(expr)
-  
+
   if (is.null(enclos)) {
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
   }
-  
+
   # Record output correctly interleaved with messages, warnings and errors.
   w <- watchout(debug)
   on.exit(w$close())
   output <- list(new_source(src))
-  
+  had_error <- FALSE
+
   wHandler <- function(wn) {
     output <<- c(output, w$get_new(), list(wn))
     invokeRestart("muffleWarning")
@@ -75,7 +77,7 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   }
   for (h in hooks) setHook(h, hook_new_plot)
 
-  ev <- list(value = NULL, visible = FALSE)  
+  ev <- list(value = NULL, visible = FALSE)
   try(ev <- withCallingHandlers(
     withVisible(eval(expr, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
@@ -85,8 +87,8 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
   # If visible, print and capture output
   if (ev$visible) {
     render <- if (isS4(ev$value)) show else print
-    
-    try(withCallingHandlers(render(ev$value), warning = wHandler, 
+
+    try(withCallingHandlers(render(ev$value), warning = wHandler,
       error = eHandler, message = mHandler), silent = TRUE)
     output <- c(output, w$get_new())
   }
