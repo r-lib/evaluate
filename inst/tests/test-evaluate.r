@@ -33,3 +33,13 @@ test_that("S4 methods are displayed with show, not print", {
   ev <- evaluate("a")
   expect_equal(ev[[2]], "B")
 })
+
+test_that("all code run, even after error", {
+  ev <- evaluate(file("error.r"))
+  expect_that(length(ev), equals(4))
+})
+
+test_that("code aborts on error if stop_on_error == TRUE", {
+  ev <- evaluate(file("error.r"), stop_on_error = TRUE)
+  expect_that(length(ev), equals(2))
+})

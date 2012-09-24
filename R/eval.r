@@ -31,6 +31,11 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
   for (i in seq_along(out)) {
     out[[i]] <- evaluate_call(parsed$expr[[i]][[1]], parsed$src[[i]],
       envir = envir, enclos = enclos, debug = debug)
+
+    if (stop_on_error) {
+      errs <- vapply(out[[i]], is.error, logical(1))
+      if (any(errs)) break
+    }
   }
 
   unlist(out, recursive = FALSE, use.names = FALSE)
@@ -43,7 +48,7 @@ evaluate_call <- function(call, src = NULL, envir = parent.frame(),
   if (is.null(call)) {
     return(list(new_source(src)))
   }
-  stopifnot(is.call(call) || is.language(call))
+  stopifnot(is.call(call) || is.language(call) || is.atomic(call))
 
   # Capture output
   w <- watchout(debug)
