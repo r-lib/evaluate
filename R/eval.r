@@ -23,46 +23,48 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
                      stop_on_error = FALSE) {
   parsed <- parse_all(input)
 
+  if (is.null(enclos)) {
+    enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
+  }
+
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
-    out[[i]] <- evaluate_call(parsed$expr[[i]], parsed$src[[i]],
+    out[[i]] <- evaluate_call(parsed$expr[[i]][[1]], parsed$src[[i]],
       envir = envir, enclos = enclos, debug = debug)
   }
 
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
-evaluate_call <- function(expr, src = NULL, envir = parent.frame(),
-                              enclos = NULL, debug = debug) {
-  if (missing(src)) {
-    src <- str_c(deparse(substitute(expr)), collapse="")
-  }
+evaluate_call <- function(call, src = NULL, envir = parent.frame(),
+                          enclos = NULL, debug = FALSE) {
   if (debug) message(src)
 
-  # No expression, just source code
-  if (is.null(expr)) {
+  if (is.null(call)) {
     return(list(new_source(src)))
   }
-  expr <- as.expression(expr)
+  stopifnot(is.call(call) || is.language(call))
 
-  if (is.null(enclos)) {
-    enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
-  }
-
-  # Record output correctly interleaved with messages, warnings and errors.
+  # Capture output
   w <- watchout(debug)
   on.exit(w$close())
   output <- list(new_source(src))
-  had_error <- FALSE
 
+  # Hooks to capture plot creation
+  capture_plot <- function() {
+    output <<- c(output, w$get_new())
+  }
+  old_hooks <- set_hooks(list(
+    before.plot.new = capture_plot,
+    before.grid.newpage = capture_plot))
+  on.exit(set_hooks(old_hooks, "replace"), add = TRUE)
+
+  # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
     output <<- c(output, w$get_new(), list(wn))
     invokeRestart("muffleWarning")
   }
   eHandler <- function(e) {
-    # Capture call stack, removing last two calls, which are added by
-    # withCallingHandlers
-    # e$calls <- head(sys.calls(), -2)
     output <<- c(output, w$get_new(), list(e))
   }
   mHandler <- function(m) {
@@ -70,16 +72,9 @@ evaluate_call <- function(expr, src = NULL, envir = parent.frame(),
     invokeRestart("muffleMessage")
   }
 
-  # set hooks to record all new plots
-  hooks <- c("before.plot.new", "before.grid.newpage")
-  hook_new_plot <- function() {
-    output <<- c(output, w$get_new())
-  }
-  for (h in hooks) setHook(h, hook_new_plot)
-
   ev <- list(value = NULL, visible = FALSE)
   try(ev <- withCallingHandlers(
-    withVisible(eval(expr, envir, enclos)),
+    withVisible(eval(call, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
   output <- c(output, w$get_new())
@@ -93,13 +88,6 @@ evaluate_call <- function(expr, src = NULL, envir = parent.frame(),
     output <- c(output, w$get_new())
   }
 
-  # restore plot hooks: no straightforward way to do this
-  diff_hooks <- function(x) !identical(x, hook_new_plot)
-  for (h in hooks) {
-    other_hooks <- Filter(diff_hooks, getHook(h))
-    setHook(h, NULL, "replace")
-    lapply(other_hooks, setHook, hookName = h)
-  }
-
   output
 }
+

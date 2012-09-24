@@ -3,7 +3,7 @@
 \title{Evaluate input and return all details of evaluation.}
 \usage{
   evaluate(input, envir = parent.frame(), enclos = NULL,
-    debug = FALSE)
+    debug = FALSE, stop_on_error = FALSE)
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.
@@ -19,6 +19,11 @@
   \item{debug}{if \code{TRUE}, displays information useful
   for debugging, including all output that evaluate
   captures}
+
+  \item{stop_on_error}{if \code{TRUE}, evaluation will stop
+  on first error.  If \code{FALSE} will continue running
+  all code, just as if you'd pasted the code into the
+  command line.}
 }
 \description{
   Compare to \code{\link{eval}}, \code{evaluate} captures

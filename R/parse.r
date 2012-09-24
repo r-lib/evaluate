@@ -42,7 +42,7 @@ parse_all.character <- function(x) {
   pos <- as.data.frame(pos)[c("x1","y1","x2","y2")]
 
   parsed <- data.frame(
-    pos, src=src, expr=I(expr), text = FALSE,
+    pos, src=src, expr=I(as.list(expr)), text = FALSE,
     stringsAsFactors = FALSE
   )
   # Extract unparsed text ----------------------------------------------------

@@ -17,6 +17,7 @@ Suggests:
     ggplot2
 Collate:
     'eval.r'
+    'hooks.r'
     'graphics.r'
     'output.r'
     'parse.r'
