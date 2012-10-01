@@ -3,7 +3,8 @@
 \title{Evaluate input and return all details of evaluation.}
 \usage{
   evaluate(input, envir = parent.frame(), enclos = NULL,
-    debug = FALSE, stop_on_error = FALSE)
+    debug = FALSE, stop_on_error = FALSE,
+    new_device = TRUE)
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.
@@ -24,6 +25,11 @@
   on first error.  If \code{FALSE} will continue running
   all code, just as if you'd pasted the code into the
   command line.}
+
+  \item{new_device}{if \code{TRUE}, will open a new
+  graphics device and automatically close it after
+  completion. This prevents evaluation from interfering
+  with your existing graphics environment.}
 }
 \description{
   Compare to \code{\link{eval}}, \code{evaluate} captures

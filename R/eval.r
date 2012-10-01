@@ -18,19 +18,24 @@
 #' @param stop_on_error if \code{TRUE}, evaluation will stop on first error.  If
 #'   \code{FALSE} will continue running all code, just as if you'd pasted the
 #'   code into the command line.
+#' @param new_device if \code{TRUE}, will open a new graphics device and
+#'   automatically close it after completion. This prevents evaluation from
+#'   interfering with your existing graphics environment.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
-                     stop_on_error = FALSE) {
+                     stop_on_error = FALSE, new_device = TRUE) {
   parsed <- parse_all(input)
 
   if (is.null(enclos)) {
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
   }
 
-  # Start new graphics device and clean up afterwards
-  dev.new()
-  dev <- dev.cur()
-  on.exit(dev.off(dev))
+  if (new_device) {
+    # Start new graphics device and clean up afterwards
+    dev.new()
+    dev <- dev.cur()
+    on.exit(dev.off(dev))
+  }
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {

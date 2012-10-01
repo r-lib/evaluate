@@ -5,6 +5,9 @@ BUG FIXES
 * Graphics and output interleaved correctly when generated from a loop or 
   other compound statements
 
+* By default, `evaluate` will now open a new graphics device and clean it up 
+  afterwards.  To suppress that behaviour use `new_device = FALSE`
+
 * use `show` to display S4 objects.
 
 Version 0.4.2
