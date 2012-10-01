@@ -33,21 +33,6 @@ test_that("S4 methods are displayed with show, not print", {
   expect_equal(ev[[2]], "B")
 })
 
-test_that("all code run, even after error", {
-  ev <- evaluate(file("error.r"))
-  expect_that(length(ev), equals(4))
-})
-
-test_that("code aborts on error if stop_on_error == 1L", {
-  ev <- evaluate(file("error.r"), stop_on_error = 1L)
-  expect_that(length(ev), equals(2))
-})
-
-test_that("code erros if stop_on_error == 2L", {
-  expect_error(evaluate(file("error.r"), stop_on_error = 2L))
-})
-
-
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.r"))
   expect_equal(classes(ev),

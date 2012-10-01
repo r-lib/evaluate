@@ -44,8 +44,10 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
-    out[[i]] <- evaluate_call(parsed$expr[[i]][[1]], parsed$src[[i]],
-      envir = envir, enclos = enclos, debug = debug, last = i == length(out))
+    out[[i]] <- evaluate_call(
+      parsed$expr[[i]][[1]], parsed$src[[i]],
+      envir = envir, enclos = enclos, debug = debug, last = i == length(out),
+      use_try = stop_on_error != 2L)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -61,8 +63,9 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
-evaluate_call <- function(call, src = NULL, envir = parent.frame(),
-                          enclos = NULL, debug = FALSE, last = FALSE) {
+evaluate_call <- function(call, src = NULL,
+                          envir = parent.frame(), enclos = NULL,
+                          debug = FALSE, last = FALSE, use_try = FALSE) {
   if (debug) message(src)
 
   if (is.null(call)) {
@@ -98,10 +101,15 @@ evaluate_call <- function(call, src = NULL, envir = parent.frame(),
   }
 
   ev <- list(value = NULL, visible = FALSE)
-  try(ev <- withCallingHandlers(
+
+  if (use_try) {
+    handle <- function(f) try(f, silent = TRUE)
+  } else {
+    handle <- force
+  }
+  handle(ev <- withCallingHandlers(
     withVisible(eval(call, envir, enclos)),
-    warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
-  )
+    warning = wHandler, error = eHandler, message = mHandler))
   output <- c(output, w$get_new(TRUE))
 
   # If visible, print and capture output
