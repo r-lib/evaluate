@@ -38,10 +38,15 @@ test_that("all code run, even after error", {
   expect_that(length(ev), equals(4))
 })
 
-test_that("code aborts on error if stop_on_error == TRUE", {
-  ev <- evaluate(file("error.r"), stop_on_error = TRUE)
+test_that("code aborts on error if stop_on_error == 1L", {
+  ev <- evaluate(file("error.r"), stop_on_error = 1L)
   expect_that(length(ev), equals(2))
 })
+
+test_that("code erros if stop_on_error == 2L", {
+  expect_error(evaluate(file("error.r"), stop_on_error = 2L))
+})
+
 
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.r"))

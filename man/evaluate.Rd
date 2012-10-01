@@ -3,8 +3,7 @@
 \title{Evaluate input and return all details of evaluation.}
 \usage{
   evaluate(input, envir = parent.frame(), enclos = NULL,
-    debug = FALSE, stop_on_error = FALSE,
-    new_device = TRUE)
+    debug = FALSE, stop_on_error = 0L, new_device = TRUE)
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.
@@ -21,10 +20,12 @@
   for debugging, including all output that evaluate
   captures}
 
-  \item{stop_on_error}{if \code{TRUE}, evaluation will stop
-  on first error.  If \code{FALSE} will continue running
-  all code, just as if you'd pasted the code into the
-  command line.}
+  \item{stop_on_error}{if \code{2}, evaluation will stop on
+  first error and you will get no results back. If
+  \code{1}, evaluation will stop on first error, but you
+  will get back all results up to that point. If \code{0}
+  will continue running all code, just as if you'd pasted
+  the code into the command line.}
 
   \item{new_device}{if \code{TRUE}, will open a new
   graphics device and automatically close it after

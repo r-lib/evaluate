@@ -8,6 +8,8 @@ BUG FIXES
 * By default, `evaluate` will now open a new graphics device and clean it up 
   afterwards.  To suppress that behaviour use `new_device = FALSE`
 
+* New option, `stop_on_error` which controls behaviour when errors occur.  The default value, `0`, acts like you've copied and pasted the code into the console, and continues to execute all code. `1` will stop the code execution and return the results of evaluation up to that point, and `2` will raise an error.
+
 * use `show` to display S4 objects.
 
 Version 0.4.2
