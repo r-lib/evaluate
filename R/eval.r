@@ -23,6 +23,11 @@
 #' @param new_device if \code{TRUE}, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
+#' @param render the function that handles the output of visible
+#'   evaluation results. Defaults to print but can be any function with at
+#'   least one argument. The function is \strong{not} required to yield
+#'   any console output. For example, objects could be pushed to a
+#'   database.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, new_device = TRUE, render = print) {
