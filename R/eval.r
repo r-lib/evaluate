@@ -25,7 +25,7 @@
 #'   interfering with your existing graphics environment.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
-                     stop_on_error = 0L, new_device = TRUE, render = NULL) {
+                     stop_on_error = 0L, new_device = TRUE, render = print) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
@@ -67,7 +67,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
-                          render = NULL) {
+                          render = print) {
   if (debug) message(src)
 
   if (is.null(call)) {
@@ -122,10 +122,6 @@ evaluate_call <- function(call, src = NULL,
 
   # If visible, print and capture output
   if (ev$visible) {
-    if (is.null(render)) {
-      render <- if (isS4(ev$value)) show else print
-    }
-
     try(withCallingHandlers(render(ev$value), warning = wHandler,
       error = eHandler, message = mHandler), silent = TRUE)
     output <- c(output, w$get_new(TRUE))
