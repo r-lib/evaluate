@@ -25,7 +25,7 @@
 #'   interfering with your existing graphics environment.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
-                     stop_on_error = 0L, new_device = TRUE) {
+                     stop_on_error = 0L, new_device = TRUE, render = NULL) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
@@ -47,7 +47,8 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
     out[[i]] <- evaluate_call(
       parsed$expr[[i]][[1]], parsed$src[[i]],
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
-      use_try = stop_on_error != 2L)
+      use_try = stop_on_error != 2L,
+      render = render)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -65,13 +66,20 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
-                          debug = FALSE, last = FALSE, use_try = FALSE) {
+                          debug = FALSE, last = FALSE, use_try = FALSE,
+                          render = NULL) {
   if (debug) message(src)
 
   if (is.null(call)) {
     return(list(new_source(src)))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call))
+
+  if (!is.null(render)) {
+    stopifnot(length(render) == 1L)
+    render <- match.fun(render)
+    stopifnot(length(formals(render)) >= 1L)
+  }
 
   # Capture output
   w <- watchout(debug)
@@ -114,7 +122,9 @@ evaluate_call <- function(call, src = NULL,
 
   # If visible, print and capture output
   if (ev$visible) {
-    render <- if (isS4(ev$value)) show else print
+    if (is.null(render)) {
+      render <- if (isS4(ev$value)) show else print
+    }
 
     try(withCallingHandlers(render(ev$value), warning = wHandler,
       error = eHandler, message = mHandler), silent = TRUE)
