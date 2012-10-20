@@ -23,9 +23,13 @@
 #' @param new_device if \code{TRUE}, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
+#' @param print_visible if \code{TRUE} (default), will print any visible
+#'   results of evaluation, capture the output and return it as a character
+#'   vector. If \code{FALSE}, will instead return the result as an object of
+#'   class \code{value}.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
-                     stop_on_error = 0L, new_device = TRUE) {
+                     stop_on_error = 0L, new_device = TRUE, print_visible = TRUE) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
@@ -47,7 +51,8 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
     out[[i]] <- evaluate_call(
       parsed$expr[[i]][[1]], parsed$src[[i]],
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
-      use_try = stop_on_error != 2L)
+      use_try = stop_on_error != 2L,
+      print_visible = print_visible)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -65,7 +70,8 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
-                          debug = FALSE, last = FALSE, use_try = FALSE) {
+                          debug = FALSE, last = FALSE, use_try = FALSE,
+                          print_visible = TRUE) {
   if (debug) message(src)
 
   if (is.null(call)) {
@@ -114,11 +120,15 @@ evaluate_call <- function(call, src = NULL,
 
   # If visible, print and capture output
   if (ev$visible) {
-    render <- if (isS4(ev$value)) show else print
+    if (print_visible) {
+      render <- if (isS4(ev$value)) show else print
 
-    try(withCallingHandlers(render(ev$value), warning = wHandler,
-      error = eHandler, message = mHandler), silent = TRUE)
-    output <- c(output, w$get_new(TRUE))
+      try(withCallingHandlers(render(ev$value), warning = wHandler,
+        error = eHandler, message = mHandler), silent = TRUE)
+      output <- c(output, w$get_new(TRUE))
+    } else {
+      output <- c(output, list(new_value(ev$value, ev$visible)))
+    }
   }
 
   # Always capture last plot, even if incomplete
