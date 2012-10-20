@@ -23,9 +23,14 @@
 #' @param new_device if \code{TRUE}, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
+#' @param render the function that handles the output of visible
+#'   evaluation results. Defaults to print but can be any function with at
+#'   least one argument. The function is \strong{not} required to yield
+#'   any console output. For example, objects could be pushed to a
+#'   database.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
-                     stop_on_error = 0L, new_device = TRUE) {
+                     stop_on_error = 0L, new_device = TRUE, render = print) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
@@ -45,9 +50,10 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
     out[[i]] <- evaluate_call(
-      parsed$expr[[i]][[1]], parsed$src[[i]],
+      as.expression(parsed$expr[[i]]), parsed$src[[i]],
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
-      use_try = stop_on_error != 2L)
+      use_try = stop_on_error != 2L,
+      render = render)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -65,13 +71,20 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
-                          debug = FALSE, last = FALSE, use_try = FALSE) {
+                          debug = FALSE, last = FALSE, use_try = FALSE,
+                          render = print) {
   if (debug) message(src)
 
   if (is.null(call)) {
     return(list(new_source(src)))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call))
+
+  if (!is.null(render)) {
+    stopifnot(length(render) == 1L)
+    render <- match.fun(render)
+    stopifnot(length(formals(render)) >= 1L)
+  }
 
   # Capture output
   w <- watchout(debug)
@@ -114,8 +127,6 @@ evaluate_call <- function(call, src = NULL,
 
   # If visible, print and capture output
   if (ev$visible) {
-    render <- if (isS4(ev$value)) show else print
-
     try(withCallingHandlers(render(ev$value), warning = wHandler,
       error = eHandler, message = mHandler), silent = TRUE)
     output <- c(output, w$get_new(TRUE))
