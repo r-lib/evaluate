@@ -40,9 +40,7 @@ render <- function(x) if (isS4(x)) show(x) else print(x)
 ##'
 ##' Calling the constructor with no arguments results in the default
 ##' handler, which mimics the behavior of the console by printing
-##' visible values. All source, conditions and graphics are directly and
-##' visibly returned and thus are included in the result of
-##' \code{evaluate}.
+##' visible values.
 ##'
 ##' Note that recursion is common: for example, if \code{value} does
 ##' any printing, then the \code{text} or \code{graphics} handlers may be
