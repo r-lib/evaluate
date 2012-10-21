@@ -121,7 +121,6 @@ evaluate_call <- function(call, src = NULL,
   eHandler <- function(e) {
     handle_condition(e)
     output_handler$error(e)
-    invokeRestart("muffleWarning")
   }
   mHandler <- function(m) {
     handle_condition(m)
