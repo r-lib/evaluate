@@ -27,37 +27,39 @@ classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
 
 render <- function(x) if (isS4(x)) show(x) else print(x)
 
-##' Custom output handlers
-##' An \code{output_handler} handles the results
-##' of \code{\link{evaluate}}, including the values, graphics,
-##' conditions. Each type of output is handled by a particular
-##' function in the handler object.
-##'
-##' The handler functions should accept an output object as their
-##' first argument. The return value of the handlers is ignored,
-##' except in the case of the \code{value} handler, where a visible
-##' return value is passed to \code{print} and the output is captured.
-##'
-##' Calling the constructor with no arguments results in the default
-##' handler, which mimics the behavior of the console by printing
-##' visible values.
-##'
-##' Note that recursion is common: for example, if \code{value} does
-##' any printing, then the \code{text} or \code{graphics} handlers may be
-##' called.
-##'
-##' @param source Function to handle the echoed source code under
-##' evaluation.
-##' @param text Function to handle any textual console output.
-##' @param graphics Function to handle graphics, as returned by
-##' \code{\link{recordPlot}}.
-##' @param message Function to handle \code{\link{message}} output.
-##' @param warning Function to handle \code{\link{warning}} output.
-##' @param error Function to handle \code{\link{stop}} output.
-##' @param value Function to handle the visible values, i.e., the
-##' return values of evaluation.
-##' @return A new \code{output_handler} object
-##' @export
+#' Custom output handlers.
+#'
+#' An \code{output_handler} handles the results
+#' of \code{\link{evaluate}}, including the values, graphics,
+#' conditions. Each type of output is handled by a particular
+#' function in the handler object.
+#'
+#' The handler functions should accept an output object as their
+#' first argument. The return value of the handlers is ignored,
+#' except in the case of the \code{value} handler, where a visible
+#' return value is passed to \code{print} and the output is captured.
+#'
+#' Calling the constructor with no arguments results in the default
+#' handler, which mimics the behavior of the console by printing
+#' visible values.
+#'
+#' Note that recursion is common: for example, if \code{value} does
+#' any printing, then the \code{text} or \code{graphics} handlers may be
+#' called.
+#'
+#' @param source Function to handle the echoed source code under
+#'   evaluation.
+#' @param text Function to handle any textual console output.
+#' @param graphics Function to handle graphics, as returned by
+#'   \code{\link{recordPlot}}.
+#' @param message Function to handle \code{\link{message}} output.
+#' @param warning Function to handle \code{\link{warning}} output.
+#' @param error Function to handle \code{\link{stop}} output.
+#' @param value Function to handle the visible values, i.e., the
+#'   return values of evaluation.
+#' @return A new \code{output_handler} object
+#' @aliases output_handler
+#' @export
 new_output_handler <- function(source = identity,
                                text = identity, graphics = identity,
                                message = identity, warning = identity,

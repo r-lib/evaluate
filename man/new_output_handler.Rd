@@ -1,10 +1,7 @@
 \name{new_output_handler}
 \alias{new_output_handler}
-\title{Custom output handlers
-An \code{output_handler} handles the results
-of \code{\link{evaluate}}, including the values, graphics,
-conditions. Each type of output is handled by a particular
-function in the handler object.}
+\alias{output_handler}
+\title{Custom output handlers.}
 \usage{
   new_output_handler(source = identity, text = identity,
     graphics = identity, message = identity,
@@ -36,13 +33,18 @@ function in the handler object.}
   A new \code{output_handler} object
 }
 \description{
+  An \code{output_handler} handles the results of
+  \code{\link{evaluate}}, including the values, graphics,
+  conditions. Each type of output is handled by a
+  particular function in the handler object.
+}
+\details{
   The handler functions should accept an output object as
   their first argument. The return value of the handlers is
   ignored, except in the case of the \code{value} handler,
   where a visible return value is passed to \code{print}
   and the output is captured.
-}
-\details{
+
   Calling the constructor with no arguments results in the
   default handler, which mimics the behavior of the console
   by printing visible values.
