@@ -3,7 +3,8 @@
 \title{Evaluate input and return all details of evaluation.}
 \usage{
   evaluate(input, envir = parent.frame(), enclos = NULL,
-    debug = FALSE, stop_on_error = 0L, new_device = TRUE)
+    debug = FALSE, stop_on_error = 0L, new_device = TRUE,
+    output_handler = new_output_handler())
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.
@@ -31,6 +32,11 @@
   graphics device and automatically close it after
   completion. This prevents evaluation from interfering
   with your existing graphics environment.}
+
+  \item{output_handler}{an instance of
+  \code{\link{output_handler}} that processes the output
+  from the evaluation. The default simply prints the
+  visible return values.}
 }
 \description{
   Compare to \code{\link{eval}}, \code{evaluate} captures

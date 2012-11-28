@@ -7,6 +7,7 @@
 #'   a list of functions.
 #' @param action \code{"replace"}, \code{"append"} or \code{"prepend"}
 #' @keywords internal
+#' @export
 #' @examples
 #' new <- list(before.plot.new = function() print("Plotted!"))
 #' hooks <- set_hooks(new)
