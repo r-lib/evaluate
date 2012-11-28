@@ -33,12 +33,16 @@ test_that("S4 methods are displayed with show, not print", {
   expect_equal(ev[[2]], "B")
 })
 
-test_that("output and plots interleaved correctly", {
-  ev <- evaluate(file("interleave-1.r"))
-  expect_equal(classes(ev),
-    c("source", "character", "recordedplot", "character", "recordedplot"))
+if (dev.interactive()) {
 
-  ev <- evaluate(file("interleave-2.r"))
-  expect_equal(classes(ev),
-    c("source", "recordedplot", "character", "recordedplot", "character"))
-})
+  test_that("output and plots interleaved correctly", {
+    ev <- evaluate(file("interleave-1.r"))
+    expect_equal(classes(ev),
+      c("source", "character", "recordedplot", "character", "recordedplot"))
+
+    ev <- evaluate(file("interleave-2.r"))
+    expect_equal(classes(ev),
+      c("source", "recordedplot", "character", "recordedplot", "character"))
+  })
+
+}
