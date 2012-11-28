@@ -1,3 +1,6 @@
+Version 0.4.3
+------------------------------------------------------------------------------
+
 NEW FEATURES
 
 * Added `output_handler` argument to `evaluate`. Should be a
