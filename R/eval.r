@@ -103,6 +103,7 @@ evaluate_call <- function(call, src = NULL,
     handle_output(TRUE)
   }
   old_hooks <- set_hooks(list(
+    persp = capture_plot,
     before.plot.new = capture_plot,
     before.grid.newpage = capture_plot))
   on.exit(set_hooks(old_hooks, "replace"), add = TRUE)
