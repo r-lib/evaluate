@@ -73,6 +73,12 @@ if (dev.interactive()) {
     expect_that(classes(ev),
       equals(c("source", "recordedplot", "source", "source", "recordedplot")))
   })
+
+  test_that("perspective plots are captured", {
+    ev <- evaluate(file("plot-persp.r"))
+    expect_that(classes(ev),
+      equals(rep(c("source", "recordedplot"), c(6, 3))))
+  })
   # test_that("no plot windows open", {
   #   graphics.off()
   #   expect_that(length(dev.list()), equals(0))
