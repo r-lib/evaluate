@@ -149,9 +149,8 @@ evaluate_call <- function(call, src = NULL,
     handle_output(TRUE)
     # If return value visible, print and capture output
     if (pv$visible) {
-      try(withCallingHandlers(print(pv$value),
-            warning = wHandler, error = eHandler, message = mHandler),
-          silent = TRUE)
+      handle(withCallingHandlers(print(pv$value),
+             warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)
     }
   }
