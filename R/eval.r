@@ -143,14 +143,14 @@ evaluate_call <- function(call, src = NULL,
 
   # If visible, process and capture output
   if (ev$visible) {
-    pv <- try(withCallingHandlers(withVisible(output_handler$value(ev$value)),
-      warning = wHandler, error = eHandler, message = mHandler), silent = TRUE)
+    pv <- list(value = NULL, visible = FALSE)
+    handle(pv <- withCallingHandlers(withVisible(output_handler$value(ev$value)),
+      warning = wHandler, error = eHandler, message = mHandler))
     handle_output(TRUE)
     # If return value visible, print and capture output
     if (pv$visible) {
-      try(withCallingHandlers(print(pv$value),
-            warning = wHandler, error = eHandler, message = mHandler),
-          silent = TRUE)
+      handle(withCallingHandlers(print(pv$value),
+             warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)
     }
   }
