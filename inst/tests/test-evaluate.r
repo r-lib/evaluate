@@ -33,6 +33,15 @@ test_that("S4 methods are displayed with show, not print", {
   expect_equal(ev[[2]], "B")
 })
 
+test_that("errors during printing visible values are captured", {
+  setClass("A", contains = "function")
+  setMethod("show", "A", function(object) stop("B"))
+  a <- new('A', function() b)
+
+  ev <- evaluate("a")
+  stopifnot("error" %in% class(ev[[2]]))
+})
+
 if (dev.interactive()) {
 
   test_that("output and plots interleaved correctly", {

@@ -6,6 +6,9 @@ BUG FIXES
 * Perspective plots from `persp()` are captured now (thanks to Harvey Lime
   and Yihui Xie)
 
+* If an error occurs during printing a visible value, evaluate will halt on
+  a cryptic error "operator is invalid for atomic vectors" (fixed by Yihui Xie)
+
 Version 0.4.3
 ------------------------------------------------------------------------------
 
