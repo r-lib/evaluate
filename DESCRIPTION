@@ -17,10 +17,13 @@ Suggests:
     ggplot2
 Collate:
     'eval.r'
-    'hooks.r'
+    'extract.r'
+    'fixplot.r'
     'graphics.r'
+    'hooks.r'
     'output.r'
     'parse.r'
+    'print.r'
     'replay.r'
     'src-region.r'
     'traceback.r'
