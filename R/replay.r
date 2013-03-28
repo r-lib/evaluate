@@ -11,6 +11,7 @@
 #' replay(evaluate(file(file.path(samples, "plot.r"))))
 #' replay(evaluate(file(file.path(samples, "data.r"))))
 #' @S3method replay list
+#' @S3method replay evaluation
 #' @S3method replay character
 #' @S3method replay source
 #' @S3method replay warning
@@ -22,6 +23,10 @@ replay <- function(x) UseMethod("replay", x)
 
 replay.list <- function(x) {
   invisible(lapply(x, replay))
+}
+
+replay.evaluation <- function(x){
+  replay(unclass(x))
 }
 
 replay.character <- function(x) {
