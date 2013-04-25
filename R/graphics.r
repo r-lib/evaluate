@@ -38,7 +38,7 @@ is_par_change <- function(p1, p2) {
   if (!identical(calls1, calls2[1:n1])) return(FALSE)
 
   last <- calls2[(n1 + 1):n2]
-  all(last %in% c("layout", "par", ".External2"))
+  all(last %in% c("layout", "par"))
 }
 
 
