@@ -46,7 +46,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
     on.exit(dev.off(dev))
   }
 
-  dev.control(displaylist="enable")
+  dev.control(displaylist = "enable")
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
