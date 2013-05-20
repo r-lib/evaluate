@@ -79,6 +79,14 @@ if (dev.interactive()) {
     expect_that(classes(ev),
       equals(rep(c("source", "recordedplot"), c(6, 3))))
   })
+
+  test_that("displaylist is enabled", {
+    pdf(tempfile())
+    ev <- evaluate("plot(1)", new_device=FALSE)
+    dev.off()
+    expect_that(length(ev), equals(2))
+  })
+
   # test_that("no plot windows open", {
   #   graphics.off()
   #   expect_that(length(dev.list()), equals(0))

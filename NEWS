@@ -9,6 +9,9 @@ BUG FIXES
 * If an error occurs during printing a visible value, evaluate will halt on
   a cryptic error "operator is invalid for atomic vectors" (fixed by Yihui Xie)
 
+* The displaylist is always enabled such that evaluate also works with devices
+  other than X11
+
 Version 0.4.3
 ------------------------------------------------------------------------------
 
