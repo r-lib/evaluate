@@ -9,6 +9,10 @@ BUG FIXES
 * If an error occurs during printing a visible value, evaluate will halt on
   a cryptic error "operator is invalid for atomic vectors" (fixed by Yihui Xie)
 
+MAINTAINENCE
+
+* Yihui Xie is the new maintainer of this package now
+
 Version 0.4.3
 ------------------------------------------------------------------------------
 
