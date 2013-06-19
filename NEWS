@@ -35,10 +35,10 @@ BUG FIXES
 
 * Chinese characters on windows now work correctly (thanks to Yihui Xie)
 
-* Graphics and output interleaved correctly when generated from a loop or 
+* Graphics and output interleaved correctly when generated from a loop or
   other compound statements
 
-* By default, `evaluate` will now open a new graphics device and clean it up 
+* By default, `evaluate` will now open a new graphics device and clean it up
   afterwards.  To suppress that behaviour use `new_device = FALSE`
 
 * use `show` to display S4 objects.
@@ -55,13 +55,13 @@ Version 0.4.1
 
 * use `test_package` to avoid problems with latest version of `testthat`
 
-evaluate 0.4 (2011-11-03) 
+evaluate 0.4 (2011-11-03)
 =========================
 
 * Use plot hooks to capture multiple plots created in a loop or within a
   function.  (Contributed by Yihui Xie)
 
-evaluate 0.3 
+evaluate 0.3
 ============
 
 * Import `stringr` instead of depending on it.
