@@ -79,6 +79,7 @@ if (dev.interactive()) {
     expect_that(classes(ev),
       equals(rep(c("source", "recordedplot"), c(6, 3))))
   })
+
   # test_that("no plot windows open", {
   #   graphics.off()
   #   expect_that(length(dev.list()), equals(0))
@@ -86,3 +87,10 @@ if (dev.interactive()) {
   #   expect_that(length(dev.list()), equals(0))
   # })
 }
+
+test_that("by default, evaluate() always records plots regardless of the device", {
+  op <- options(device = pdf)
+  ev <- evaluate("plot(1)")
+  options(op)
+  expect_that(length(ev), equals(2))
+})
