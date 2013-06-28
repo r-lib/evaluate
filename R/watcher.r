@@ -35,6 +35,8 @@ watchout <- function(debug = FALSE) {
     pause = function() sink(),
     unpause = function() sink(con, split = debug),
     close = function() {
+      if (!isOpen(con))
+        stop("something bad happened... did you use closeAllConnections()?")
       sink()
       close(con)
       output
