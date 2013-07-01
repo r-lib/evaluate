@@ -47,14 +47,14 @@ op <- options(device = function(...) {
   dev.control("enable")
 })
 
-  test_that("output and plots interleaved correctly", {
-    ev <- evaluate(file("interleave-1.r"))
-    expect_equal(classes(ev),
-      c("source", "character", "recordedplot", "character", "recordedplot"))
+test_that("output and plots interleaved correctly", {
+  ev <- evaluate(file("interleave-1.r"))
+  expect_equal(classes(ev),
+               c("source", "character", "recordedplot", "character", "recordedplot"))
 
-    ev <- evaluate(file("interleave-2.r"))
-    expect_equal(classes(ev),
-      c("source", "recordedplot", "character", "recordedplot", "character"))
-  })
+  ev <- evaluate(file("interleave-2.r"))
+  expect_equal(classes(ev),
+               c("source", "recordedplot", "character", "recordedplot", "character"))
+})
 
 options(op)
