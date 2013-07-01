@@ -42,7 +42,10 @@ test_that("errors during printing visible values are captured", {
   stopifnot("error" %in% class(ev[[2]]))
 })
 
-if (dev.interactive()) {
+op <- options(device = function(...) {
+  pdf(file = NULL)
+  dev.control("enable")
+})
 
   test_that("output and plots interleaved correctly", {
     ev <- evaluate(file("interleave-1.r"))
@@ -54,4 +57,4 @@ if (dev.interactive()) {
       c("source", "recordedplot", "character", "recordedplot", "character"))
   })
 
-}
+options(op)
