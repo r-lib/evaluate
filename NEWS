@@ -15,6 +15,9 @@ BUG FIXES
 * Now the graphical device will always try to record graphics by default (when
   new_device = TRUE) (#34)
 
+* Some empty and incomplete plots caused by par() or layout() will be
+  filtered out correctly for R 3.0 (#35)
+
 MAINTAINENCE
 
 * Yihui Xie is the new maintainer of this package now
