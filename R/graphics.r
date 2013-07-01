@@ -38,7 +38,7 @@ is_par_change <- function(p1, p2) {
   if (!identical(calls1, calls2[1:n1])) return(FALSE)
 
   last <- calls2[(n1 + 1):n2]
-  all(last %in% c("layout", "par"))
+  all(last %in% empty_calls)
 }
 
 
@@ -64,11 +64,27 @@ empty_calls <- if (isR3) c("C_par", "C_layout", "palette", "palette2") else
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
 
-  drawing <- setdiff(plot_calls(x), c("plot.new", "plot.window", "par"))
-  length(drawing) == 0
+  pc <- plot_calls(x)
+  if (length(pc) == 0) return(TRUE)
+
+  if (isR3) all(pc %in% empty_calls) else {
+    !identical(pc, "recordGraphics") && !identical(pc, "persp") &&
+      (length(pc) <= 1L || all(pc %in% empty_calls))
+  }
 }
 
-plot_calls <- function(plot) {
+
+plot_calls <- if (isR3) {
+  function(plot) {
+    el <- lapply(plot[[1]], "[[", 2)
+    if (length(el) == 0) return()
+    sapply(el, function(x) {
+      x <- x[[1]]
+      # grid graphics do not have x$name
+      if (is.null(x[["name"]])) deparse(x) else x[["name"]]
+    })
+  }
+} else function(plot) {
   prims <- lapply(plot[[1]], "[[", 1)
   if (length(prims) == 0) return()
 
