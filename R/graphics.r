@@ -41,19 +41,6 @@ is_par_change <- function(p1, p2) {
   all(last %in% empty_calls)
 }
 
-
-par_added <- function(a, b) {
-  n_a <- length(a[[1]])
-  n_b <- length(b[[1]])
-
-  # Has more than one additional element
-  if (n_a != n_b - 1) return(FALSE)
-
-
-
-  lapply(plot[[1]], "[[", 1)
-}
-
 # R 3.0 has significant changes in display lists
 isR3 <- getRversion() >= "3.0.0"
 
