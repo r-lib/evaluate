@@ -69,6 +69,7 @@ is.empty <- function(x) {
 
   if (isR3) all(pc %in% empty_calls) else {
     !identical(pc, "recordGraphics") && !identical(pc, "persp") &&
+      !identical(pc, "plot.new") &&
       (length(pc) <= 1L || all(pc %in% empty_calls))
   }
 }

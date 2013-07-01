@@ -30,13 +30,12 @@ test_that("plot additions are captured", {
               equals(c("source", "recordedplot", "source", "recordedplot")))
 })
 
-test_that("blank plots are ignored", {
+test_that("blank plots by plot.new() are preserved", {
   ev <- evaluate(file("plot-new.r"))
-  expect_that(length(ev), equals(7))
+  expect_that(length(ev), equals(10))
 
   expect_that(classes(ev),
-              equals(c("source", "source", "recordedplot",
-                       "source", "source", "recordedplot", "source")))
+              equals(rep(c("source", "recordedplot"), 5)))
 })
 
 test_that("base plots in a single expression are captured", {
