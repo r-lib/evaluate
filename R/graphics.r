@@ -54,6 +54,13 @@ par_added <- function(a, b) {
   lapply(plot[[1]], "[[", 1)
 }
 
+# R 3.0 has significant changes in display lists
+isR3 <- getRversion() >= "3.0.0"
+
+# if all calls are in these elements, the plot is basically empty
+empty_calls <- if (isR3) c("C_par", "C_layout", "palette", "palette2") else
+  c("layout", "par")
+
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
 
