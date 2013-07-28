@@ -120,10 +120,10 @@ evaluate_call <- function(call, src = NULL,
     output_handler$warning(wn)
     invokeRestart("muffleWarning")
   } else identity
-  eHandler <- function(e) {
+  eHandler <- if (use_try) function(e) {
     handle_condition(e)
     output_handler$error(e)
-  }
+  } else identity
   mHandler <- if (keep_message) function(m) {
     handle_condition(m)
     output_handler$message(m)
