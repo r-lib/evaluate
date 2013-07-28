@@ -63,9 +63,6 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
       if (!any(errs)) next
       if (stop_on_error == 1L) break
-
-      err <- out[[i]][errs][[1]]
-      stop(err)
     }
   }
 
