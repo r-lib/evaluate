@@ -3,7 +3,8 @@
 \title{Evaluate input and return all details of evaluation.}
 \usage{
   evaluate(input, envir = parent.frame(), enclos = NULL,
-    debug = FALSE, stop_on_error = 0L, new_device = TRUE,
+    debug = FALSE, stop_on_error = 0L, keep_warning = TRUE,
+    keep_message = TRUE, new_device = TRUE,
     output_handler = new_output_handler())
 }
 \arguments{
@@ -27,6 +28,9 @@
   will get back all results up to that point. If \code{0}
   will continue running all code, just as if you'd pasted
   the code into the command line.}
+
+  \item{keep_warning,keep_message}{whether to record
+  warnings and messages}
 
   \item{new_device}{if \code{TRUE}, will open a new
   graphics device and automatically close it after
