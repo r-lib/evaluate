@@ -20,6 +20,7 @@
 #'   but you will get back all results up to that point. If \code{0} will
 #'   continue running all code, just as if you'd pasted the code into the
 #'   command line.
+#' @param keep_warning,keep_message whether to record warnings and messages
 #' @param new_device if \code{TRUE}, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
@@ -28,8 +29,8 @@
 #'   prints the visible return values.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
-                     stop_on_error = 0L, new_device = TRUE,
-                     output_handler = new_output_handler()) {
+                     stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
+                     new_device = TRUE, output_handler = new_output_handler()) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
@@ -56,6 +57,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
       expr, parsed$src[[i]],
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
       use_try = stop_on_error != 2L,
+      keep_warning = keep_warning, keep_message = keep_message,
       output_handler = output_handler)
 
     if (stop_on_error > 0L) {
@@ -72,6 +74,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
+                          keep_warning = TRUE, keep_message = TRUE,
                           output_handler = new_output_handler()) {
   if (debug) message(src)
 
@@ -112,20 +115,20 @@ evaluate_call <- function(call, src = NULL,
   }
 
   # Handlers for warnings, errors and messages
-  wHandler <- function(wn) {
+  wHandler <- if (keep_warning) function(wn) {
     handle_condition(wn)
     output_handler$warning(wn)
     invokeRestart("muffleWarning")
-  }
+  } else identity
   eHandler <- function(e) {
     handle_condition(e)
     output_handler$error(e)
   }
-  mHandler <- function(m) {
+  mHandler <- if (keep_message) function(m) {
     handle_condition(m)
     output_handler$message(m)
     invokeRestart("muffleMessage")
-  }
+  } else identity
 
   ev <- list(value = NULL, visible = FALSE)
 

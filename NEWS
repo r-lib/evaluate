@@ -1,3 +1,11 @@
+Version 0.4.5
+------------------------------------------------------------------------------
+
+NEW FEATURES
+
+* added two arguments keep_warning and keep_message in evaluate() so that it
+  is possible not to capture warnings or messages now
+
 Version 0.4.4
 ------------------------------------------------------------------------------
 
