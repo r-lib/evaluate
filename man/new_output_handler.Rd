@@ -3,9 +3,8 @@
 \alias{output_handler}
 \title{Custom output handlers.}
 \usage{
-  new_output_handler(source = identity, text = identity,
-    graphics = identity, message = identity,
-    warning = identity, error = identity, value = render)
+new_output_handler(source = identity, text = identity, graphics = identity, 
+    message = identity, warning = identity, error = identity, value = render)
 }
 \arguments{
   \item{source}{Function to handle the echoed source code
@@ -53,4 +52,3 @@
   \code{value} does any printing, then the \code{text} or
   \code{graphics} handlers may be called.
 }
-

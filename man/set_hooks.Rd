@@ -2,7 +2,7 @@
 \alias{set_hooks}
 \title{Set hooks.}
 \usage{
-  set_hooks(hooks, action = "append")
+set_hooks(hooks, action = "append")
 }
 \arguments{
   \item{hooks}{a named list of hooks - each hook can either
@@ -23,4 +23,3 @@ set_hooks(hooks, "replace")
 plot(1)
 }
 \keyword{internal}
-

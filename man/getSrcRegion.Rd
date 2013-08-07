@@ -2,7 +2,7 @@
 \alias{getSrcRegion}
 \title{Extract a rectangular region of a srcfile}
 \usage{
-  getSrcRegion(srcfile, x1, x2, y1, y2)
+getSrcRegion(srcfile, x1, x2, y1, y2)
 }
 \arguments{
   \item{srcfile}{string}
@@ -21,4 +21,3 @@
 \description{
   Extract a rectangular region of a srcfile
 }
-

@@ -2,7 +2,7 @@
 \alias{replay}
 \title{Replay a list of evaluated results.}
 \usage{
-  replay(x)
+replay(x)
 }
 \arguments{
   \item{x}{result from \code{\link{evaluate}}}
@@ -17,4 +17,3 @@ replay(evaluate(file(file.path(samples, "order.r"))))
 replay(evaluate(file(file.path(samples, "plot.r"))))
 replay(evaluate(file(file.path(samples, "data.r"))))
 }
-

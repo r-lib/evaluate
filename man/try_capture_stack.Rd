@@ -2,7 +2,7 @@
 \alias{try_capture_stack}
 \title{Try, capturing stack on error.}
 \usage{
-  try_capture_stack(quoted_code, env)
+try_capture_stack(quoted_code, env)
 }
 \arguments{
   \item{quoted_code}{code to evaluate, in quoted form}
@@ -14,4 +14,3 @@
   captures the call stack if an error occurs.
 }
 \keyword{internal}
-

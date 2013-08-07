@@ -2,7 +2,7 @@
 \alias{watchout}
 \title{Watch for changes in output, text and graphical.}
 \usage{
-  watchout(debug = FALSE)
+watchout(debug = FALSE)
 }
 \arguments{
   \item{debug}{activate debug mode where output will be
@@ -15,4 +15,3 @@
 \description{
   Watch for changes in output, text and graphical.
 }
-

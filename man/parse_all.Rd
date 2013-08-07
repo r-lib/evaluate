@@ -2,7 +2,7 @@
 \alias{parse_all}
 \title{Parse, retaining comments.}
 \usage{
-  parse_all(x)
+parse_all(x)
 }
 \arguments{
   \item{x}{object to parse.  Can be a string, a file
@@ -16,4 +16,3 @@
   Works very similarly to parse, but also keeps original
   formatting and comments.
 }
-
