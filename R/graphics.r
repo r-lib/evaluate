@@ -53,6 +53,9 @@ is_par_change <- function(p1, p2) {
 
   if (n2 <= n1) return(FALSE)
   if (!identical(calls1, calls2[1:n1])) return(FALSE)
+  # also check if the content of the display list is still the same (note we
+  # need p1[[1]][] as well because [] turns a dotted pair list into a list)
+  if (!identical(p1[[1]][1:n1], p2[[1]][1:n1])) return(FALSE)
 
   last <- calls2[(n1 + 1):n2]
   all(last %in% empty_calls)
