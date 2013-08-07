@@ -6,6 +6,11 @@ NEW FEATURES
 * added two arguments keep_warning and keep_message in evaluate() so that it
   is possible not to capture warnings or messages now
 
+BUG FIXES
+
+* fixed #25: plots can be correctly recorded under a complex layout now
+  (#25, thanks, Jack Tanner and Andy Barbour)
+
 Version 0.4.4
 ------------------------------------------------------------------------------
 
