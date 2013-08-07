@@ -89,6 +89,12 @@ test_that("changes in parameters don't generate new plots", {
               equals(c("source", "recordedplot", "source", "source", "recordedplot")))
 })
 
+test_that("plots in a loop are captured even the changes seem to be from par only", {
+  ev <- evaluate(file("plot-par2.r"))
+  expect_that(classes(ev),
+              equals(c("source", "recordedplot")[c(1, 2, 1, 1, 2, 2, 2)]))
+})
+
 test_that("perspective plots are captured", {
   ev <- evaluate(file("plot-persp.r"))
   expect_that(classes(ev),

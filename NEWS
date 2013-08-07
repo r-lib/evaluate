@@ -11,6 +11,10 @@ BUG FIXES
 * fixed #25: plots can be correctly recorded under a complex layout now
   (#25, thanks, Jack Tanner and Andy Barbour)
 
+* fixed yihui/knitr#582: evaluate() misclassified some plot changes as "par
+  changes" and removed some plots when it should not; now it is better at
+  identifying plot changes dur to par() (thanks, Keith Twombley)
+
 Version 0.4.4
 ------------------------------------------------------------------------------
 
