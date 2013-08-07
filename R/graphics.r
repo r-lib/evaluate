@@ -21,7 +21,9 @@ plot_snapshot <- local({
       mfg_changed <<- FALSE
     } else {
       # now there is a multi-col/row layout
-      if (is.null(mfg_init)) mfg_init <<- mfg else {
+      if (is.null(mfg_init)) {
+        mfg_init <<- mfg
+      } else {
         if (identical(mfg_init, mfg)) {
           if (!mfg_changed) return(NULL)
         } else {
