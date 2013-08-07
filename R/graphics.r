@@ -8,13 +8,28 @@
 #"   \code{\link[grDevices]{recordPlot}}.
 plot_snapshot <- local({
   last_plot <- NULL
+  # help decide whether to keep plots when multiple plots on one screen
+  mfg_init <- NULL
+  mfg_changed <- FALSE
 
   function(incomplete = FALSE) {
     if (is.null(dev.list())) return(NULL)
 
-    pos <- par("mfg")[1:2]
-    size <- par("mfg")[3:4]
-    if (!incomplete && !identical(pos, size)) return(NULL)
+    mfg <- par("mfg")
+    if (identical(mfg, rep(1L, 4)) || incomplete) {
+      mfg_init <<- NULL
+      mfg_changed <<- FALSE
+    } else {
+      # now there is a multi-col/row layout
+      if (is.null(mfg_init)) mfg_init <<- mfg else {
+        if (identical(mfg_init, mfg)) {
+          if (!mfg_changed) return(NULL)
+        } else {
+          mfg_changed <<- TRUE
+          return(NULL)
+        }
+      }
+    }
 
     plot <- recordPlot()
     if (is_par_change(last_plot, plot) || identical(last_plot, plot)) {
