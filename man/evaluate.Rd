@@ -2,9 +2,11 @@
 \alias{evaluate}
 \title{Evaluate input and return all details of evaluation.}
 \usage{
-evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE, 
-    stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE, new_device = TRUE, 
-    output_handler = new_output_handler())
+  evaluate(input, envir = parent.frame(), enclos = NULL,
+    debug = FALSE, stop_on_error = 0L, keep_warning = TRUE,
+    keep_message = TRUE, new_device = TRUE,
+    output_handler = new_output_handler(),
+    keep_final_value = FALSE)
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.
@@ -40,6 +42,14 @@ evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
   \code{\link{output_handler}} that processes the output
   from the evaluation. The default simply prints the
   visible return values.}
+
+  \item{keep_final_value}{if \code{TRUE} the final value
+  generated when evaluating \code{code} is retained in both
+  as a \code{value} object (classed version of the list
+  returned by withVisible) and as rendered output text
+  dictated by \code{output_handler$value}, if \code{FALSE}
+  only the rendered form is retained. Defaults to
+  \code{FALSE}.}
 }
 \description{
   Compare to \code{\link{eval}}, \code{evaluate} captures
@@ -51,3 +61,4 @@ evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
   it should be visible, and the contents of the current
   graphics device.
 }
+
