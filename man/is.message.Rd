@@ -7,19 +7,20 @@
 \alias{is.warning}
 \title{Object class tests}
 \usage{
-is.message(x)
+  is.message(x)
 
-is.warning(x)
+  is.warning(x)
 
-is.error(x)
+  is.error(x)
 
-is.value(x)
+  is.value(x)
 
-is.source(x)
+  is.source(x)
 
-is.recordedplot(x)
+  is.recordedplot(x)
 }
 \description{
   Object class tests
 }
 \keyword{internal}
+

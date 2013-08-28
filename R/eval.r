@@ -27,13 +27,11 @@
 #' @param output_handler an instance of \code{\link{output_handler}}
 #'   that processes the output from the evaluation. The default simply
 #'   prints the visible return values.
-#' @param keep_final_value if \code{TRUE} the final value generated when evaluating \code{code} is retained in both as a \code{value} object (classed version of the list returned by withVisible) and as rendered output text dictated by \code{output_handler$value}, if \code{FALSE} only the rendered form is retained. Defaults to \code{FALSE}.
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
-                     new_device = TRUE, output_handler = new_output_handler(),
-                     keep_final_value = FALSE) {
-  parsed <- parse_all(input)
+                     new_device = TRUE, output_handler = new_output_handler()){
+    parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
@@ -60,8 +58,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning, keep_message = keep_message,
-      output_handler = output_handler,
-        keep_final_value = keep_final_value)
+      output_handler = output_handler)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -78,8 +75,8 @@ evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
                           keep_warning = TRUE, keep_message = TRUE,
-                          output_handler = new_output_handler(),
-                          keep_final_value = FALSE) {
+                          output_handler = new_output_handler()
+                          ) {
   if (debug) message(src)
 
   if (is.null(call)) {
@@ -118,6 +115,18 @@ evaluate_call <- function(call, src = NULL,
     output <<- c(output, list(cond))
   }
 
+  handle_value <- function(val)
+  {
+      hval = tryCatch(output_handler$value(val), error = function(e) e)
+      if(is(hval, "error"))
+          stop("Error in value handler within evaluate call:", hval$message)
+      #catch any errors, warnings, or graphics generated during the call
+      #to the value handler
+      handle_output(TRUE)
+      if(!is(hval, "___no_output___"))
+          output <<- c(output, list(hval))
+  }
+  
   # Handlers for warnings, errors and messages
   wHandler <- if (keep_warning) function(wn) {
     handle_condition(wn)
@@ -145,27 +154,18 @@ evaluate_call <- function(call, src = NULL,
     withVisible(eval(call, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler))
   handle_output(TRUE)
+
   
-  # If visible, process and capture output
+  # If visible, process the value itself as output via value_handler
   if (ev$visible) {
-    pv <- list(value = NULL, visible = FALSE)
-    handle(pv <- withCallingHandlers(withVisible(output_handler$value(ev$value)),
+    handle(withCallingHandlers(handle_value(ev$value),
       warning = wHandler, error = eHandler, message = mHandler))
-    handle_output(TRUE)
-    # If return value visible, print and capture output
-    if (pv$visible) {
-      handle(withCallingHandlers(print(pv$value),
-             warning = wHandler, error = eHandler, message = mHandler))
-      handle_output(TRUE)
   }
-}
 
   # Always capture last plot, even if incomplete
   if (last) {
       handle_output(TRUE, TRUE)   
-      if(keep_final_value)
-          output[[length(output)+1]] <- new_value(value = ev$value, visible = ev$visible)
-  }
+   }
 
   output
 }

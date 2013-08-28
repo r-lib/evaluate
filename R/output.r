@@ -27,6 +27,25 @@ classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
 
 render <- function(x) if (isS4(x)) show(x) else print(x)
 
+#' Create 'no output' object
+#'
+#' value handlers can indicate that nothing should be added directly
+#' to the output list by returning an object returned from this function
+#'
+#' @return an object of class \code{___no_output___}
+#' @export
+
+no_output <- function() structure(list(), class="___no_output___")
+
+render_capture <- function(x)
+{
+    out = capture.output(render(x))
+    if(!length(out))
+        out = no_output()
+    out
+    
+}
+
 #' Custom output handlers.
 #'
 #' An \code{output_handler} handles the results
@@ -36,8 +55,18 @@ render <- function(x) if (isS4(x)) show(x) else print(x)
 #'
 #' The handler functions should accept an output object as their
 #' first argument. The return value of the handlers is ignored,
-#' except in the case of the \code{value} handler, where a visible
-#' return value is passed to \code{print} and the output is captured.
+#' except in the case of the value handler, where the handler is
+#' assumed to process and return the value in the exact
+#' form it should appear in the output list returned by
+#' \code{link{evaluate}}.
+#'
+#' The default value handler returns a character vector containing
+#' the textual output when \code{link{print}}/\code{link{output}}
+#' is called on the object.
+#'
+#' Value handlers which wish to indicate that nothing should be
+#' added to the output list should return an objected created
+#' via \code{\link{no_output}}.
 #'
 #' Calling the constructor with no arguments results in the default
 #' handler, which mimics the behavior of the console by printing
@@ -56,14 +85,16 @@ render <- function(x) if (isS4(x)) show(x) else print(x)
 #' @param warning Function to handle \code{\link{warning}} output.
 #' @param error Function to handle \code{\link{stop}} output.
 #' @param value Function to handle the visible values, i.e., the
-#'   return values of evaluation.
+#'   return values of evaluation. This function is responsible for
+#'   returning the value in the exact form it should appear in the
+#'   outputs list returned by \code{link{evaluate}}. 
 #' @return A new \code{output_handler} object
 #' @aliases output_handler
 #' @export
 new_output_handler <- function(source = identity,
                                text = identity, graphics = identity,
                                message = identity, warning = identity,
-                               error = identity, value = render) {
+                               error = identity, value = render_capture) {
   source <- match.fun(source)
   stopifnot(length(formals(source)) >= 1)
   text <- match.fun(text)
