@@ -31,7 +31,7 @@
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = new_output_handler()){
-    parsed <- parse_all(input)
+  parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
@@ -71,12 +71,15 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
+
+has_output <- function(x) !inherits(x, "___no_output___")
+
+
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
                           keep_warning = TRUE, keep_message = TRUE,
-                          output_handler = new_output_handler()
-                          ) {
+                          output_handler = new_output_handler()) {
   if (debug) message(src)
 
   if (is.null(call)) {
@@ -117,14 +120,14 @@ evaluate_call <- function(call, src = NULL,
 
   handle_value <- function(val)
   {
-      hval = tryCatch(output_handler$value(val), error = function(e) e)
-      if(is(hval, "error"))
-          stop("Error in value handler within evaluate call:", hval$message)
-      #catch any errors, warnings, or graphics generated during the call
-      #to the value handler
-      handle_output(TRUE)
-      if(!is(hval, "___no_output___"))
-          output <<- c(output, list(hval))
+    hval <- tryCatch(output_handler$value(val), error = function(e) e)
+    if(inherits(hval, "error"))
+      stop("Error in value handler within evaluate call:", hval$message)
+    #catch any errors, warnings, or graphics generated during the call
+    #to the value handler
+    handle_output(TRUE)
+    if(has_output(hval))
+      output <<- c(output, list(hval))
   }
   
   # Handlers for warnings, errors and messages
@@ -164,8 +167,8 @@ evaluate_call <- function(call, src = NULL,
 
   # Always capture last plot, even if incomplete
   if (last) {
-      handle_output(TRUE, TRUE)   
-   }
+    handle_output(TRUE, TRUE)   
+  }
 
   output
 }

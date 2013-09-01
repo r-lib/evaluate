@@ -39,11 +39,12 @@ no_output <- function() structure(list(), class="___no_output___")
 
 render_capture <- function(x)
 {
-    out = capture.output(render(x))
-    if(!length(out))
-        out = no_output()
+  out <- capture.output(render(x))
+  if(length(out) == 0) {
+    no_output()
+  } else {
     out
-    
+  }
 }
 
 #' Custom output handlers.
