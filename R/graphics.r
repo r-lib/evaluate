@@ -73,8 +73,9 @@ isR3 <- getRversion() >= "3.0.0"
 par_page <- "page" %in% getFromNamespace('.Pars', 'graphics')
 
 # if all calls are in these elements, the plot is basically empty
-empty_calls <- if (isR3) c("C_par", "C_layout", "palette", "palette2") else
-  c("layout", "par")
+empty_calls <- if (isR3) {
+  c("C_par", "C_layout", "palette", "palette2", "C_strWidth", "C_strHeight", "C_clip")
+} else c("layout", "par")
 
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)

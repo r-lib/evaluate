@@ -95,6 +95,18 @@ test_that("plots in a loop are captured even the changes seem to be from par onl
               equals(c("source", "recordedplot")[c(1, 2, 1, 1, 2, 2, 2)]))
 })
 
+test_that("strwidth()/strheight() should not produce new plots", {
+  ev <- evaluate(file("plot-strwidth.r"))
+  expect_that(classes(ev),
+              equals(rep(c("source", "recordedplot"), c(4, 1))))
+})
+
+test_that("clip() does not produce new plots", {
+  ev <- evaluate(file("plot-clip.r"))
+  expect_that(classes(ev),
+              equals(c("source", "recordedplot")[c(1, 2, 1, 1, 2)]))
+})
+
 test_that("perspective plots are captured", {
   ev <- evaluate(file("plot-persp.r"))
   expect_that(classes(ev),
