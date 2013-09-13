@@ -1,10 +1,18 @@
 Version 0.5
 ------------------------------------------------------------------------------
 
+NEW FEATURES
+
+* evaluate() is better at telling if a new plot should render a new page due
+  to the new par('page') in R 3.0.2
+
 BUG FIXES
 
 * fixed yihui/knitr#600: when the last expression in the code is a comment,
   the previous incomplete plot was not captured
+
+* the empty plots produced by strwidth(), strheight(), and clip() are no
+  longer recorded
 
 Version 0.4.7
 ------------------------------------------------------------------------------
