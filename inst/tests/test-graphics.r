@@ -113,6 +113,12 @@ test_that("perspective plots are captured", {
               equals(rep(c("source", "recordedplot"), c(6, 3))))
 })
 
+test_that("an incomplete plot with a comment in the end is also captured", {
+  ev <- evaluate(file("plot-last-comment.r"))
+  expect_that(classes(ev),
+              equals(rep(c("source", "recordedplot"), c(3, 1))))
+})
+
 # test_that("no plot windows open", {
 #   graphics.off()
 #   expect_that(length(dev.list()), equals(0))

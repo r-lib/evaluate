@@ -1,3 +1,11 @@
+Version 0.5
+------------------------------------------------------------------------------
+
+BUG FIXES
+
+* fixed yihui/knitr#600: when the last expression in the code is a comment,
+  the previous incomplete plot was not captured
+
 Version 0.4.7
 ------------------------------------------------------------------------------
 

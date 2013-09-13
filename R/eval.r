@@ -78,7 +78,7 @@ evaluate_call <- function(call, src = NULL,
                           output_handler = new_output_handler()) {
   if (debug) message(src)
 
-  if (is.null(call)) {
+  if (is.null(call) && !last) {
     return(list(new_source(src)))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call))
@@ -137,10 +137,12 @@ evaluate_call <- function(call, src = NULL,
   } else {
     handle <- force
   }
-  handle(ev <- withCallingHandlers(
-    withVisible(eval(call, envir, enclos)),
-    warning = wHandler, error = eHandler, message = mHandler))
-  handle_output(TRUE)
+  if (!is.null(call)) {
+    handle(ev <- withCallingHandlers(
+      withVisible(eval(call, envir, enclos)),
+      warning = wHandler, error = eHandler, message = mHandler))
+    handle_output(TRUE)
+  }
 
   # If visible, process and capture output
   if (ev$visible) {
