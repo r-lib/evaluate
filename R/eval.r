@@ -116,8 +116,10 @@ evaluate_call <- function(call, src = NULL,
 
   # Handlers for warnings, errors and messages
   wHandler <- if (keep_warning) function(wn) {
-    handle_condition(wn)
-    output_handler$warning(wn)
+    if (getOption("warn") >= 0) {
+      handle_condition(wn)
+      output_handler$warning(wn)
+    }
     invokeRestart("muffleWarning")
   } else identity
   eHandler <- if (use_try) function(e) {

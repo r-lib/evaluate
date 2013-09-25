@@ -14,6 +14,11 @@ BUG FIXES
 * the empty plots produced by strwidth(), strheight(), and clip() are no
   longer recorded
 
+MAJOR CHANGES
+
+* evaluate() no longer records warnings in case of options(warn = -1); see
+  yihui/knitr#610
+
 Version 0.4.7
 ------------------------------------------------------------------------------
 

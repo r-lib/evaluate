@@ -42,6 +42,11 @@ test_that("errors during printing visible values are captured", {
   stopifnot("error" %in% class(ev[[2]]))
 })
 
+test_that("options(warn = -1) suppresses warnings", {
+  ev <- evaluate("op = options(warn = -1); warning('hi'); options(op)")
+  expect_that(classes(ev), equals("source"))
+})
+
 op <- options(device = function(...) {
   pdf(file = NULL)
   dev.control("enable")
