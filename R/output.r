@@ -51,8 +51,9 @@ render <- function(x) if (isS4(x)) show(x) else print(x)
 #' @param message Function to handle \code{\link{message}} output.
 #' @param warning Function to handle \code{\link{warning}} output.
 #' @param error Function to handle \code{\link{stop}} output.
-#' @param value Function to handle the visible values, i.e., the return values
-#'   of evaluation.
+#' @param value Function to handle the values returned from evaluation. If it
+#'   only has one argument, only visible values are handled; if it has more
+#'   arguments, the second argument indicates whether the value is visible.
 #' @return A new \code{output_handler} object
 #' @aliases output_handler
 #' @export
