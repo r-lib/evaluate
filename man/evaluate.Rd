@@ -2,8 +2,9 @@
 \alias{evaluate}
 \title{Evaluate input and return all details of evaluation.}
 \usage{
-evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE, 
-    stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE, new_device = TRUE, 
+  evaluate(input, envir = parent.frame(), enclos = NULL,
+    debug = FALSE, stop_on_error = 0L, keep_warning = TRUE,
+    keep_message = TRUE, new_device = TRUE,
     output_handler = new_output_handler())
 }
 \arguments{
@@ -51,3 +52,4 @@ evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
   it should be visible, and the contents of the current
   graphics device.
 }
+

@@ -71,6 +71,10 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
+
+has_output <- function(x) !inherits(x, "___no_output___")
+
+
 evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
@@ -114,6 +118,18 @@ evaluate_call <- function(call, src = NULL,
     output <<- c(output, list(cond))
   }
 
+  handle_value <- function(val)
+  {
+    hval <- tryCatch(output_handler$value(val), error = function(e) e)
+    if(inherits(hval, "error"))
+      stop("Error in value handler within evaluate call:", hval$message)
+    #catch any errors, warnings, or graphics generated during the call
+    #to the value handler
+    handle_output(TRUE)
+    if(has_output(hval))
+      output <<- c(output, list(hval))
+  }
+  
   # Handlers for warnings, errors and messages
   wHandler <- if (keep_warning) function(wn) {
     handle_condition(wn)
@@ -144,18 +160,11 @@ evaluate_call <- function(call, src = NULL,
     handle_output(TRUE)
   }
 
-  # If visible, process and capture output
+  
+  # If visible, process the value itself as output via value_handler
   if (ev$visible) {
-    pv <- list(value = NULL, visible = FALSE)
-    handle(pv <- withCallingHandlers(withVisible(output_handler$value(ev$value)),
+    handle(withCallingHandlers(handle_value(ev$value),
       warning = wHandler, error = eHandler, message = mHandler))
-    handle_output(TRUE)
-    # If return value visible, print and capture output
-    if (pv$visible) {
-      handle(withCallingHandlers(print(pv$value),
-             warning = wHandler, error = eHandler, message = mHandler))
-      handle_output(TRUE)
-    }
   }
 
   # Always capture last plot, even if incomplete
