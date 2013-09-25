@@ -25,6 +25,10 @@ MAJOR CHANGES
   will not affect those who use the default output handlers (#40, thanks,
   Gabriel Becker)
 
+* the 'value' handler in new_output_handler() may take an additional
+  argument that means if the value is visible or not; this makes it possible
+  to save the invisible values as well (#41, thanks, Joroen Ooms)
+
 Version 0.4.7
 ------------------------------------------------------------------------------
 
