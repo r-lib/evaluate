@@ -19,6 +19,12 @@ MAJOR CHANGES
 * evaluate() no longer records warnings in case of options(warn = -1); see
   yihui/knitr#610
 
+* for 'output_handler' in evaluate(), visible values from the 'value' handler
+  will be saved to the output list; this makes it possible for users to save
+  the original values instead of their printed side effects; this change
+  will not affect those who use the default output handlers (#40, thanks,
+  Gabriel Becker)
+
 Version 0.4.7
 ------------------------------------------------------------------------------
 
