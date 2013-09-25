@@ -4,7 +4,7 @@
 \usage{
 evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE, 
     stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE, new_device = TRUE, 
-    output_handler = new_output_handler())
+    output_handler = default_output_handler)
 }
 \arguments{
   \item{input}{input object to be parsed an evaluated.

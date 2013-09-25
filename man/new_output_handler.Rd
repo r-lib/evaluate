@@ -25,8 +25,10 @@ new_output_handler(source = identity, text = identity, graphics = identity,
   \item{error}{Function to handle \code{\link{stop}}
   output.}
 
-  \item{value}{Function to handle the visible values, i.e.,
-  the return values of evaluation.}
+  \item{value}{Function to handle the values returned from
+  evaluation. If it only has one argument, only visible
+  values are handled; if it has more arguments, the second
+  argument indicates whether the value is visible.}
 }
 \value{
   A new \code{output_handler} object
@@ -41,8 +43,7 @@ new_output_handler(source = identity, text = identity, graphics = identity,
   The handler functions should accept an output object as
   their first argument. The return value of the handlers is
   ignored, except in the case of the \code{value} handler,
-  where a visible return value is passed to \code{print}
-  and the output is captured.
+  where a visible return value is saved in the output list.
 
   Calling the constructor with no arguments results in the
   default handler, which mimics the behavior of the console
