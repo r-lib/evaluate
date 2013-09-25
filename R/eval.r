@@ -152,12 +152,8 @@ evaluate_call <- function(call, src = NULL,
     handle(pv <- withCallingHandlers(withVisible(output_handler$value(ev$value)),
       warning = wHandler, error = eHandler, message = mHandler))
     handle_output(TRUE)
-    # If return value visible, print and capture output
-    if (pv$visible) {
-      handle(withCallingHandlers(print(pv$value),
-             warning = wHandler, error = eHandler, message = mHandler))
-      handle_output(TRUE)
-    }
+    # If the return value is visible, save the value to the output
+    if (pv$visible) output <- c(output, list(pv$value))
   }
 
   # Always capture last plot, even if incomplete

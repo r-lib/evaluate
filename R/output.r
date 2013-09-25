@@ -37,7 +37,7 @@ render <- function(x) if (isS4(x)) show(x) else print(x)
 #' The handler functions should accept an output object as their
 #' first argument. The return value of the handlers is ignored,
 #' except in the case of the \code{value} handler, where a visible
-#' return value is passed to \code{print} and the output is captured.
+#' return value is saved in the output list.
 #'
 #' Calling the constructor with no arguments results in the default
 #' handler, which mimics the behavior of the console by printing
