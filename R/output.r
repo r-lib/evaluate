@@ -80,3 +80,5 @@ new_output_handler <- function(source = identity,
                  value = value),
             class = "output_handler")
 }
+
+default_output_handler <- new_output_handler()

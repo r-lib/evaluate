@@ -30,7 +30,7 @@
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
-                     new_device = TRUE, output_handler = new_output_handler()) {
+                     new_device = TRUE, output_handler = default_output_handler) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
