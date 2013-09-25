@@ -62,4 +62,10 @@ test_that("output and plots interleaved correctly", {
                c("source", "recordedplot", "character", "recordedplot", "character"))
 })
 
+test_that("return value of value handler inserted directly in output list", {
+  ev <- evaluate(file("raw-output.r"), output_handler = new_output_handler(value = identity))
+  expect_equal(classes(ev),
+               c("source", "numeric", "source", "source", "source", "gg"))
+})
+
 options(op)
