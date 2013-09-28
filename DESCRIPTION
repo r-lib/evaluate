@@ -6,8 +6,8 @@ Version: 0.5
 Date: 2013-09-28
 Author: Hadley Wickham <h.wickham@gmail.com>
 Maintainer: Yihui Xie <xie@yihui.name>
-Description: Parsing and evaluation tools that make it easy
-    to recreate the command line behaviour of R.
+Description: Parsing and evaluation tools that make it easy to recreate the
+    command line behaviour of R.
 License: GPL
 Depends:
     R (>= 2.14.0)
