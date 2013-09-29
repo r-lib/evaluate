@@ -1,3 +1,11 @@
+Version 0.5.1
+------------------------------------------------------------------------------
+
+BUG FIXES
+
+* under R 2.15.x, evaluate() was unable to filter out the plots triggered by
+  clip() (thanks, Uwe Ligges)
+
 Version 0.5
 ------------------------------------------------------------------------------
 
