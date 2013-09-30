@@ -4,10 +4,9 @@ Title: Parsing and evaluation tools that provide more
     details than the default.
 Version: 0.5.1
 Date: 2013-09-30
-Authors@R: c(person("Hadley", "Wickham", email = "h.wickham@gmail.com", role =
-    c("aut", "cre")), person("Yihui", "Xie", role = "ctb"), person("Barret",
+Authors@R: c(person("Hadley", "Wickham", role = "aut"), person("Yihui", "Xie",
+    role = c("cre", "ctb"), email = "xie@yihui.name"), person("Barret",
     "Schloerke", role = "ctb"))
-Maintainer: Yihui Xie <xie@yihui.name>
 Description: Parsing and evaluation tools that make it easy to recreate the
     command line behaviour of R.
 License: GPL
