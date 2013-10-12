@@ -40,7 +40,7 @@ plot_snapshot <- local({
     }
 
     plot <- recordPlot()
-    if (is_par_change(last_plot, plot) || identical(last_plot, plot)) {
+    if (identical(last_plot, plot) || is_par_change(last_plot, plot)) {
       return(NULL)
     }
 
