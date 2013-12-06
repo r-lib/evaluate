@@ -25,7 +25,7 @@ test_that("terminal newline not needed", {
 })
 
 test_that("S4 methods are displayed with show, not print", {
-  setClass("A", contains = "function")
+  setClass("A", contains = "function", where = environment())
   setMethod("show", "A", function(object) cat("B"))
   a <- new('A', function() b)
 
@@ -34,7 +34,7 @@ test_that("S4 methods are displayed with show, not print", {
 })
 
 test_that("errors during printing visible values are captured", {
-  setClass("A", contains = "function")
+  setClass("A", contains = "function", where = environment())
   setMethod("show", "A", function(object) stop("B"))
   a <- new('A', function() b)
 
