@@ -6,10 +6,12 @@
 #' @param x result from \code{\link{evaluate}}
 #' @export
 #' @examples
-#' samples <- system.file("tests", package = "evaluate")
+#' samples <- system.file("tests", "testthat", package = "evaluate")
+#' if (file_test("-d", samples)) {
 #' replay(evaluate(file(file.path(samples, "order.r"))))
 #' replay(evaluate(file(file.path(samples, "plot.r"))))
 #' replay(evaluate(file(file.path(samples, "data.r"))))
+#' }
 #' @S3method replay list
 #' @S3method replay character
 #' @S3method replay source
