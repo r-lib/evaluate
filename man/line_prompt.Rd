@@ -12,9 +12,8 @@ line_prompt(x, prompt = getOption("prompt"), continue = getOption("continue"))
   \item{continue}{prompt for subsequent lines}
 }
 \value{
-  a string
+a string
 }
 \description{
-  Format a single expression as if it had been entered at
-  the command prompt.
+Format a single expression as if it had been entered at the command prompt.
 }

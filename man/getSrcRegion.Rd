@@ -16,8 +16,8 @@ getSrcRegion(srcfile, x1, x2, y1, y2)
   \item{y2}{end col}
 }
 \value{
-  a string
+a string
 }
 \description{
-  Extract a rectangular region of a srcfile
+Extract a rectangular region of a srcfile
 }

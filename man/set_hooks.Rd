@@ -12,8 +12,8 @@ set_hooks(hooks, action = "append")
   \code{"prepend"}}
 }
 \description{
-  This wraps the base \code{\link{setHook}} function to
-  provide a return value that makes it easy to undo.
+This wraps the base \code{\link{setHook}} function to provide a return
+value that makes it easy to undo.
 }
 \examples{
 new <- list(before.plot.new = function() print("Plotted!"))

@@ -31,25 +31,22 @@ new_output_handler(source = identity, text = identity, graphics = identity,
   argument indicates whether the value is visible.}
 }
 \value{
-  A new \code{output_handler} object
+A new \code{output_handler} object
 }
 \description{
-  An \code{output_handler} handles the results of
-  \code{\link{evaluate}}, including the values, graphics,
-  conditions. Each type of output is handled by a
-  particular function in the handler object.
+An \code{output_handler} handles the results of \code{\link{evaluate}},
+including the values, graphics, conditions. Each type of output is handled by
+a particular function in the handler object.
 }
 \details{
-  The handler functions should accept an output object as
-  their first argument. The return value of the handlers is
-  ignored, except in the case of the \code{value} handler,
-  where a visible return value is saved in the output list.
+The handler functions should accept an output object as their first argument.
+The return value of the handlers is ignored, except in the case of the
+\code{value} handler, where a visible return value is saved in the output
+list.
 
-  Calling the constructor with no arguments results in the
-  default handler, which mimics the behavior of the console
-  by printing visible values.
+Calling the constructor with no arguments results in the default handler,
+which mimics the behavior of the console by printing visible values.
 
-  Note that recursion is common: for example, if
-  \code{value} does any printing, then the \code{text} or
-  \code{graphics} handlers may be called.
+Note that recursion is common: for example, if \code{value} does any
+printing, then the \code{text} or \code{graphics} handlers may be called.
 }

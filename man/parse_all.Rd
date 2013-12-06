@@ -9,10 +9,10 @@ parse_all(x)
   connection, or a function}
 }
 \value{
-  a data.frame with columns \code{src}, the source code,
-  and \code{eval}
+a data.frame with columns \code{src}, the source code, and
+  \code{eval}
 }
 \description{
-  Works very similarly to parse, but also keeps original
-  formatting and comments.
+Works very similarly to parse, but also keeps original formatting and
+comments.
 }

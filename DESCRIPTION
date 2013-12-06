@@ -17,13 +17,4 @@ Imports:
 Suggests:
     testthat,
     ggplot2
-Collate:
-    'eval.r'
-    'hooks.r'
-    'graphics.r'
-    'output.r'
-    'parse.r'
-    'replay.r'
-    'src-region.r'
-    'traceback.r'
-    'watcher.r'
+Roxygen: list(wrap = FALSE)

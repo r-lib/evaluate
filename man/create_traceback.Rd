@@ -9,6 +9,6 @@ create_traceback(callstack)
   \code{\link[base]{sys.calls}}}
 }
 \description{
-  Generate a traceback from a list of calls.
+Generate a traceback from a list of calls.
 }
 \keyword{internal}

@@ -9,9 +9,9 @@ watchout(debug = FALSE)
   both printed to screen and captured.}
 }
 \value{
-  list containing four functions: \code{get_new},
-  \code{pause}, \code{unpause}, \code{close}.
+list containing four functions: \code{get_new}, \code{pause},
+ \code{unpause}, \code{close}.
 }
 \description{
-  Watch for changes in output, text and graphical.
+Watch for changes in output, text and graphical.
 }

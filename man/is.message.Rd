@@ -20,6 +20,6 @@ is.source(x)
 is.recordedplot(x)
 }
 \description{
-  Object class tests
+Object class tests
 }
 \keyword{internal}
