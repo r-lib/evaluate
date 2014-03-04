@@ -8,12 +8,9 @@
 #' @return a data.frame with columns \code{src}, the source code, and
 #'   \code{eval}
 #' @export
-#' @S3method parse_all character
-#' @S3method parse_all "function"
-#' @S3method parse_all connection
-#' @S3method parse_all default
 parse_all <- function(x) UseMethod("parse_all")
 
+#' @export
 parse_all.character <- function(x) {
   x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
   src <- srcfilecopy("<text>", x)
@@ -117,7 +114,7 @@ parse_all.character <- function(x) {
   do.call("rbind", lapply(lines, join_pieces))
 }
 
-
+#' @export
 parse_all.connection <- function(x) {
   if (!isOpen(x, "r")) {
       open(x, "r")
@@ -127,6 +124,7 @@ parse_all.connection <- function(x) {
   parse_all(text)
 }
 
+#' @export
 parse_all.function <- function(x) {
   src <- attr(x, "source")
   # Remove first, function() {,  and last lines, }
@@ -134,6 +132,7 @@ parse_all.function <- function(x) {
   parse_all(src[-c(1, n)])
 }
 
+#' @export
 parse_all.default <- function(x) {
   parse_all(deparse(x))
 }

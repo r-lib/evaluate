@@ -12,36 +12,34 @@
 #' replay(evaluate(file(file.path(samples, "plot.r"))))
 #' replay(evaluate(file(file.path(samples, "data.r"))))
 #' }
-#' @S3method replay list
-#' @S3method replay character
-#' @S3method replay source
-#' @S3method replay warning
-#' @S3method replay message
-#' @S3method replay error
-#' @S3method replay value
-#' @S3method replay recordedplot
 replay <- function(x) UseMethod("replay", x)
 
+#' @export
 replay.list <- function(x) {
   invisible(lapply(x, replay))
 }
 
+#' @export
 replay.character <- function(x) {
   cat(x)
 }
 
+#' @export
 replay.source <- function(x) {
   cat(line_prompt(x$src))
 }
 
+#' @export
 replay.warning <- function(x) {
   message("Warning message:\n", x$message)
 }
 
+#' @export
 replay.message <- function(x) {
   message(str_replace(x$message, "\n$", ""))
 }
 
+#' @export
 replay.error <- function(x) {
   if (is.null(x$call)) {
     message("Error: ", x$message)
@@ -51,10 +49,12 @@ replay.error <- function(x) {
   }
 }
 
+#' @export
 replay.value <- function(x) {
   if (x$visible) print(x$value)
 }
 
+#' @export
 replay.recordedplot <- function(x) {
   print(x)
 }

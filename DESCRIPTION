@@ -17,4 +17,3 @@ Imports:
 Suggests:
     testthat,
     ggplot2
-Roxygen: list(wrap = FALSE)
