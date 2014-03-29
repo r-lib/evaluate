@@ -5,11 +5,10 @@
 set_hooks(hooks, action = "append")
 }
 \arguments{
-  \item{hooks}{a named list of hooks - each hook can either
-  be a function or a list of functions.}
+\item{hooks}{a named list of hooks - each hook can either be a function or
+a list of functions.}
 
-  \item{action}{\code{"replace"}, \code{"append"} or
-  \code{"prepend"}}
+\item{action}{\code{"replace"}, \code{"append"} or \code{"prepend"}}
 }
 \description{
 This wraps the base \code{\link{setHook}} function to provide a return

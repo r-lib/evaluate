@@ -5,8 +5,8 @@
 watchout(debug = FALSE)
 }
 \arguments{
-  \item{debug}{activate debug mode where output will be
-  both printed to screen and captured.}
+\item{debug}{activate debug mode where output will be both printed to
+screen and captured.}
 }
 \value{
 list containing four functions: \code{get_new}, \code{pause},

@@ -5,9 +5,9 @@
 try_capture_stack(quoted_code, env)
 }
 \arguments{
-  \item{quoted_code}{code to evaluate, in quoted form}
+\item{quoted_code}{code to evaluate, in quoted form}
 
-  \item{env}{environment in which to execute code}
+\item{env}{environment in which to execute code}
 }
 \description{
 This is a variant of \code{\link{tryCatch}} that also captures the call

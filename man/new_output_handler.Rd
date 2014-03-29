@@ -7,28 +7,22 @@ new_output_handler(source = identity, text = identity, graphics = identity,
     message = identity, warning = identity, error = identity, value = render)
 }
 \arguments{
-  \item{source}{Function to handle the echoed source code
-  under evaluation.}
+\item{source}{Function to handle the echoed source code under evaluation.}
 
-  \item{text}{Function to handle any textual console
-  output.}
+\item{text}{Function to handle any textual console output.}
 
-  \item{graphics}{Function to handle graphics, as returned
-  by \code{\link{recordPlot}}.}
+\item{graphics}{Function to handle graphics, as returned by
+\code{\link{recordPlot}}.}
 
-  \item{message}{Function to handle \code{\link{message}}
-  output.}
+\item{message}{Function to handle \code{\link{message}} output.}
 
-  \item{warning}{Function to handle \code{\link{warning}}
-  output.}
+\item{warning}{Function to handle \code{\link{warning}} output.}
 
-  \item{error}{Function to handle \code{\link{stop}}
-  output.}
+\item{error}{Function to handle \code{\link{stop}} output.}
 
-  \item{value}{Function to handle the values returned from
-  evaluation. If it only has one argument, only visible
-  values are handled; if it has more arguments, the second
-  argument indicates whether the value is visible.}
+\item{value}{Function to handle the values returned from evaluation. If it
+only has one argument, only visible values are handled; if it has more
+arguments, the second argument indicates whether the value is visible.}
 }
 \value{
 A new \code{output_handler} object
