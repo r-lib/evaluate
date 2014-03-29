@@ -47,6 +47,8 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
     dev <- dev.cur()
     on.exit(dev.off(dev))
   }
+  # clean up the last_plot object after an evaluate() call (cf yihui/knitr#722)
+  on.exit(assign("last_plot", NULL, envir = environment(plot_snapshot)), add = TRUE)
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {

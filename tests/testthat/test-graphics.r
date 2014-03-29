@@ -119,6 +119,11 @@ test_that("an incomplete plot with a comment in the end is also captured", {
               equals(rep(c("source", "recordedplot"), c(3, 1))))
 })
 
+# a bug report yihui/knitr#722
+test_that("repeatedly drawing the same plot does not omit plots randomly", {
+  expect_true(all(replicate(100, length(evaluate("plot(1:10)"))) == 2))
+})
+
 # test_that("no plot windows open", {
 #   graphics.off()
 #   expect_that(length(dev.list()), equals(0))

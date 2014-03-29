@@ -1,3 +1,12 @@
+Version 0.5.3
+------------------------------------------------------------------------------
+
+BUG FIXES
+
+* fixed the bug reported at https://github.com/yihui/knitr/issues/722
+  (repeatedly knitting the same code results in plots being omitted
+  randomly) (thanks, Simon Urbanek)
+
 Version 0.5.1
 ------------------------------------------------------------------------------
 
