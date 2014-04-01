@@ -93,11 +93,8 @@ evaluate_call <- function(call, src = NULL,
   output <- list(source)
 
   handle_output <- function(plot = FALSE, incomplete_plots = FALSE) {
-    out <- w$get_new(plot, incomplete_plots)
-    if (!is.null(out$text))
-      output_handler$text(out$text)
-    if (!is.null(out$graphics))
-      output_handler$graphics(out$graphics)
+    out <- w$get_new(plot, incomplete_plots,
+      output_handler$text, output_handler$graphics)
     output <<- c(output, out)
   }
 

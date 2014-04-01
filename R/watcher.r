@@ -12,7 +12,8 @@ watchout <- function(debug = FALSE) {
   sink(con, split = debug)
 
   list(
-    get_new = function(plot = FALSE, incomplete_plots = FALSE) {
+    get_new = function(plot = FALSE, incomplete_plots = FALSE,
+                       text_callback = identity, graphics_callback = identity) {
       incomplete <- isIncomplete(con)
       if (incomplete) cat("\n")
 
@@ -20,6 +21,7 @@ watchout <- function(debug = FALSE) {
 
       if (plot) {
         out$graphics <- plot_snapshot(incomplete_plots)
+        graphics_callback(out$graphics)
       }
 
       if (length(output) != length(prev)) {
@@ -28,6 +30,8 @@ watchout <- function(debug = FALSE) {
 
         out$text <- str_c(new, collapse = "\n")
         if (!incomplete) out$text <- str_c(out$text, "\n")
+
+        text_callback(out$text)
       }
 
       unname(out)
