@@ -2,7 +2,7 @@ context('Graphics')
 
 test_that("Rplots.pdf files are not created", {
     op <- options(device = pdf)
+    on.exit(options(op))
     evaluate(file("plot.r"))
-    options(op)
-    expect_true(!file.exists("Rplots.pdf"))
+    expect_false(file.exists("Rplots.pdf"))
 })
