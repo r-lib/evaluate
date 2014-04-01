@@ -42,7 +42,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
   if (new_device) {
     # Start new graphics device and clean up afterwards
-    dev.new()
+    dev.new(file=NULL)
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     on.exit(dev.off(dev))
