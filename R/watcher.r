@@ -21,7 +21,7 @@ watchout <- function(debug = FALSE) {
 
       if (plot) {
         out$graphics <- plot_snapshot(incomplete_plots)
-        graphics_callback(out$graphics)
+        if (!is.null(out$graphics)) graphics_callback(out$graphics)
       }
 
       if (length(output) != length(prev)) {
