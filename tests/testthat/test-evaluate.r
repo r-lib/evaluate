@@ -47,11 +47,6 @@ test_that("options(warn = -1) suppresses warnings", {
   expect_that(classes(ev), equals("source"))
 })
 
-op <- options(device = function(...) {
-  pdf(file = NULL)
-  dev.control("enable")
-})
-
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.r"))
   expect_equal(classes(ev),
@@ -85,5 +80,3 @@ test_that("multiple lines of comments do not lose the terminating \\n", {
   ev <- evaluate("# foo\n#bar")
   expect_equal(ev[[1]][["src"]], "# foo\n")
 })
-
-options(op)

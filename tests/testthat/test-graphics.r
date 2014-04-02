@@ -1,8 +1,3 @@
-op <- options(device = function(...) {
-  pdf(file = NULL)
-  dev.control("enable")
-})
-
 context("Evaluation: graphics")
 
 test_that("single plot is captured", {
@@ -130,8 +125,6 @@ test_that("repeatedly drawing the same plot does not omit plots randomly", {
 #   evaluate(file("plot.r"))
 #   expect_that(length(dev.list()), equals(0))
 # })
-
-options(op)
 
 test_that("by default, evaluate() always records plots regardless of the device", {
   op <- options(device = pdf)
