@@ -42,7 +42,9 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
 
   if (new_device) {
     # Start new graphics device and clean up afterwards
-    dev.new()
+    if (identical(grDevices::pdf, getOption("device"))) {
+      dev.new(file = NULL)
+    } else dev.new()
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     on.exit(dev.off(dev))
