@@ -76,4 +76,9 @@ test_that("invisible values can also be saved if value handler has two arguments
   expect_equal(classes(ev), c("source", "integer"))
 })
 
+test_that("multiple expressions on one line can get printed as expected", {
+  ev <- evaluate("x <- 1; y <- 2; x; y")
+  expect_equal(classes(ev), c("source", "character", "character"))
+})
+
 options(op)

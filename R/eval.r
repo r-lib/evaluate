@@ -140,28 +140,29 @@ evaluate_call <- function(call, src = NULL,
   } else {
     handle <- force
   }
-  if (!is.null(call)) {
-    handle(ev <- withCallingHandlers(
-      withVisible(eval(call, envir, enclos)),
-      warning = wHandler, error = eHandler, message = mHandler))
-    handle_output(TRUE)
-  }
-
   value_handler <- output_handler$value
   multi_args <- length(formals(value_handler)) > 1
-  # If visible or the value handler has multi args, process and capture output
-  if (ev$visible || multi_args) {
-    pv <- list(value = NULL, visible = FALSE)
-    value_fun <- if (multi_args) value_handler else {
-      function(x, visible) value_handler(x)
-    }
-    handle(pv <- withCallingHandlers(withVisible(value_fun(ev$value, ev$visible)),
+  for (expr in call) {
+    handle(ev <- withCallingHandlers(
+      withVisible(eval(expr, envir, enclos)),
       warning = wHandler, error = eHandler, message = mHandler))
     handle_output(TRUE)
-    # If the return value is visible, save the value to the output
-    if (pv$visible) output <- c(output, list(pv$value))
-  }
 
+
+    # If visible or the value handler has multi args, process and capture output
+    if (ev$visible || multi_args) {
+      pv <- list(value = NULL, visible = FALSE)
+      value_fun <- if (multi_args) value_handler else {
+        function(x, visible) value_handler(x)
+      }
+      handle(pv <- withCallingHandlers(withVisible(
+        value_fun(ev$value, ev$visible)
+      ), warning = wHandler, error = eHandler, message = mHandler))
+      handle_output(TRUE)
+      # If the return value is visible, save the value to the output
+      if (pv$visible) output <- c(output, list(pv$value))
+    }
+  }
   # Always capture last plot, even if incomplete
   if (last) {
     handle_output(TRUE, TRUE)
