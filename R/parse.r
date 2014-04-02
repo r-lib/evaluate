@@ -19,6 +19,7 @@ parse_all.character <- function(x) {
   # No code, all comments
   if (length(expr) == 0) {
     n <- length(x)
+    if (n > 1) x <- paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
     return(data.frame(
       x1 = seq_along(x), x2 = seq_along(x),
       y1 = rep(0, n), y2 = nchar(x),

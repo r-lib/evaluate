@@ -81,4 +81,9 @@ test_that("multiple expressions on one line can get printed as expected", {
   expect_equal(classes(ev), c("source", "character", "character"))
 })
 
+test_that("multiple lines of comments do not lose the terminating \\n", {
+  ev <- evaluate("# foo\n#bar")
+  expect_equal(ev[[1]][["src"]], "# foo\n")
+})
+
 options(op)
