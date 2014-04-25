@@ -16,4 +16,5 @@ Imports:
     stringr (>= 0.4)
 Suggests:
     testthat,
+    lattice,
     ggplot2
