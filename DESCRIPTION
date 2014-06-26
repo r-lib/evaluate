@@ -10,6 +10,8 @@ Authors@R: c(person("Hadley", "Wickham", role = "aut"), person("Yihui", "Xie",
 Description: Parsing and evaluation tools that make it easy to recreate the
     command line behaviour of R.
 License: GPL
+URL: https://github.com/hadley/evaluate
+BugReports: https://github.com/hadley/evaluate/issues
 Depends:
     R (>= 2.14.0)
 Imports:
