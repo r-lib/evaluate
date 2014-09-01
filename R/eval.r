@@ -94,7 +94,10 @@ evaluate_call <- function(call, src = NULL,
   output_handler$source(source)
   output <- list(source)
 
+  dev <- dev.cur()
   handle_output <- function(plot = FALSE, incomplete_plots = FALSE) {
+    # if dev.cur() has changed, we should not record plots any more
+    plot <- plot && identical(dev, dev.cur())
     out <- w$get_new(plot, incomplete_plots,
       output_handler$text, output_handler$graphics)
     output <<- c(output, out)
