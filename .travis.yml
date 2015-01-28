@@ -4,7 +4,7 @@ env:
   matrix:
     - R_PKG="$(basename $TRAVIS_REPO_SLUG)"
   global:
-    secure: OWnH5aMsFXwtWesDr6cMynHMfiil2vHU8FWzsa6CNgjQvRhvWgQiETjXN56AmuMAwYD34npdynbg0XlG93S/6r3kzXzKz1lbi3QiluEEfEuEYmQL+jgZ04i4kkB+AG8+KZeueZlRjPOLT6XEeHkIDHCdexBMpxS07IZr4O8UPx8=
+    secure: GFsc99IHEIY3pGbNrYInR+N10CXpzGwnULkeX8Ol6o+18e2VmRrkCfWM/vSi48ka7g2q/rqzoQZnpwt2K2Dr8ctDAbIoQ2jS77vr9ws9YkpWEGwJVdXZIyC2OR3FgTihT2KSU4DTKimsOkJ7TrTSsRvWM9vzY3seBxBT/xaqg60=
 
 install:
   - sudo apt-add-repository -y "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/"
