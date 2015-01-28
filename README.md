@@ -1,6 +1,6 @@
 # Evaluate
 
-[![Build Status](https://travis-ci.org/hadley/evaluate.svg)](https://travis-ci.org/hadley/evaluate)
+[![Build Status](https://travis-ci.org/yihui/evaluate.svg)](https://travis-ci.org/yihui/evaluate)
 
 Evaluate provides tools that allow you to recreate the parsing, evaluation and
 display of R code, with enough information that you can accurately recreate what
