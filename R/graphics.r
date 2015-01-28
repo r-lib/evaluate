@@ -73,7 +73,7 @@ isR3 <- getRversion() >= "3.0.0"
 
 # if all calls are in these elements, the plot is basically empty
 empty_calls <- if (isR3) {
-  c("C_par", "C_layout", "palette", "palette2", "C_strWidth", "C_strHeight", "C_clip")
+  c("C_par", "C_layout", "palette", "palette2", "C_strWidth", "C_strHeight", "C_clip", "C_plot_window")
 } else c("layout", "par", "clip")
 
 is.empty <- function(x) {
