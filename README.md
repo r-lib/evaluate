@@ -1,5 +1,7 @@
 # Evaluate
 
+[![Build Status](https://travis-ci.org/hadley/evaluate.svg)](https://travis-ci.org/hadley/evaluate)
+
 Evaluate provides tools that allow you to recreate the parsing, evaluation and
 display of R code, with enough information that you can accurately recreate what
 happens at the command line. Evaluate + replay works very similarly to
