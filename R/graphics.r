@@ -72,9 +72,13 @@ is_par_change <- function(p1, p2) {
 isR3 <- getRversion() >= "3.0.0"
 
 # if all calls are in these elements, the plot is basically empty
-empty_calls <- if (isR3) {
-  c("C_par", "C_layout", "palette", "palette2", "C_strWidth", "C_strHeight", "C_clip", "C_plot_window")
-} else c("layout", "par", "clip")
+empty_calls <- c("layout", "par", "clip")
+if (isR3) {
+  empty_calls <- c(
+    "palette", "palette2",
+    sprintf("C_%s", c(empty_calls, "strWidth", "strHeight", "plot_window"))
+  )
+}
 
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
