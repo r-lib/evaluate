@@ -1,3 +1,4 @@
+% Please edit documentation in R/parse.r
 \name{parse_all}
 \alias{parse_all}
 \title{Parse, retaining comments.}

@@ -1,3 +1,4 @@
+% Please edit documentation in R/src-region.r
 \name{getSrcRegion}
 \alias{getSrcRegion}
 \title{Extract a rectangular region of a srcfile}

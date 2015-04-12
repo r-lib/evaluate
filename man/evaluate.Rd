@@ -1,3 +1,4 @@
+% Please edit documentation in R/eval.r
 \name{evaluate}
 \alias{evaluate}
 \title{Evaluate input and return all details of evaluation.}
@@ -24,7 +25,7 @@ but you will get back all results up to that point. If \code{0} will
 continue running all code, just as if you'd pasted the code into the
 command line.}
 
-\item{keep_warning,keep_message}{whether to record warnings and messages}
+\item{keep_warning, keep_message}{whether to record warnings and messages}
 
 \item{new_device}{if \code{TRUE}, will open a new graphics device and
 automatically close it after completion. This prevents evaluation from

@@ -1,3 +1,4 @@
+% Please edit documentation in R/replay.r
 \name{line_prompt}
 \alias{line_prompt}
 \title{Line prompt.}

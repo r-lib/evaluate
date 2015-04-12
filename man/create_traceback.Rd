@@ -1,3 +1,4 @@
+% Please edit documentation in R/traceback.r
 \name{create_traceback}
 \alias{create_traceback}
 \title{Generate a traceback from a list of calls.}

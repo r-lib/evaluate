@@ -1,3 +1,4 @@
+% Please edit documentation in R/output.r
 \name{is.message}
 \alias{is.error}
 \alias{is.message}

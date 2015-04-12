@@ -1,3 +1,4 @@
+% Please edit documentation in R/replay.r
 \name{replay}
 \alias{replay}
 \title{Replay a list of evaluated results.}

@@ -1,3 +1,4 @@
+% Please edit documentation in R/output.r
 \name{new_output_handler}
 \alias{new_output_handler}
 \alias{output_handler}

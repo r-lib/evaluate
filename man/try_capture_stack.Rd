@@ -1,3 +1,4 @@
+% Please edit documentation in R/traceback.r
 \name{try_capture_stack}
 \alias{try_capture_stack}
 \title{Try, capturing stack on error.}

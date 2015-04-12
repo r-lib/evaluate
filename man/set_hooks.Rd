@@ -1,3 +1,4 @@
+% Please edit documentation in R/hooks.r
 \name{set_hooks}
 \alias{set_hooks}
 \title{Set hooks.}

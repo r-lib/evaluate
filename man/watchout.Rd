@@ -1,3 +1,4 @@
+% Please edit documentation in R/watcher.r
 \name{watchout}
 \alias{watchout}
 \title{Watch for changes in output, text and graphical.}
