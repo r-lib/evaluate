@@ -11,7 +11,7 @@ function}
 }
 \value{
 a data.frame with columns \code{src}, the source code, and
-  \code{eval}
+  \code{expr}
 }
 \description{
 Works very similarly to parse, but also keeps original formatting and

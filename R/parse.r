@@ -6,7 +6,7 @@
 #' @param x object to parse.  Can be a string, a file connection, or a
 #'   function
 #' @return a data.frame with columns \code{src}, the source code, and
-#'   \code{eval}
+#'   \code{expr}
 #' @export
 parse_all <- function(x) UseMethod("parse_all")
 
