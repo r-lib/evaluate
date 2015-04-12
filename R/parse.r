@@ -127,6 +127,9 @@ parse_all.connection <- function(x) {
 
 #' @export
 parse_all.function <- function(x) {
+  # FIXME: should use attr(x, 'srcref') now, and it is a little tricky to work
+  # with one-liner functions, e.g. f = function(x) 1 + 1 (you cannot just remove
+  # 1 and n from src)
   src <- attr(x, "source")
   # Remove first, function() {,  and last lines, }
   n <- length(src)
