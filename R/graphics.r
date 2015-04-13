@@ -8,35 +8,17 @@
 #"   \code{\link[grDevices]{recordPlot}}.
 plot_snapshot <- local({
   last_plot <- NULL
-  # help decide whether to keep plots when multiple plots on one screen
-  mfg_init <- NULL
-  mfg_changed <- FALSE
 
   function(incomplete = FALSE) {
     if (is.null(dev.list())) return(NULL)
 
-    # is page in par()? feature of R 3.0.2
-    if ("page" %in% getFromNamespace('.Pars', 'graphics')) {
-      if (!incomplete && !par('page')) return(NULL)  # current page not complete
-    } else {
-      # a hack for R < 3.0.2
-      mfg <- par("mfg")
-      if (identical(mfg, rep(1L, 4)) || incomplete) {
-        mfg_init <<- NULL
-        mfg_changed <<- FALSE
-      } else {
-        # now there is a multi-col/row layout
-        if (is.null(mfg_init)) {
-          mfg_init <<- mfg
-        } else {
-          if (identical(mfg_init, mfg)) {
-            if (!mfg_changed) return(NULL)
-          } else {
-            mfg_changed <<- TRUE
-            return(NULL)
-          }
-        }
+    if (!incomplete) {
+      # par('page') is a feature of R since 3.0.2
+      if (is.null(par('page'))) {
+        warning('Please upgrade R to at least version 3.0.2')
+        return(NULL)
       }
+      if (!par('page')) return(NULL)  # current page not complete
     }
 
     plot <- recordPlot()
