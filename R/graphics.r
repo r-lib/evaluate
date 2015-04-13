@@ -50,46 +50,35 @@ is_par_change <- function(p1, p2) {
   all(last %in% empty_calls)
 }
 
-# R 3.0 has significant changes in display lists
-isR3 <- getRversion() >= "3.0.0"
-
 # if all calls are in these elements, the plot is basically empty
 empty_calls <- c("layout", "par", "clip")
-if (isR3) {
-  empty_calls <- c(
-    "palette", "palette2",
-    sprintf("C_%s", c(empty_calls, "strWidth", "strHeight", "plot_window"))
-  )
+empty_calls <- c(
+  "palette", "palette2",
+  sprintf("C_%s", c(empty_calls, "strWidth", "strHeight", "plot_window"))
+)
+
+isR2 <- getRversion() < "3.0.0"
+warnR2 <- function() {
+  if (isR2)
+    warning('Support for R 2.x has been deprecated. Please upgrade R.')
 }
 
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
 
+  warnR2()
   pc <- plot_calls(x)
   if (length(pc) == 0) return(TRUE)
 
-  if (isR3) all(pc %in% empty_calls) else {
-    !identical(pc, "recordGraphics") && !identical(pc, "persp") &&
-      !identical(pc, "plot.new") &&
-      (length(pc) <= 1L || all(pc %in% empty_calls))
-  }
+  all(pc %in% empty_calls)
 }
 
-
-plot_calls <- if (isR3) {
-  function(plot) {
-    el <- lapply(plot[[1]], "[[", 2)
-    if (length(el) == 0) return()
-    sapply(el, function(x) {
-      x <- x[[1]]
-      # grid graphics do not have x$name
-      if (is.null(x[["name"]])) deparse(x) else x[["name"]]
-    })
-  }
-} else function(plot) {
-  prims <- lapply(plot[[1]], "[[", 1)
-  if (length(prims) == 0) return()
-
-  chars <- sapply(prims, deparse)
-  str_replace_all(chars, ".Primitive\\(\"|\"\\)", "")
+plot_calls <- function(plot) {
+  el <- lapply(plot[[1]], "[[", 2)
+  if (length(el) == 0) return()
+  sapply(el, function(x) {
+    x <- x[[1]]
+    # grid graphics do not have x$name
+    if (is.null(x[["name"]])) deparse(x) else x[["name"]]
+  })
 }
