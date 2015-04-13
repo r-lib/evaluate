@@ -32,11 +32,12 @@ parse_all.character <- function(x) {
   srcref <- attr(exprs, "srcref", exact = TRUE)
 
   # Stard/End line numbers of expressions
-  pos <- as.data.frame(t(sapply(srcref, unclass))[, c(1, 3), drop = FALSE])
+  pos <- do.call(rbind, lapply(srcref, unclass))[, c(1, 3), drop = FALSE]
   l1 <- pos[, 1]
   l2 <- pos[, 2]
   # Add a third column i to store the indices of expressions
   pos <- cbind(pos, i = seq_len(nrow(pos)))
+  pos <- as.data.frame(pos)  # split() does not work on matrices
 
   # Split line number pairs into groups: if the next start line is the same as
   # the last end line, the two expressions must belong to the same group
