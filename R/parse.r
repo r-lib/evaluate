@@ -13,6 +13,7 @@ parse_all <- function(x) UseMethod("parse_all")
 #' @export
 parse_all.character <- function(x) {
 
+  # Do not convert strings to factors by default in data.frame()
   op <- options(stringsAsFactors = FALSE)
   on.exit(options(op), add = TRUE)
 
