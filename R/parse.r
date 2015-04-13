@@ -12,107 +12,85 @@ parse_all <- function(x) UseMethod("parse_all")
 
 #' @export
 parse_all.character <- function(x) {
-  x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
+
+  op <- options(stringsAsFactors = FALSE)
+  on.exit(options(op), add = TRUE)
+
+  if (length(grep("\n", x)))
+    x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
+  n <- length(x)
   src <- srcfilecopy("<text>", x)
+  exprs <- parse(text = x, srcfile = src)
 
-  expr <- parse(text = x, srcfile = src)
-  # No code, all comments
-  if (length(expr) == 0) {
-    n <- length(x)
-    if (n > 1) x <- paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
-    return(data.frame(
-      x1 = seq_along(x), x2 = seq_along(x),
-      y1 = rep(0, n), y2 = nchar(x),
-      src = x, text = rep(TRUE, n),
-      expr = I(rep(list(NULL), n)), visible = rep(FALSE, n),
-      stringsAsFactors = FALSE
-    ))
+  # No code, only comments and/or empty lines
+  ne <- length(exprs)
+  if (ne == 0) {
+    return(data.frame(src = append_break(x), expr = I(rep(list(NULL), n))))
   }
 
-  srcref <- attr(expr, "srcref")
-  srcfile <- attr(srcref[[1]], "srcfile")
+  srcref <- attr(exprs, "srcref", exact = TRUE)
 
-  # Create data frame containing each expression and its
-  # location in the original source
-  src <- sapply(srcref, function(src) str_c(as.character(src), collapse="\n"))
-  pos <- t(sapply(srcref, unclass))[, 1:4, drop = FALSE]
-  colnames(pos) <- c("x1", "y1", "x2", "y2")
-  pos <- as.data.frame(pos)[c("x1","y1","x2","y2")]
+  # Stard/End line numbers of expressions
+  pos <- as.data.frame(t(sapply(srcref, unclass))[, c(1, 3), drop = FALSE])
+  l1 <- pos[, 1]
+  l2 <- pos[, 2]
+  # Add a third column i to store the indices of expressions
+  pos <- cbind(pos, i = seq_len(nrow(pos)))
 
-  parsed <- data.frame(
-    pos, src=src, expr=I(as.list(expr)), text = FALSE,
-    stringsAsFactors = FALSE
-  )
-  # Extract unparsed text ----------------------------------------------------
-  # Unparsed text includes:
-  #  * text before first expression
-  #  * text between expressions
-  #  * text after last expression
-  #
-  # Unparsed text does not contain any expressions, so can
-  # be split into individual lines
-
-  get_region <- function(x1, y1, x2, y2) {
-    string <- getSrcRegion(srcfile, x1, x2, y1, y2)
-    lines <- strsplit(string, "(?<=\n)", perl=TRUE)[[1]]
-    n <- length(lines)
-    if (n == 0) {
-      lines <- ""
-      n <- 1
-    }
-
+  # Split line number pairs into groups: if the next start line is the same as
+  # the last end line, the two expressions must belong to the same group
+  spl <- cumsum(c(TRUE, l1[-1] != l2[-ne]))
+  # Extract src lines and expressions for each group; also record the start line
+  # number of this group so we can re-order src/expr later
+  res <- lapply(split(pos, spl), function(p) {
+    n <- nrow(p)
     data.frame(
-      x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(1, n - 1)),
-      x2 = x1 + seq_len(n), y2 = rep(1, n),
-      src = lines,
-      expr = I(rep(list(NULL), n)),
-      stringsAsFactors=FALSE
+      src = paste(x[p[1, 1]:p[n, 2]], collapse = "\n"),
+      expr = I(list(exprs[p[, 3]])),
+      line = p[1, 1]
     )
-  }
-  breaks <- data.frame(
-    x1 = c(1, parsed[, "x2"]),
-    y1 = c(1, parsed[, "y2"] + 1),
-    x2 = c(parsed[1, "x1"], parsed[-1, "x1"], Inf),
-    y2 = c(parsed[, "y1"], Inf)
-  )
-  unparsed <- do.call("rbind",
-    apply(breaks, 1, function(row) do.call("get_region", as.list(row)))
-  )
-  unparsed <- subset(unparsed, src != "")
+  })
 
-  if (nrow(unparsed) > 0) {
-    unparsed$text <- TRUE
-    all <- rbind(parsed, unparsed)
-  } else {
-    all <- parsed
-  }
-  all <- all[do.call("order", all[,c("x1","y1", "x2","y2")]), ]
+  # Now process empty expressions (comments/blank lines); see if there is a
+  # "gap" between the last end number + 1 and the next start number - 1
+  pos <- cbind(c(1, l2 + 1), c(l1 - 1, n))
+  pos <- pos[pos[, 1] <= pos[, 2], , drop = FALSE]
 
-  all$eol <- FALSE
-  all$eol[grep("\n$", all$src)] <- TRUE
+  # Extract src lines from the gaps, and assign empty expressions to them
+  res <- c(res, lapply(seq_len(nrow(pos)), function(i) {
+    p <- pos[i, ]
+    r <- p[1]:p[2]
+    data.frame(
+      src = x[r],
+      expr = I(rep(list(NULL), p[2] - p[1] + 1)),
+      line = r - 1
+    )
+  }))
 
-  # Join lines ---------------------------------------------------------------
-  # Expressions need to be combined to create a complete line
-  # Some expressions already span multiple lines, and these should be
-  # left alone
+  # Bind everything into a data frame, order it by line numbers, append \n to
+  # all src lines except the last one, and remove the line numbers
+  res <- do.call(rbind, res)
+  res <- res[order(res$line), ]
+  res$src <- append_break(res$src)
+  res$line <- NULL
 
-  join_pieces <- function(df) {
-    clean_expr <- Filter(Negate(is.null), as.list(df$expr))
-    if (length(clean_expr) == 0) {
-      clean_expr <- list(NULL)
-    } else {
-      clean_expr <- list(clean_expr)
-    }
+  # For compatibility with evaluate (<= 0.5.7): remove the last empty line (YX:
+  # I think this is a bug)
+  n <- nrow(res)
+  if (res$src[n] == "") res <- res[-n, ]
 
-    with(df, data.frame(
-      src = str_c(src, collapse = ""),
-      expr = I(clean_expr),
-      stringsAsFactors = FALSE
-    ))
-  }
-  block <- c(0, cumsum(all$eol)[-nrow(all)])
-  lines <- split(all, block)
-  do.call("rbind", lapply(lines, join_pieces))
+  rownames(res) <- NULL
+  res
+}
+
+# YX: It seems evaluate (<= 0.5.7) had difficulties with preserving line breaks,
+# so it ended up with adding \n to the first n-1 lines, which does not seem to
+# be necessary to me, and is actually buggy. I'm not sure if it is worth shaking
+# the earth and work with authors of reverse dependencies to sort this out. Also
+# see #42.
+append_break <- function(x) {
+  n <- length(x)
+  if (n <= 1) x else paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
 }
 
 #' @export
