@@ -13,9 +13,16 @@ test_that("{ not removed", {
 
 })
 
-test_that("double quotes in Chinese characters not destroyed", {
-  loc <- Sys.getlocale("LC_ALL")
-  if (.Platform$OS.type == "windows" && grepl("Chinese (Simplified)_People's Republic of China.936", loc, fixed = TRUE)) {
+# test some multibyte characters when the locale is UTF8 based
+if (identical(Sys.getlocale("LC_CTYPE"), "en_US.UTF-8")) {
+
+  test_that("double quotes in Chinese characters not destroyed", {
     expect_identical(parse_all(c('1+1', '"你好"'))[2, 1], '"你好"')
-  }
-})
+  })
+
+  test_that("multibyte characters are parsed correct", {
+    code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
+    expect_identical(parse_all(code)$src, append_break(code))
+  })
+
+}
