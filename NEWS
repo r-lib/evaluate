@@ -1,6 +1,11 @@
 Version 0.6
 ------------------------------------------------------------------------------
 
+* R 3.0.2 is the minimal required version for this package now.
+
+Version 0.6
+------------------------------------------------------------------------------
+
 * Plots are no longer recorded when the current graphical device has been
   changed, which may introduce issues like yihui/knitr#824.
 
