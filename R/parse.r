@@ -107,13 +107,25 @@ parse_all.connection <- function(x) {
 
 #' @export
 parse_all.function <- function(x) {
-  # FIXME: should use attr(x, 'srcref') now, and it is a little tricky to work
-  # with one-liner functions, e.g. f = function(x) 1 + 1 (you cannot just remove
-  # 1 and n from src)
-  src <- attr(x, "source")
-  # Remove first, function() {,  and last lines, }
-  n <- length(src)
-  parse_all(src[-c(1, n)])
+  src <- attr(x, "srcref", exact = TRUE)
+  if (is.null(src)) {
+    src <- deparse(body(x))
+    # Remove { and }
+    n <- length(src)
+    if (n >= 2) src <- src[-c(1, n)]
+    parse_all(src)
+  } else {
+    src2 <- attr(body(x), "srcref", exact = TRUE)
+    n <- length(src2)
+    if (n >= 2) {
+      parse_all(unlist(lapply(src2[-1], as.character)))
+    } else if (n == 1) {
+      # f <- function(...) {}
+      parse_all(character(0))
+    } else if (n == 0) {
+      parse_all(deparse(body(x)))
+    }
+  }
 }
 
 #' @export
