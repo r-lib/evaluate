@@ -64,7 +64,7 @@ warnR2 <- function() {
 }
 
 is.empty <- function(x) {
-  if(is.null(x)) return(TRUE)
+  if (is.null(x)) return(TRUE)
 
   warnR2()
   pc <- plot_calls(x)

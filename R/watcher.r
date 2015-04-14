@@ -9,7 +9,7 @@ watchout <- function(debug = FALSE) {
   output <- vector("character")
   prev   <- vector("character")
 
-  con <- textConnection("output", "wr", local=TRUE)
+  con <- textConnection("output", "wr", local = TRUE)
   sink(con, split = debug)
 
   list(
