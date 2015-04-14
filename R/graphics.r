@@ -11,15 +11,7 @@ plot_snapshot <- local({
 
   function(incomplete = FALSE) {
     if (is.null(dev.list())) return(NULL)
-
-    if (!incomplete) {
-      # par('page') is a feature of R since 3.0.2
-      if (is.null(par('page'))) {
-        warning('Please upgrade R to at least version 3.0.2')
-        return(NULL)
-      }
-      if (!par('page')) return(NULL)  # current page not complete
-    }
+    if (!incomplete && !par('page')) return(NULL)  # current page not complete
 
     plot <- recordPlot()
     if (identical(last_plot, plot) || is_par_change(last_plot, plot)) {
@@ -57,16 +49,9 @@ empty_calls <- c(
   sprintf("C_%s", c(empty_calls, "strWidth", "strHeight", "plot_window"))
 )
 
-isR2 <- getRversion() < "3.0.0"
-warnR2 <- function() {
-  if (isR2)
-    warning('Support for R 2.x has been deprecated. Please upgrade R.')
-}
-
 is.empty <- function(x) {
   if (is.null(x)) return(TRUE)
 
-  warnR2()
   pc <- plot_calls(x)
   if (length(pc) == 0) return(TRUE)
 
