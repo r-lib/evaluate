@@ -66,6 +66,7 @@ replay.recordedplot <- function(x) {
 #' @param x string representing a single expression
 #' @param prompt prompt for first line
 #' @param continue prompt for subsequent lines
+#' @keywords internal
 #' @return a string
 line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("continue")) {
   lines <- strsplit(x, "\n")[[1]]

@@ -18,3 +18,4 @@ a string
 \description{
 Format a single expression as if it had been entered at the command prompt.
 }
+\keyword{internal}

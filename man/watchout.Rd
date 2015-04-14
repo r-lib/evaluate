@@ -16,3 +16,4 @@ list containing four functions: \code{get_new}, \code{pause},
 \description{
 Watch for changes in output, text and graphical.
 }
+\keyword{internal}
