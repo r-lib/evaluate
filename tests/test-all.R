@@ -1,4 +1,3 @@
-library(testthat)
 library(evaluate)
 
-if (getRversion() >= "3.0.2") test_check("evaluate")
+if (require("testthat", quietly = TRUE)) test_check("evaluate")
