@@ -59,7 +59,7 @@ test_that("output and plots interleaved correctly", {
 
 test_that("return value of value handler inserted directly in output list", {
   ev <- evaluate(file("raw-output.r"), output_handler = new_output_handler(value = identity))
-  if (require("ggplot2")) {
+  if (require("ggplot2", quietly = TRUE)) {
     expect_equal(classes(ev),
                  c("source", "numeric", "source", "source", "source", "gg"))
   }

@@ -8,7 +8,7 @@ test_that("single plot is captured", {
 })
 
 test_that("ggplot is captured", {
-  if (require("ggplot2")) {
+  if (require("ggplot2", quietly = TRUE)) {
     ev <- evaluate(file("ggplot.r"))
     expect_that(length(ev), equals(3))
 
@@ -42,7 +42,7 @@ test_that("base plots in a single expression are captured", {
 })
 
 test_that("ggplot2 plots in a single expression are captured", {
-  if (require("ggplot2")) {
+  if (require("ggplot2", quietly = TRUE)) {
     ev <- evaluate(file("ggplot-loop.r"))
     expect_that(length(ev), equals(4))
 
