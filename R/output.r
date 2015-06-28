@@ -25,7 +25,7 @@ new_source <- function(src) {
 
 classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
 
-render <- function(x) if (isS4(x)) show(x) else print(x)
+render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 
 #' Custom output handlers.
 #'

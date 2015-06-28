@@ -14,6 +14,7 @@ BugReports: https://github.com/hadley/evaluate/issues
 Depends:
     R (>= 3.0.2)
 Imports:
+    methods,
     stringr (>= 0.6.2)
 Suggests:
     testthat,
