@@ -27,7 +27,7 @@
 #' @param output_handler an instance of \code{\link{output_handler}}
 #'   that processes the output from the evaluation. The default simply
 #'   prints the visible return values.
-#' @import stringr
+#' @import graphics grDevices stringr utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = default_output_handler) {
