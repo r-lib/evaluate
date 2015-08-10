@@ -20,6 +20,11 @@ replay.list <- function(x) {
 }
 
 #' @export
+replay.default <- function(x) {
+  render(x)
+}
+
+#' @export
 replay.character <- function(x) {
   cat(x)
 }
