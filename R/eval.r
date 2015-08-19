@@ -8,19 +8,19 @@
 #' contents of the current graphics device.
 #'
 #' @export
-#' @param input input object to be parsed an evaluated.  Maybe a string,
+#' @param input input object to be parsed and evaluated.  May be a string,
 #'   file connection or function.
-#' @param envir environment in which to evaluate expressions
+#' @param envir environment in which to evaluate expressions.
 #' @param enclos when \code{envir} is a list or data frame, this is treated
 #'   as the parent environment to \code{envir}.
 #' @param debug if \code{TRUE}, displays information useful for debugging,
-#'   including all output that evaluate captures
+#'   including all output that evaluate captures.
 #' @param stop_on_error if \code{2}, evaluation will stop on first error and you
 #'   will get no results back. If \code{1}, evaluation will stop on first error,
 #'   but you will get back all results up to that point. If \code{0} will
 #'   continue running all code, just as if you'd pasted the code into the
 #'   command line.
-#' @param keep_warning,keep_message whether to record warnings and messages
+#' @param keep_warning,keep_message whether to record warnings and messages.
 #' @param new_device if \code{TRUE}, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
