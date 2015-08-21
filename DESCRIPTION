@@ -8,7 +8,7 @@ Authors@R: c(person("Hadley", "Wickham", role = "aut"), person("Yihui", "Xie",
     "Schloerke", role = "ctb"))
 Description: Parsing and evaluation tools that make it easy to recreate the
     command line behaviour of R.
-License: GPL
+License: MIT + file LICENSE
 URL: https://github.com/hadley/evaluate
 BugReports: https://github.com/hadley/evaluate/issues
 Depends:
