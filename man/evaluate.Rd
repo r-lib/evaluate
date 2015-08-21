@@ -8,16 +8,16 @@ evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
     output_handler = default_output_handler)
 }
 \arguments{
-\item{input}{input object to be parsed an evaluated.  Maybe a string,
+\item{input}{input object to be parsed and evaluated.  May be a string,
 file connection or function.}
 
-\item{envir}{environment in which to evaluate expressions}
+\item{envir}{environment in which to evaluate expressions.}
 
 \item{enclos}{when \code{envir} is a list or data frame, this is treated
 as the parent environment to \code{envir}.}
 
 \item{debug}{if \code{TRUE}, displays information useful for debugging,
-including all output that evaluate captures}
+including all output that evaluate captures.}
 
 \item{stop_on_error}{if \code{2}, evaluation will stop on first error and you
 will get no results back. If \code{1}, evaluation will stop on first error,
@@ -25,7 +25,7 @@ but you will get back all results up to that point. If \code{0} will
 continue running all code, just as if you'd pasted the code into the
 command line.}
 
-\item{keep_warning, keep_message}{whether to record warnings and messages}
+\item{keep_warning, keep_message}{whether to record warnings and messages.}
 
 \item{new_device}{if \code{TRUE}, will open a new graphics device and
 automatically close it after completion. This prevents evaluation from
