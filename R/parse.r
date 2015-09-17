@@ -20,7 +20,7 @@ parse_all.character <- function(x) {
   if (length(grep("\n", x)))
     x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
   n <- length(x)
-  src <- srcfilecopy("<text>", x)
+  src <- srcfilecopy2(x, "<text>")
   exprs <- parse(text = x, srcfile = src)
 
   # No code, only comments and/or empty lines
@@ -93,6 +93,18 @@ parse_all.character <- function(x) {
 append_break <- function(x) {
   n <- length(x)
   if (n <= 1) x else paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
+}
+
+# YX: This hack is because srcfilecopy() uses grepl("\n", fixed = TRUE), which
+# does not work when the source lines contain multibyte characters that are not
+# representable in the current locale on Windows (see
+# https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=16264). In our case, we
+# have already split the lines by \n, so there is no need to do that again like
+# srcfilecopy() does internally.
+srcfilecopy2 <- function(lines, ...) {
+  src <- srcfilecopy(lines = "", ...)
+  src$lines <- lines
+  src
 }
 
 #' @export
