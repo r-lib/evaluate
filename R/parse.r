@@ -20,7 +20,7 @@ parse_all.character <- function(x) {
   if (length(grep("\n", x)))
     x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
   n <- length(x)
-  src <- srcfilecopy2(x, "<text>")
+  src <- srcfilecopy("<text>", x)
   exprs <- parse(text = x, srcfile = src)
 
   # No code, only comments and/or empty lines
@@ -101,8 +101,8 @@ append_break <- function(x) {
 # https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=16264). In our case, we
 # have already split the lines by \n, so there is no need to do that again like
 # srcfilecopy() does internally.
-srcfilecopy2 <- function(lines, ...) {
-  src <- srcfilecopy(lines = "", ...)
+if (getRversion() <= '3.2.2') srcfilecopy <- function(filename, lines, ...) {
+  src <- base::srcfilecopy(filename, lines = "", ...)
   src$lines <- lines
   src
 }
