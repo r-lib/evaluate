@@ -1,32 +1,32 @@
 #' Evaluate input and return all details of evaluation.
 #'
 #' Compare to \code{\link{eval}}, \code{evaluate} captures all of the
-#' information necessary to recreate the output as if you had copied and
-#' pasted the code into a R terminal. It captures messages, warnings, errors
-#' and output, all correctly interleaved in the order in which they occured.
-#' It stores the final result, whether or not it should be visible, and the
+#' information necessary to recreate the output as if you had copied and pasted
+#' the code into a R terminal. It captures messages, warnings, errors and
+#' output, all correctly interleaved in the order in which they occured. It
+#' stores the final result, whether or not it should be visible, and the
 #' contents of the current graphics device.
 #'
 #' @export
-#' @param input input object to be parsed and evaluated.  May be a string,
-#'   file connection or function.
+#' @param input input object to be parsed and evaluated.  May be a string, file
+#'   connection or function.
 #' @param envir environment in which to evaluate expressions.
-#' @param enclos when \code{envir} is a list or data frame, this is treated
-#'   as the parent environment to \code{envir}.
+#' @param enclos when \code{envir} is a list or data frame, this is treated as
+#'   the parent environment to \code{envir}.
 #' @param debug if \code{TRUE}, displays information useful for debugging,
 #'   including all output that evaluate captures.
 #' @param stop_on_error if \code{2}, evaluation will halt on first error and you
 #'   will get no results back. If \code{1}, evaluation will stop on first error
-#'   without signaling the error, but you will get back all results up to that
+#'   without signaling the error, and you will get back all results up to that
 #'   point. If \code{0} will continue running all code, just as if you'd pasted
 #'   the code into the command line.
 #' @param keep_warning,keep_message whether to record warnings and messages.
 #' @param new_device if \code{TRUE}, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
-#' @param output_handler an instance of \code{\link{output_handler}}
-#'   that processes the output from the evaluation. The default simply
-#'   prints the visible return values.
+#' @param output_handler an instance of \code{\link{output_handler}} that
+#'   processes the output from the evaluation. The default simply prints the
+#'   visible return values.
 #' @import graphics grDevices stringr utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
