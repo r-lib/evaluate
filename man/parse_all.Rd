@@ -3,11 +3,13 @@
 \alias{parse_all}
 \title{Parse, retaining comments.}
 \usage{
-parse_all(x)
+parse_all(x, filename = NULL)
 }
 \arguments{
 \item{x}{object to parse.  Can be a string, a file connection, or a
 function}
+
+\item{filename}{string overriding the file name}
 }
 \value{
 a data.frame with columns \code{src}, the source code, and

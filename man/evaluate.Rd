@@ -5,7 +5,7 @@
 \usage{
 evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE, 
     stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE, new_device = TRUE, 
-    output_handler = default_output_handler)
+    output_handler = default_output_handler, filename = NULL)
 }
 \arguments{
 \item{input}{input object to be parsed and evaluated.  May be a string, file
@@ -34,6 +34,8 @@ interfering with your existing graphics environment.}
 \item{output_handler}{an instance of \code{\link{output_handler}} that
 processes the output from the evaluation. The default simply prints the
 visible return values.}
+
+\item{filename}{string overrriding the \code{\link[base]{srcfile}} filename.}
 }
 \description{
 Compare to \code{\link{eval}}, \code{evaluate} captures all of the

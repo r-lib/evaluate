@@ -20,3 +20,4 @@ Suggests:
     testthat,
     lattice,
     ggplot2
+RoxygenNote: 5.0.1
