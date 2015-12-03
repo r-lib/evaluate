@@ -27,11 +27,13 @@
 #' @param output_handler an instance of \code{\link{output_handler}} that
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
+#' @param filename string overrriding the \code{\link[base]{srcfile}} filename.
 #' @import graphics grDevices stringr utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
-                     new_device = TRUE, output_handler = default_output_handler) {
-  parsed <- parse_all(input)
+                     new_device = TRUE, output_handler = default_output_handler,
+                     filename = NULL) {
+  parsed <- parse_all(input, filename)
 
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)

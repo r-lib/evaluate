@@ -5,13 +5,14 @@
 #'
 #' @param x object to parse.  Can be a string, a file connection, or a
 #'   function
+#' @param filename string overriding the file name
 #' @return a data.frame with columns \code{src}, the source code, and
 #'   \code{expr}
 #' @export
-parse_all <- function(x) UseMethod("parse_all")
+parse_all <- function(x, filename = NULL) UseMethod("parse_all")
 
 #' @export
-parse_all.character <- function(x) {
+parse_all.character <- function(x, filename = NULL) {
 
   # Do not convert strings to factors by default in data.frame()
   op <- options(stringsAsFactors = FALSE)
@@ -20,7 +21,10 @@ parse_all.character <- function(x) {
   if (length(grep("\n", x)))
     x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
   n <- length(x)
-  src <- srcfilecopy("<text>", x)
+
+  if (is.null(filename))
+    filename <- "<text>"
+  src <- srcfilecopy(filename, x)
   exprs <- parse(text = x, srcfile = src)
 
   # No code, only comments and/or empty lines
@@ -108,39 +112,51 @@ if (getRversion() <= '3.2.2') srcfilecopy <- function(filename, lines, ...) {
 }
 
 #' @export
-parse_all.connection <- function(x) {
+parse_all.connection <- function(x, filename = NULL) {
   if (!isOpen(x, "r")) {
       open(x, "r")
       on.exit(close(x))
   }
   text <- readLines(x)
-  parse_all(text)
+  if (is.null(filename))
+    filename <- summary(x)$description
+  parse_all(text, filename)
 }
 
 #' @export
-parse_all.function <- function(x) {
+parse_all.function <- function(x, filename = NULL) {
   src <- attr(x, "srcref", exact = TRUE)
   if (is.null(src)) {
     src <- deparse(body(x))
     # Remove { and }
     n <- length(src)
     if (n >= 2) src <- src[-c(1, n)]
-    parse_all(src)
+    if (is.null(filename))
+      filename <- "<function>"
+    parse_all(src, filename)
   } else {
     src2 <- attr(body(x), "srcref", exact = TRUE)
     n <- length(src2)
-    if (n >= 2) {
-      parse_all(unlist(lapply(src2[-1], as.character)))
-    } else if (n == 1) {
-      # f <- function(...) {}
-      parse_all(character(0))
-    } else if (n == 0) {
-      parse_all(deparse(body(x)))
+    if (n > 0) {
+      if (is.null(filename))
+        filename <- attr(src, 'srcfile')$filename
+      if (n >= 2) {
+        parse_all(unlist(lapply(src2[-1], as.character)), filename)
+      } else  {
+        # f <- function(...) {}
+        parse_all(character(0), filename)
+      }
+    } else {
+      if (is.null(filename))
+        filename <- "<function>"
+      parse_all(deparse(body(x)), filename)
     }
   }
 }
 
 #' @export
-parse_all.default <- function(x) {
-  parse_all(deparse(x))
+parse_all.default <- function(x, filename = NULL) {
+  if (is.null(filename))
+    filename <- "<expression>"
+  parse_all(deparse(x), filename)
 }
