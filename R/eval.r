@@ -85,7 +85,9 @@ evaluate_call <- function(call, src = NULL,
   if (debug) message(src)
 
   if (is.null(call) && !last) {
-    return(list(new_source(src)))
+    source <- new_source(src)
+    output_handler$source(source)
+    return(list(source))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call))
 
