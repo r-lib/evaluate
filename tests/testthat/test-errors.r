@@ -15,7 +15,7 @@ test_that("code errors if stop_on_error == 2L", {
 })
 
 test_that("traceback useful if stop_on_error == 2L", {
-  expect_error(evaluate(file("error-complex.r"), stop_on_error = 2L), "h()")
+  expect_error(evaluate(file("error-complex.r"), stop_on_error = 2L), "Error")
 
   ## Doesn't work because .Traceback not create when code run
   ## inside try or tryCatch. Can't figure out how to work around.
