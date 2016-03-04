@@ -1,11 +1,15 @@
 Package: evaluate
 Type: Package
 Title: Parsing and Evaluation Tools that Provide More Details than the Default
-Version: 0.8.2
-Date: 2015-09-18
-Authors@R: c(person("Hadley", "Wickham", role = "aut"), person("Yihui", "Xie",
-    role = c("cre", "ctb"), email = "xie@yihui.name"), person("Barret",
-    "Schloerke", role = "ctb"))
+Version: 0.8.3
+Date: 2016-03-04
+Authors@R: c(
+    person("Hadley", "Wickham", role = "aut"),
+    person("Yihui", "Xie", role = c("cre", "ctb"), email = "xie@yihui.name"),
+    person("Michael", "Lawrence", role = "ctb"),
+    person("Thomas", "Kluyver", role = "ctb"),
+    person("Barret", "Schloerke", role = "ctb")
+    )
 Description: Parsing and evaluation tools that make it easy to recreate the
     command line behaviour of R.
 License: MIT + file LICENSE
