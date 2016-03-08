@@ -13,6 +13,12 @@ test_that("{ not removed", {
 
 })
 
+test_that("parse(allow_error = TRUE/FALSE)", {
+  expect_error(parse_all('x <-', allow_error = FALSE))
+  res <- parse_all('x <-', allow_error = TRUE)
+  expect_true(inherits(attr(res, 'PARSE_ERROR'), 'error'))
+})
+
 # test some multibyte characters when the locale is UTF8 based
 if (identical(Sys.getlocale("LC_CTYPE"), "en_US.UTF-8")) {
 

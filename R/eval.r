@@ -33,10 +33,17 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = default_output_handler,
                      filename = NULL) {
-  parsed <- parse_all(input, filename)
-
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
+
+  parsed <- parse_all(input, filename, stop_on_error != 2L)
+  if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
+    source <- new_source(parsed$src)
+    output_handler$source(source)
+    output_handler$error(err)
+    err$call <- NULL  # the call is unlikely to be useful
+    return(list(source, err))
+  }
 
   if (is.null(enclos)) {
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()

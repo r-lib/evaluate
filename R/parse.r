@@ -3,16 +3,18 @@
 #' Works very similarly to parse, but also keeps original formatting and
 #' comments.
 #'
-#' @param x object to parse.  Can be a string, a file connection, or a
-#'   function
+#' @param x object to parse.  Can be a string, a file connection, or a function
 #' @param filename string overriding the file name
-#' @return a data.frame with columns \code{src}, the source code, and
-#'   \code{expr}
+#' @param allow_error whether to allow syntax errors in \code{x}
+#' @return A data.frame with columns \code{src}, the source code, and
+#'   \code{expr}. If there are syntax errors in \code{x} and \code{allow_error =
+#'   TRUE}, the data frame has an attribute \code{PARSE_ERROR} that stores the
+#'   error object.
 #' @export
-parse_all <- function(x, filename = NULL) UseMethod("parse_all")
+parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_all")
 
 #' @export
-parse_all.character <- function(x, filename = NULL) {
+parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
 
   # Do not convert strings to factors by default in data.frame()
   op <- options(stringsAsFactors = FALSE)
@@ -25,7 +27,15 @@ parse_all.character <- function(x, filename = NULL) {
   if (is.null(filename))
     filename <- "<text>"
   src <- srcfilecopy(filename, x)
-  exprs <- parse(text = x, srcfile = src)
+  if (allow_error) {
+    exprs <- tryCatch(parse(text = x, srcfile = src), error = identity)
+    if (inherits(exprs, 'error')) return(structure(
+      data.frame(src = paste(x, collapse = '\n'), expr = I(list(expression()))),
+      PARSE_ERROR = exprs
+    ))
+  } else {
+    exprs <- parse(text = x, srcfile = src)
+  }
 
   # No code, only comments and/or empty lines
   ne <- length(exprs)
@@ -112,7 +122,7 @@ if (getRversion() <= '3.2.2') srcfilecopy <- function(filename, lines, ...) {
 }
 
 #' @export
-parse_all.connection <- function(x, filename = NULL) {
+parse_all.connection <- function(x, filename = NULL, ...) {
   if (!isOpen(x, "r")) {
       open(x, "r")
       on.exit(close(x))
@@ -120,11 +130,11 @@ parse_all.connection <- function(x, filename = NULL) {
   text <- readLines(x)
   if (is.null(filename))
     filename <- summary(x)$description
-  parse_all(text, filename)
+  parse_all(text, filename, ...)
 }
 
 #' @export
-parse_all.function <- function(x, filename = NULL) {
+parse_all.function <- function(x, filename = NULL, ...) {
   src <- attr(x, "srcref", exact = TRUE)
   if (is.null(src)) {
     src <- deparse(body(x))
@@ -133,7 +143,7 @@ parse_all.function <- function(x, filename = NULL) {
     if (n >= 2) src <- src[-c(1, n)]
     if (is.null(filename))
       filename <- "<function>"
-    parse_all(src, filename)
+    parse_all(src, filename, ...)
   } else {
     src2 <- attr(body(x), "srcref", exact = TRUE)
     n <- length(src2)
@@ -141,22 +151,22 @@ parse_all.function <- function(x, filename = NULL) {
       if (is.null(filename))
         filename <- attr(src, 'srcfile')$filename
       if (n >= 2) {
-        parse_all(unlist(lapply(src2[-1], as.character)), filename)
+        parse_all(unlist(lapply(src2[-1], as.character)), filename, ...)
       } else  {
         # f <- function(...) {}
-        parse_all(character(0), filename)
+        parse_all(character(0), filename, ...)
       }
     } else {
       if (is.null(filename))
         filename <- "<function>"
-      parse_all(deparse(body(x)), filename)
+      parse_all(deparse(body(x)), filename, ...)
     }
   }
 }
 
 #' @export
-parse_all.default <- function(x, filename = NULL) {
+parse_all.default <- function(x, filename = NULL, ...) {
   if (is.null(filename))
     filename <- "<expression>"
-  parse_all(deparse(x), filename)
+  parse_all(deparse(x), filename, ...)
 }

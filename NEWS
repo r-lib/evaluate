@@ -1,3 +1,12 @@
+Version 0.9
+------------------------------------------------------------------------------
+
+* Added an argument `allow_error` to `parse_all()` to allow syntactical errors
+  in R source code when `allow_error = TRUE`; this means `evaluate(stop_on_error
+  = 0 or 1)` will no longer stop on syntactical errors but returns a list of
+  source code and the error object instead. This can be useful to show
+  syntactical errors for pedagogical purposes.
+
 Version 0.8.3
 ------------------------------------------------------------------------------
 
