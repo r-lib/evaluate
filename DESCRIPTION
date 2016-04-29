@@ -1,8 +1,8 @@
 Package: evaluate
 Type: Package
 Title: Parsing and Evaluation Tools that Provide More Details than the Default
-Version: 0.8.4
-Date: 2016-03-04
+Version: 0.9
+Date: 2016-04-29
 Authors@R: c(
     person("Hadley", "Wickham", role = "aut"),
     person("Yihui", "Xie", role = c("cre", "ctb"), email = "xie@yihui.name"),
