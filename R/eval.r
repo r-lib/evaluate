@@ -28,11 +28,14 @@
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
 #' @param filename string overrriding the \code{\link[base]{srcfile}} filename.
+#' @param enable_flush if \code{TRUE}, \code{flush.console()} will result in
+#'   flushed output. If \code{FALSE} (the default), output shown only after
+#'   each expression completes.
 #' @import graphics grDevices stringr utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = default_output_handler,
-                     filename = NULL) {
+                     filename = NULL, enable_flush = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
 
@@ -71,7 +74,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning, keep_message = keep_message,
-      output_handler = output_handler)
+      output_handler = output_handler, enable_flush = enable_flush)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -88,7 +91,8 @@ evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
                           keep_warning = TRUE, keep_message = TRUE,
-                          output_handler = new_output_handler()) {
+                          output_handler = new_output_handler(),
+                          enable_flush = FALSE) {
   if (debug) message(src)
 
   if (is.null(call) && !last) {
@@ -156,6 +160,25 @@ evaluate_call <- function(call, src = NULL,
   }
   value_handler <- output_handler$value
   multi_args <- length(formals(value_handler)) > 1
+  if (enable_flush) {
+    # insert a flush.console function into the environment which
+    # triggers the output handling
+    orig.flush.console <- flush.console
+    orig.flush <- flush
+    replacement.flush.console <- function(){
+      orig.flush.console()
+      handle_output(FALSE) # no plots
+    }
+    replacement.flush <- function(con){
+      orig.flush(con)
+      if (con == stdout()){
+        # currently we only handle stdout, not stderr...
+        handle_output(FALSE) # no plots
+      }
+    }
+    assign("flush.console", replacement.flush.console, envir=envir)
+    assign("flush", replacement.flush, envir=envir)
+  }
   for (expr in call) {
     handle(ev <- withCallingHandlers(
       withVisible(eval(expr, envir, enclos)),
@@ -181,7 +204,9 @@ evaluate_call <- function(call, src = NULL,
   if (last) {
     handle_output(TRUE, TRUE)
   }
-
+  if (enable_flush) {
+    rm(list=c("flush.console", "flush"), envir=envir)
+  }
   output
 }
 
