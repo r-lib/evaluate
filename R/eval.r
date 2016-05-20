@@ -169,12 +169,13 @@ evaluate_call <- function(call, src = NULL,
 
   multi_args <- length(formals(value_handler)) > 1
   for (expr in call) {
+    srcindex<-length(output)
     time<-timing_fn(handle(ev <- withCallingHandlers(
       withVisible(eval(expr, envir, enclos)),
       warning = wHandler, error = eHandler, message = mHandler)))
     handle_output(TRUE)
     if (!is.null(time))
-      attr(output[[length(output)]]$src,'timing')<-time
+      attr(output[[srcindex]]$src,'timing')<-time
 
     # If visible or the value handler has multi args, process and capture output
     if (ev$visible || multi_args) {
