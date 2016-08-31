@@ -28,7 +28,7 @@
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
 #' @param filename string overrriding the \code{\link[base]{srcfile}} filename.
-#' @param include_tining if \code{TRUE}, evaluate will wrap each input line in
+#' @param include_timing if \code{TRUE}, evaluate will wrap each input line in
 #'   \code{system.time}, which will be accessed by following \code{replay} call
 #'   to produce timing information for each evaluated command. Note, that currently
 #'   this feature will work only if \code{input} is a string.
