@@ -5,7 +5,7 @@
 \usage{
 evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE, 
     stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE, new_device = TRUE, 
-    output_handler = default_output_handler, filename = NULL)
+    output_handler = default_output_handler, filename = NULL, include_timing = FALSE)
 }
 \arguments{
 \item{input}{input object to be parsed and evaluated.  May be a string, file
@@ -36,6 +36,11 @@ processes the output from the evaluation. The default simply prints the
 visible return values.}
 
 \item{filename}{string overrriding the \code{\link[base]{srcfile}} filename.}
+
+\item{include_timing}{if \code{TRUE}, evaluate will wrap each input
+expression in \code{system.time()}, which will be accessed by following
+\code{replay()} call to produce timing information for each evaluated
+command.}
 }
 \description{
 Compare to \code{\link{eval}}, \code{evaluate} captures all of the
