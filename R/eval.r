@@ -28,11 +28,15 @@
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
 #' @param filename string overrriding the \code{\link[base]{srcfile}} filename.
+#' @param include_timing if \code{TRUE}, evaluate will wrap each input line in
+#'   \code{system.time}, which will be accessed by following \code{replay} call
+#'   to produce timing information for each evaluated command. Note, that currently
+#'   this feature will work only if \code{input} is a string.
 #' @import graphics grDevices stringr utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = default_output_handler,
-                     filename = NULL) {
+                     filename = NULL, include_timing = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
 
@@ -71,7 +75,8 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
       envir = envir, enclos = enclos, debug = debug, last = i == length(out),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning, keep_message = keep_message,
-      output_handler = output_handler)
+      output_handler = output_handler,
+      include_timing = include_timing)
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -88,7 +93,7 @@ evaluate_call <- function(call, src = NULL,
                           envir = parent.frame(), enclos = NULL,
                           debug = FALSE, last = FALSE, use_try = FALSE,
                           keep_warning = TRUE, keep_message = TRUE,
-                          output_handler = new_output_handler()) {
+                          output_handler = new_output_handler(), include_timing = FALSE) {
   if (debug) message(src)
 
   if (is.null(call) && !last) {
@@ -155,13 +160,22 @@ evaluate_call <- function(call, src = NULL,
     handle <- force
   }
   value_handler <- output_handler$value
+  if (include_timing)
+  {
+    timing_fn<-function(x) {system.time(x)[1:3]}
+  } else {
+    timing_fn<-function(x) {x;NULL};
+  }
+
   multi_args <- length(formals(value_handler)) > 1
   for (expr in call) {
-    handle(ev <- withCallingHandlers(
+    srcindex<-length(output)
+    time<-timing_fn(handle(ev <- withCallingHandlers(
       withVisible(eval(expr, envir, enclos)),
-      warning = wHandler, error = eHandler, message = mHandler))
+      warning = wHandler, error = eHandler, message = mHandler)))
     handle_output(TRUE)
-
+    if (!is.null(time))
+      attr(output[[srcindex]]$src,'timing')<-time
 
     # If visible or the value handler has multi args, process and capture output
     if (ev$visible || multi_args) {

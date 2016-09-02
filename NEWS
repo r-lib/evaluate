@@ -1,3 +1,11 @@
+Version 0.9.1
+------------------------------------------------------------------------------
+
+* Added option for the evaluate function to include timing information of ran
+  commands. This information will be subsequently rendered by the replay.
+  Example usage:
+  evaluate::replay(evaluate::evaluate('Sys.sleep(1)',include_timing = TRUE))
+
 Version 0.9
 ------------------------------------------------------------------------------
 
