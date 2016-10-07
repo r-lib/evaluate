@@ -171,6 +171,15 @@ evaluate_call <- function(call, src = NULL,
     timing_fn <- function(x) {x; NULL};
   }
 
+  if (length(funs <- .env$inject_funs)) {
+    funs_names <- names(funs)
+    funs_new <- !vapply(funs_names, exists, logical(1), envir, inherits = FALSE)
+    funs_names <- funs_names[funs_new]
+    funs <- funs[funs_new]
+    on.exit(rm(list = funs_names, envir = envir), add = TRUE)
+    for (i in seq_along(funs_names)) assign(funs_names[i], funs[[i]], envir)
+  }
+
   multi_args <- length(formals(value_handler)) > 1
   for (expr in call) {
     srcindex <- length(output)
@@ -203,3 +212,30 @@ evaluate_call <- function(call, src = NULL,
   output
 }
 
+#' Inject functions into the environment of \code{evaluate()}
+#'
+#' Create functions in the environment specified in the \code{envir} argument of
+#' \code{evaluate()}. This can be helpful if you want to substitute certain
+#' functions when evaluating the code. To make sure it does not wipe out
+#' existing functions in the environment, only functions that do not exist in
+#' the environment are injected.
+#' @param ... Named arguments of functions. If empty, previously injected
+#'   functions will be emptied.
+#' @note For expert use only. Do not use it unless you clearly understand it.
+#' @keywords internal
+#' @examples library(evaluate)
+#' # normally you cannot capture the output of system
+#' evaluate("system('R --version')")
+#'
+#' # replace the system() function
+#' inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = '\n'))
+#'
+#' evaluate("system('R --version')")
+#'
+#' inject_funs()  # empty previously injected functions
+#' @export
+inject_funs <- function(...) {
+  funs <- list(...)
+  funs <- funs[names(funs) != '']
+  .env$inject_funs <- Filter(is.function, funs)
+}
