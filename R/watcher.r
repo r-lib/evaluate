@@ -6,8 +6,8 @@
 #'  \code{unpause}, \code{close}.
 #' @keywords internal
 watchout <- function(debug = FALSE) {
-  output <- vector("character")
-  prev   <- vector("character")
+  output <- character()
+  prev   <- character()
 
   con <- textConnection("output", "wr", local = TRUE)
   sink(con, split = debug)
@@ -25,8 +25,10 @@ watchout <- function(debug = FALSE) {
         if (!is.null(out$graphics)) graphics_callback(out$graphics)
       }
 
-      if (length(output) != length(prev)) {
-        new <- output[setdiff(seq_along(output), seq_along(prev))]
+      n0 <- length(prev)
+      n1 <- length(output)
+      if (n0 != n1) {
+        new <- output[n0 + seq_len(n1 - n0)]
         prev <<- output
 
         out$text <- str_c(new, collapse = "\n")
