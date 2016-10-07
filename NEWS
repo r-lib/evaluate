@@ -1,4 +1,4 @@
-Version 0.9.1
+Version 0.9.2
 ------------------------------------------------------------------------------
 
 * Added option for the evaluate function to include timing information of ran
@@ -8,6 +8,9 @@ Version 0.9.1
 
 * Added a new function `flush_console()` to emulate `flush.console()` in
   `evaluate()` (#61).
+
+* Added a `inject_funs()` function to create functions in the environment passed
+  to the `envir` argument of `evaluate()`.
 
 Version 0.9
 ------------------------------------------------------------------------------

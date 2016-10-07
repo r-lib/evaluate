@@ -1,0 +1,20 @@
+% Please edit documentation in R/watcher.r
+\name{flush_console}
+\alias{flush_console}
+\title{An emulation of flush.console() in evaluate()}
+\usage{
+flush_console()
+}
+\description{
+When \code{evaluate()} is evaluating code, the text output is diverted into
+an internal connection, and there is no way to flush that connection. This
+function provides a way to "flush" the connection so that any text output can
+be immediately written out, and more importantly, the \code{text} handler
+(specified in the \code{output_handler} argument of \code{evaluate()}) will
+be called, which makes it possible for users to know it when the code
+produces text output using the handler.
+}
+\note{
+This function is supposed to be called inside \code{evaluate()} (e.g.
+  either a direct \code{evaluate()} call or in \pkg{knitr} code chunks).
+}
