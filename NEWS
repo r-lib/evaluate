@@ -6,6 +6,9 @@ Version 0.9.1
   Example usage:
   evaluate::replay(evaluate::evaluate('Sys.sleep(1)', include_timing = TRUE))
 
+* Added a new function `flush_console()` to emulate `flush.console()` in
+  `evaluate()` (#61).
+
 Version 0.9
 ------------------------------------------------------------------------------
 

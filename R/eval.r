@@ -119,6 +119,11 @@ evaluate_call <- function(call, src = NULL,
     output <<- c(output, out)
   }
 
+  flush_old <- .env$flush_console; on.exit({
+    .env$flush_console <- flush_old
+  }, add = TRUE)
+  .env$flush_console <- function() handle_output(FALSE)
+
   # Hooks to capture plot creation
   capture_plot <- function() {
     handle_output(TRUE)
