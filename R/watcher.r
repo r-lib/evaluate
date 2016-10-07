@@ -27,7 +27,7 @@ watchout <- function(debug = FALSE) {
 
       n0 <- length(prev)
       n1 <- length(output)
-      if (n0 != n1) {
+      if (n1 > n0) {
         new <- output[n0 + seq_len(n1 - n0)]
         prev <<- output
 
