@@ -6,15 +6,16 @@
 #' @param x object to parse.  Can be a string, a file connection, or a function
 #' @param filename string overriding the file name
 #' @param allow_error whether to allow syntax errors in \code{x}
+#' @param encoding The input encoding assumed when parsing.
 #' @return A data.frame with columns \code{src}, the source code, and
 #'   \code{expr}. If there are syntax errors in \code{x} and \code{allow_error =
 #'   TRUE}, the data frame has an attribute \code{PARSE_ERROR} that stores the
 #'   error object.
 #' @export
-parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_all")
+parse_all <- function(x, filename = NULL, allow_error = FALSE, encoding = "UTF-8") UseMethod("parse_all")
 
 #' @export
-parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
+parse_all.character <- function(x, filename = NULL, allow_error = FALSE, encoding = "UTF-8") {
 
   # Do not convert strings to factors by default in data.frame()
   op <- options(stringsAsFactors = FALSE)
@@ -28,13 +29,13 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
     filename <- "<text>"
   src <- srcfilecopy(filename, x)
   if (allow_error) {
-    exprs <- tryCatch(parse(text = x, srcfile = src), error = identity)
+    exprs <- tryCatch(parse(text = x, srcfile = src, encoding = encoding), error = identity)
     if (inherits(exprs, 'error')) return(structure(
       data.frame(src = paste(x, collapse = '\n'), expr = I(list(expression()))),
       PARSE_ERROR = exprs
     ))
   } else {
-    exprs <- parse(text = x, srcfile = src)
+    exprs <- parse(text = x, srcfile = src, encoding = encoding)
   }
 
   # No code, only comments and/or empty lines

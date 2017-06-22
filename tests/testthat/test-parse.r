@@ -31,4 +31,11 @@ if (identical(Sys.getlocale("LC_CTYPE"), "en_US.UTF-8")) {
     expect_identical(parse_all(code)$src, append_break(code))
   })
 
+  test_that("Code is parsed with requested encoding", {
+    cl <- call('Encoding', "寿司")
+
+    expect_identical(Encoding(parse_all(cl, encoding = "UTF-8")$expr[[c(1, 1, 2)]]), "UTF-8")
+    expect_identical(Encoding(parse_all(cl, encoding = "latin1")$expr[[c(1, 1, 2)]]), "latin1")
+    expect_identical(Encoding(parse_all(cl, encoding = "unknown")$expr[[c(1, 1, 2)]]), "unknown")
+  })
 }

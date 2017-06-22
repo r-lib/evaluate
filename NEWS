@@ -1,6 +1,9 @@
 Version 0.10
 ------------------------------------------------------------------------------
 
+* Added `encoding` option for `parse_all()` and `evaluate`, to specify what
+* encoding the code should be parsed with. (@jimhester, #74)
+
 * Added option for the evaluate function to include timing information of ran
   commands. This information will be subsequently rendered by the replay.
   Example usage:

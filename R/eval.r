@@ -32,15 +32,16 @@
 #'   expression in \code{system.time()}, which will be accessed by following
 #'   \code{replay()} call to produce timing information for each evaluated
 #'   command.
+#' @inheritParams parse_all
 #' @import graphics grDevices stringr utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = default_output_handler,
-                     filename = NULL, include_timing = FALSE) {
+                     filename = NULL, include_timing = FALSE, encoding = "UTF-8") {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
 
-  parsed <- parse_all(input, filename, stop_on_error != 2L)
+  parsed <- parse_all(input, filename, stop_on_error != 2L, encoding = encoding)
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
     source <- new_source(parsed$src)
     output_handler$source(source)
