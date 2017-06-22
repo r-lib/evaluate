@@ -5,13 +5,12 @@ cache: packages
 env:
   global:
     - R_PKG="$(basename $TRAVIS_REPO_SLUG)"
-    - secure: GFsc99IHEIY3pGbNrYInR+N10CXpzGwnULkeX8Ol6o+18e2VmRrkCfWM/vSi48ka7g2q/rqzoQZnpwt2K2Dr8ctDAbIoQ2jS77vr9ws9YkpWEGwJVdXZIyC2OR3FgTihT2KSU4DTKimsOkJ7TrTSsRvWM9vzY3seBxBT/xaqg60=
 
 repos:
-  XRAN: http://yihui.name/xran
+  XRAN: https://xran.yihui.name
 
 before_install:
-  - "wget -q http://yihui.name/xran/.gitconfig -O ~/.gitconfig"
+  - "curl https://xran.yihui.name/.gitconfig -o ~/.gitconfig"
 
 after_success:
-  - "(wget -q -O - http://yihui.name/xran/r-xran | bash)"
+  - "(curl https://xran.yihui.name/r-xran | bash)"
