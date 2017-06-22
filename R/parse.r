@@ -177,6 +177,6 @@ parse_all.call <- function(x, filename = NULL, ...) {
   expr <- list(as.expression(x))
   src <- deparse(x)
   out <- data.frame(src = src, stringsAsFactors = FALSE)
-  out$expr = expr
+  out$expr <- expr
   out
 }

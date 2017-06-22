@@ -1,3 +1,9 @@
+Version 0.11
+------------------------------------------------------------------------------
+
+* Added parse_all.call() method to use the original source for evaluating call
+  objects (because base::deparse() breaks non-ascii source code) (fixes #74)
+
 Version 0.10
 ------------------------------------------------------------------------------
 
