@@ -174,9 +174,7 @@ parse_all.default <- function(x, filename = NULL, ...) {
 # Calls are already parsed and always length one
 #' @export
 parse_all.call <- function(x, filename = NULL, ...) {
-  expr <- list(as.expression(x))
-  src <- deparse(x)
-  out <- data.frame(src = src, stringsAsFactors = FALSE)
-  out$expr <- expr
+  out <- parse_all.default(x, filename = filename, ...)
+  out$expr <- list(as.expression(x))
   out
 }
