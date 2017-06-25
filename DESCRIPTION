@@ -8,6 +8,7 @@ Authors@R: c(
     person("Yihui", "Xie", role = c("cre", "ctb"), email = "xie@yihui.name"),
     person("Michael", "Lawrence", role = "ctb"),
     person("Thomas", "Kluyver", role = "ctb"),
+    person("Jeroen", "Ooms", role = "ctb"),
     person("Barret", "Schloerke", role = "ctb"),
     person("Adam", "Ryczkowski", role = "ctb")
     )
