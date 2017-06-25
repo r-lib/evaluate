@@ -1,4 +1,9 @@
-Version 0.11 (unreleased)
+Version 0.10.2
+------------------------------------------------------------------------------
+
+* Fix for regression introduced in 0.10.1 in parse_all.call() (fixes #77)
+
+Version 0.10.1
 ------------------------------------------------------------------------------
 
 * Added parse_all.call() method to use the original source for evaluating call
