@@ -47,7 +47,7 @@ test_that("options(warn = -1) suppresses warnings", {
   expect_that(classes(ev), equals("source"))
 })
 
-test_that("options(warn = 0) and options(warn = 0) produces warnings", {
+test_that("options(warn = 0) and options(warn = 1) produces warnings", {
   ev <- evaluate("op = options(warn = 0); warning('hi'); options(op)")
   expect_equal(classes(ev), c("source", "simpleWarning"))
 
