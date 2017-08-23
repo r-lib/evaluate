@@ -10,7 +10,8 @@ Authors@R: c(
     person("Thomas", "Kluyver", role = "ctb"),
     person("Jeroen", "Ooms", role = "ctb"),
     person("Barret", "Schloerke", role = "ctb"),
-    person("Adam", "Ryczkowski", role = "ctb")
+    person("Adam", "Ryczkowski", role = "ctb"),
+    person("Hiroaki", "Yutani", role = "ctb")
     )
 Description: Parsing and evaluation tools that make it easy to recreate the
     command line behaviour of R.

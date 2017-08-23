@@ -47,6 +47,20 @@ test_that("options(warn = -1) suppresses warnings", {
   expect_that(classes(ev), equals("source"))
 })
 
+test_that("options(warn = 0) and options(warn = 1) produces warnings", {
+  ev <- evaluate("op = options(warn = 0); warning('hi'); options(op)")
+  expect_equal(classes(ev), c("source", "simpleWarning"))
+
+  ev <- evaluate("op = options(warn = 1); warning('hi'); options(op)")
+  expect_equal(classes(ev), c("source", "simpleWarning"))
+})
+
+# errors won't work regularly in test_that()
+ev_warn_2 <- evaluate("op = options(warn = 2); warning('hi'); options(op)")
+test_that("options(warn = 2) produces errors instead of warnings", {
+  expect_equal(classes(ev_warn_2), c("source", "simpleError"))
+})
+
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.r"))
   expect_equal(classes(ev),

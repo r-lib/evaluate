@@ -141,6 +141,9 @@ evaluate_call <- function(call, src = NULL,
 
   # Handlers for warnings, errors and messages
   wHandler <- if (keep_warning) function(wn) {
+    # do not handle the warning as it will be raised as error after
+    if (getOption("warn") >= 2) return()
+
     if (getOption("warn") >= 0) {
       handle_condition(wn)
       output_handler$warning(wn)
