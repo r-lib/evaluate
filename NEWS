@@ -1,7 +1,8 @@
-Version 0.10.2
+Version 0.10.3
 ------------------------------------------------------------------------------
 
 * Fix for regression introduced in 0.10.1 in parse_all.call() (fixes #77)
+
 * evaluate() now respects options(warn >= 2); all warnings are turned into
   errors (#81)
 
