@@ -28,6 +28,10 @@ create_traceback <- function(callstack) {
 #' @export
 try_capture_stack <- function(quoted_code, env) {
   capture_calls <- function(e) {
+    # Make sure a "call" component exists to avoid warnings with partial
+    # matching in conditionCall.condition()
+    e["call"] <- e["call"]
+
     # Capture call stack, removing last two calls from end (added by
     # withCallingHandlers), and first frame + 7 calls from start (added by
     # tryCatch etc)
