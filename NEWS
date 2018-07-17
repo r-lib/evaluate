@@ -1,4 +1,4 @@
-Version 0.10.3
+Version 0.11
 ------------------------------------------------------------------------------
 
 * Fix for regression introduced in 0.10.1 in parse_all.call() (fixes #77)
