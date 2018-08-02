@@ -4,9 +4,11 @@
 \alias{evaluate}
 \title{Evaluate input and return all details of evaluation.}
 \usage{
-evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE, 
-    stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE, new_device = TRUE, 
-    output_handler = default_output_handler, filename = NULL, include_timing = FALSE)
+evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
+  stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
+  keep_package_startup_message = TRUE, new_device = TRUE,
+  output_handler = default_output_handler, filename = NULL,
+  include_timing = FALSE)
 }
 \arguments{
 \item{input}{input object to be parsed and evaluated.  May be a string, file
@@ -26,7 +28,8 @@ without signaling the error, and you will get back all results up to that
 point. If \code{0} will continue running all code, just as if you'd pasted
 the code into the command line.}
 
-\item{keep_warning, keep_message}{whether to record warnings and messages.}
+\item{keep_warning, keep_message, keep_package_startup_message}{whether to
+record warnings, messages and package startup messages.}
 
 \item{new_device}{if \code{TRUE}, will open a new graphics device and
 automatically close it after completion. This prevents evaluation from
