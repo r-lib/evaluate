@@ -24,7 +24,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
     # strsplit('a\n', '\n') needs to return c('a', '') instead of c('a')
     x <- gsub("\n$", "\n\n", x)
     x[x == ""] <- "\n"
-    x <- unlist(strsplit(x, "\n", fixed = TRUE), recursive = FALSE, use.names = FALSE)
+    x <- unlist(strsplit(x, "\n"), recursive = FALSE, use.names = FALSE)
   }
   n <- length(x)
 
