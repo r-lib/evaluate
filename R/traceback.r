@@ -9,11 +9,11 @@ create_traceback <- function(callstack) {
 
   # Convert to text
   calls <- lapply(callstack, deparse, width = 500)
-  calls <- sapply(calls, str_c, collapse = "\n")
+  calls <- sapply(calls, paste0, collapse = "\n")
 
   # Number and indent
-  calls <- str_c(seq_along(calls), ": ", calls)
-  calls <- str_replace(calls, "\n", "\n   ")
+  calls <- paste0(seq_along(calls), ": ", calls)
+  calls <- sub("\n", "\n   ", calls)
   calls
 }
 
