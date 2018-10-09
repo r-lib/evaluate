@@ -20,8 +20,12 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   op <- options(stringsAsFactors = FALSE)
   on.exit(options(op), add = TRUE)
 
-  if (length(grep("\n", x)))
-    x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
+  if (length(grep("\n", x))) {
+		# strsplit('a\n', '\n') needs to return c('a', '') instead of c('a')
+		x <- gsub("\n$", "\n\n", x)
+		x[x == ""] <- "\n"
+    x <- unlist(strsplit(x, "\n", fixed = TRUE), recursive = FALSE, use.names = FALSE)
+	}
   n <- length(x)
 
   if (is.null(filename))

@@ -31,8 +31,8 @@ watchout <- function(debug = FALSE) {
         new <- output[n0 + seq_len(n1 - n0)]
         prev <<- output
 
-        out$text <- str_c(new, collapse = "\n")
-        if (!incomplete) out$text <- str_c(out$text, "\n")
+        out$text <- paste0(new, collapse = "\n")
+        if (!incomplete) out$text <- paste0(out$text, "\n")
 
         text_callback(out$text)
       }

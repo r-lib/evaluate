@@ -32,7 +32,7 @@
 #'   expression in \code{system.time()}, which will be accessed by following
 #'   \code{replay()} call to produce timing information for each evaluated
 #'   command.
-#' @import graphics grDevices stringr utils
+#' @import graphics grDevices utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
                      new_device = TRUE, output_handler = default_output_handler,

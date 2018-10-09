@@ -32,7 +32,7 @@ replay.character <- function(x) {
 #' @export
 replay.source <- function(x) {
   s <- if (is.null(attr(x$src,'timing'))) '' else render_timing(attr(x$src, 'timing'))
-  cat(str_c(s, line_prompt(x$src)))
+  cat(paste0(s, line_prompt(x$src)))
 }
 
 #' @export
@@ -42,7 +42,7 @@ replay.warning <- function(x) {
 
 #' @export
 replay.message <- function(x) {
-  message(str_replace(x$message, "\n$", ""))
+  message(sub("\n$", "", x$message))
 }
 
 #' @export
@@ -109,9 +109,9 @@ line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("c
   lines <- strsplit(x, "\n")[[1]]
   n <- length(lines)
 
-  lines[1] <- str_c(prompt, lines[1])
+  lines[1] <- paste0(prompt, lines[1])
   if (n > 1)
-    lines[2:n] <- str_c(continue, lines[2:n])
+    lines[2:n] <- paste0(continue, lines[2:n])
 
-  str_c(lines, "\n", collapse = "")
+  paste0(lines, "\n", collapse = "")
 }
