@@ -26,4 +26,5 @@ Suggests:
     testthat,
     lattice,
     ggplot2
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+Encoding: UTF-8

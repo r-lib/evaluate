@@ -7,11 +7,6 @@
 \alias{is.value}
 \alias{is.source}
 \alias{is.recordedplot}
-\alias{is.warning}
-\alias{is.error}
-\alias{is.value}
-\alias{is.source}
-\alias{is.recordedplot}
 \title{Object class tests}
 \usage{
 is.message(x)
