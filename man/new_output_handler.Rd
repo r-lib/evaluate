@@ -12,7 +12,8 @@ new_output_handler(
   message = identity,
   warning = identity,
   error = identity,
-  value = render
+  value = render,
+  calling_handlers = list()
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ new_output_handler(
 \item{value}{Function to handle the values returned from evaluation. If it
 only has one argument, only visible values are handled; if it has more
 arguments, the second argument indicates whether the value is visible.}
+
+\item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.
+These handlers have precedence over the exiting handler installed
+by \code{\link[=evaluate]{evaluate()}} when \code{stop_on_error} is set to 0.}
 }
 \value{
 A new \code{output_handler} object

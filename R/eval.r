@@ -190,12 +190,19 @@ evaluate_call <- function(call, src = NULL,
     for (i in seq_along(funs_names)) assign(funs_names[i], funs[[i]], envir)
   }
 
+  user_handlers <- output_handler$calling_handlers
+
   multi_args <- length(formals(value_handler)) > 1
   for (expr in call) {
     srcindex <- length(output)
-    time <- timing_fn(handle(ev <- withCallingHandlers(
-      withVisible(eval(expr, envir, enclos)),
-      warning = wHandler, error = eHandler, message = mHandler)))
+    time <- timing_fn(handle(
+      ev <- withCallingHandlers(
+        withVisible(eval_with_user_handlers(expr, envir, enclos, user_handlers)),
+        warning = wHandler,
+        error = eHandler,
+        message = mHandler
+      )
+    ))
     handle_output(TRUE)
     if (!is.null(time))
       attr(output[[srcindex]]$src, 'timing') <- time
@@ -220,6 +227,24 @@ evaluate_call <- function(call, src = NULL,
   }
 
   output
+}
+
+eval_with_user_handlers <- function(expr, envir, enclos, calling_handlers) {
+  if (!length(calling_handlers)) {
+    return(eval(expr, envir, enclos))
+  }
+
+  if (!is.list(calling_handlers)) {
+    stop("`calling_handlers` must be a list", call. = FALSE)
+  }
+
+  call <- as.call(c(
+    quote(withCallingHandlers),
+    quote(eval(expr, envir, enclos)),
+    calling_handlers
+  ))
+
+  eval(call)
 }
 
 #' Inject functions into the environment of `evaluate()`
