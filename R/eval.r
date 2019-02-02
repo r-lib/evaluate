@@ -106,6 +106,11 @@ evaluate_call <- function(call, src = NULL,
   # Capture output
   w <- watchout(debug)
   on.exit(w$close())
+
+  # Capture error output from try() (#88)
+  old_try_outfile <- options(try.outFile = w$get_con())
+  on.exit(options(old_try_outfile), add = TRUE)
+
   source <- new_source(src)
   output_handler$source(source)
   output <- list(source)

@@ -47,7 +47,8 @@ watchout <- function(debug = FALSE) {
       sink()
       close(con)
       output
-    }
+    },
+    get_con = function() con
   )
 }
 
