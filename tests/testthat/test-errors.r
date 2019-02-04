@@ -26,3 +26,10 @@ test_that("traceback useful if stop_on_error == 2L", {
   # expect_match(.Traceback[[3]], "g()")
   # expect_match(.Traceback[[4]], "f()")
 })
+
+test_that("capture messages in try() (#88)", {
+  skip_if(getRversion() < "3.4")
+
+  ev <- evaluate(file("try.r"))
+  expect_match(ev[[length(ev)]], "Obscure error")
+})
