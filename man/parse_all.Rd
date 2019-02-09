@@ -7,7 +7,8 @@
 parse_all(x, filename = NULL, allow_error = FALSE)
 }
 \arguments{
-\item{x}{object to parse.  Can be a string, a file connection, or a function}
+\item{x}{object to parse.  Can be a string, a file connection, or a function.
+If a connection, will be opened and closed only if it was closed initially.}
 
 \item{filename}{string overriding the file name}
 
