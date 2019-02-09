@@ -1,6 +1,6 @@
 #' Evaluate input and return all details of evaluation.
 #'
-#' Compare to \code{\link{eval}}, \code{evaluate} captures all of the
+#' Compare to [eval()], `evaluate` captures all of the
 #' information necessary to recreate the output as if you had copied and pasted
 #' the code into a R terminal. It captures messages, warnings, errors and
 #' output, all correctly interleaved in the order in which they occured. It
@@ -11,26 +11,26 @@
 #' @param input input object to be parsed and evaluated.  May be a string, file
 #'   connection or function.
 #' @param envir environment in which to evaluate expressions.
-#' @param enclos when \code{envir} is a list or data frame, this is treated as
-#'   the parent environment to \code{envir}.
-#' @param debug if \code{TRUE}, displays information useful for debugging,
+#' @param enclos when `envir` is a list or data frame, this is treated as
+#'   the parent environment to `envir`.
+#' @param debug if `TRUE`, displays information useful for debugging,
 #'   including all output that evaluate captures.
-#' @param stop_on_error if \code{2}, evaluation will halt on first error and you
-#'   will get no results back. If \code{1}, evaluation will stop on first error
+#' @param stop_on_error if `2`, evaluation will halt on first error and you
+#'   will get no results back. If `1`, evaluation will stop on first error
 #'   without signaling the error, and you will get back all results up to that
-#'   point. If \code{0} will continue running all code, just as if you'd pasted
+#'   point. If `0` will continue running all code, just as if you'd pasted
 #'   the code into the command line.
 #' @param keep_warning,keep_message whether to record warnings and messages.
-#' @param new_device if \code{TRUE}, will open a new graphics device and
+#' @param new_device if `TRUE`, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
-#' @param output_handler an instance of \code{\link{output_handler}} that
+#' @param output_handler an instance of [output_handler()] that
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
-#' @param filename string overrriding the \code{\link[base]{srcfile}} filename.
-#' @param include_timing if \code{TRUE}, evaluate will wrap each input
-#'   expression in \code{system.time()}, which will be accessed by following
-#'   \code{replay()} call to produce timing information for each evaluated
+#' @param filename string overrriding the [base::srcfile()] filename.
+#' @param include_timing if `TRUE`, evaluate will wrap each input
+#'   expression in `system.time()`, which will be accessed by following
+#'   `replay()` call to produce timing information for each evaluated
 #'   command.
 #' @import graphics grDevices utils
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
@@ -220,10 +220,10 @@ evaluate_call <- function(call, src = NULL,
   output
 }
 
-#' Inject functions into the environment of \code{evaluate()}
+#' Inject functions into the environment of `evaluate()`
 #'
-#' Create functions in the environment specified in the \code{envir} argument of
-#' \code{evaluate()}. This can be helpful if you want to substitute certain
+#' Create functions in the environment specified in the `envir` argument of
+#' [evaluate()]. This can be helpful if you want to substitute certain
 #' functions when evaluating the code. To make sure it does not wipe out
 #' existing functions in the environment, only functions that do not exist in
 #' the environment are injected.

@@ -1,11 +1,11 @@
 #' Set hooks.
 #'
-#' This wraps the base \code{\link{setHook}} function to provide a return
+#' This wraps the base [setHook()] function to provide a return
 #' value that makes it easy to undo.
 #'
 #' @param hooks a named list of hooks - each hook can either be a function or
 #'   a list of functions.
-#' @param action \code{"replace"}, \code{"append"} or \code{"prepend"}
+#' @param action `"replace"`, `"append"` or `"prepend"`
 #' @keywords internal
 #' @export
 #' @examples

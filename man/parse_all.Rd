@@ -15,9 +15,8 @@ parse_all(x, filename = NULL, allow_error = FALSE)
 }
 \value{
 A data.frame with columns \code{src}, the source code, and
-  \code{expr}. If there are syntax errors in \code{x} and \code{allow_error =
-  TRUE}, the data frame has an attribute \code{PARSE_ERROR} that stores the
-  error object.
+\code{expr}. If there are syntax errors in \code{x} and \code{allow_error = TRUE}, the data frame has an attribute \code{PARSE_ERROR} that stores the
+error object.
 }
 \description{
 Works very similarly to parse, but also keeps original formatting and

@@ -12,7 +12,7 @@ screen and captured.}
 }
 \value{
 list containing four functions: \code{get_new}, \code{pause},
- \code{unpause}, \code{close}.
+\code{unpause}, \code{close}.
 }
 \description{
 Watch for changes in output, text and graphical.

@@ -13,7 +13,7 @@ a list of functions.}
 \item{action}{\code{"replace"}, \code{"append"} or \code{"prepend"}}
 }
 \description{
-This wraps the base \code{\link{setHook}} function to provide a return
+This wraps the base \code{\link[=setHook]{setHook()}} function to provide a return
 value that makes it easy to undo.
 }
 \examples{

@@ -7,7 +7,7 @@
 replay(x)
 }
 \arguments{
-\item{x}{result from \code{\link{evaluate}}}
+\item{x}{result from \code{\link[=evaluate]{evaluate()}}}
 }
 \description{
 Replay a list of evaluated results, as if you'd run them in an R

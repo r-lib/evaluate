@@ -12,7 +12,7 @@ try_capture_stack(quoted_code, env)
 \item{env}{environment in which to execute code}
 }
 \description{
-This is a variant of \code{\link{tryCatch}} that also captures the call
+This is a variant of \code{\link[=tryCatch]{tryCatch()}} that also captures the call
 stack if an error occurs.
 }
 \keyword{internal}
