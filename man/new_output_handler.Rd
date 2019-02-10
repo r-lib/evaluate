@@ -5,8 +5,9 @@
 \alias{output_handler}
 \title{Custom output handlers.}
 \usage{
-new_output_handler(source = identity, text = identity, graphics = identity, 
-    message = identity, warning = identity, error = identity, value = render)
+new_output_handler(source = identity, text = identity,
+  graphics = identity, message = identity, warning = identity,
+  error = identity, value = render)
 }
 \arguments{
 \item{source}{Function to handle the echoed source code under evaluation.}
@@ -14,13 +15,13 @@ new_output_handler(source = identity, text = identity, graphics = identity,
 \item{text}{Function to handle any textual console output.}
 
 \item{graphics}{Function to handle graphics, as returned by
-\code{\link{recordPlot}}.}
+\code{\link[=recordPlot]{recordPlot()}}.}
 
-\item{message}{Function to handle \code{\link{message}} output.}
+\item{message}{Function to handle \code{\link[=message]{message()}} output.}
 
-\item{warning}{Function to handle \code{\link{warning}} output.}
+\item{warning}{Function to handle \code{\link[=warning]{warning()}} output.}
 
-\item{error}{Function to handle \code{\link{stop}} output.}
+\item{error}{Function to handle \code{\link[=stop]{stop()}} output.}
 
 \item{value}{Function to handle the values returned from evaluation. If it
 only has one argument, only visible values are handled; if it has more
@@ -30,7 +31,7 @@ arguments, the second argument indicates whether the value is visible.}
 A new \code{output_handler} object
 }
 \description{
-An \code{output_handler} handles the results of \code{\link{evaluate}},
+An \code{output_handler} handles the results of \code{\link[=evaluate]{evaluate()}},
 including the values, graphics, conditions. Each type of output is handled by
 a particular function in the handler object.
 }

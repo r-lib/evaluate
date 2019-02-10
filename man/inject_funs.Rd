@@ -12,7 +12,7 @@ functions will be emptied.}
 }
 \description{
 Create functions in the environment specified in the \code{envir} argument of
-\code{evaluate()}. This can be helpful if you want to substitute certain
+\code{\link[=evaluate]{evaluate()}}. This can be helpful if you want to substitute certain
 functions when evaluating the code. To make sure it does not wipe out
 existing functions in the environment, only functions that do not exist in
 the environment are injected.
@@ -26,7 +26,7 @@ library(evaluate)
 evaluate("system('R --version')")
 
 # replace the system() function
-inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = "\\n"))
+inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = '\\n'))
 
 evaluate("system('R --version')")
 
