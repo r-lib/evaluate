@@ -9,7 +9,7 @@
 #'
 #' @export
 #' @param input input object to be parsed and evaluated.  May be a string, file
-#'   connection or function.
+#'   connection or function.  Passed on to [parse_all()].
 #' @param envir environment in which to evaluate expressions.
 #' @param enclos when `envir` is a list or data frame, this is treated as
 #'   the parent environment to `envir`.

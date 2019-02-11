@@ -11,7 +11,7 @@ evaluate(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
 }
 \arguments{
 \item{input}{input object to be parsed and evaluated.  May be a string, file
-connection or function.}
+connection or function.  Passed on to \code{\link[=parse_all]{parse_all()}}.}
 
 \item{envir}{environment in which to evaluate expressions.}
 

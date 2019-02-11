@@ -3,7 +3,8 @@
 #' Works very similarly to parse, but also keeps original formatting and
 #' comments.
 #'
-#' @param x object to parse.  Can be a string, a file connection, or a function
+#' @param x object to parse.  Can be a string, a file connection, or a function.
+#'   If a connection, will be opened and closed only if it was closed initially.
 #' @param filename string overriding the file name
 #' @param allow_error whether to allow syntax errors in `x`
 #' @return A data.frame with columns `src`, the source code, and
