@@ -46,6 +46,9 @@ set_hooks <- function(hooks, action = "append") {
 #' remove_hooks(new2)
 #' plot(1)
 remove_hooks <- function(hooks) {
+  stopifnot(is.list(hooks))
+  stopifnot(!is.null(names(hooks)) && all(names(hooks) != ""))
+
   for (hook_name in names(hooks)) {
     hook <- getHook(hook_name)
     for (fun in unlist(hooks[hook_name])) {
