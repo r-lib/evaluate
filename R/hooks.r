@@ -48,7 +48,7 @@ set_hooks <- function(hooks, action = "append") {
 remove_hooks <- function(hooks) {
   for (hook_name in names(hooks)) {
     hook <- getHook(hook_name)
-    for (fun in hooks[hook_name]) {
+    for (fun in unlist(hooks[hook_name])) {
       hook[sapply(hook, identical, fun)] <- NULL
     }
     setHook(hook_name, hook, "replace")
