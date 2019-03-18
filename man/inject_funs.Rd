@@ -26,7 +26,7 @@ library(evaluate)
 evaluate("system('R --version')")
 
 # replace the system() function
-inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = "\\n"))
+inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = '\\n'))
 
 evaluate("system('R --version')")
 

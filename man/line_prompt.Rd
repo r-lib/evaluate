@@ -4,7 +4,8 @@
 \alias{line_prompt}
 \title{Line prompt.}
 \usage{
-line_prompt(x, prompt = getOption("prompt"), continue = getOption("continue"))
+line_prompt(x, prompt = getOption("prompt"),
+  continue = getOption("continue"))
 }
 \arguments{
 \item{x}{string representing a single expression}

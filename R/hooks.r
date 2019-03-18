@@ -26,3 +26,32 @@ set_hooks <- function(hooks, action = "append") {
 
   invisible(old)
 }
+
+#' Remove hooks.
+#'
+#' This provides a way to remove previously set hook values.
+#'
+#' @param hooks a named list of hooks - each hook can either be a function or
+#'   a list of functions.
+#' @keywords internal
+#' @export
+#' @examples
+#' new1 <- list(before.plot.new = function() print("Plotted!"))
+#' new2 <- list(before.plot.new = function() print("Plotted Again!"))
+#' set_hooks(new1)
+#' set_hooks(new2)
+#' plot(1)
+#' remove_hooks(new1)
+#' plot(1)
+#' remove_hooks(new2)
+#' plot(1)
+remove_hooks <- function(hooks) {
+  for (hook_name in names(hooks)) {
+    hook <- getHook(hook_name)
+    for (fun in hooks[hook_name]) {
+      hook[sapply(hook, identical, fun)] <- NULL
+    }
+    setHook(hook_name, hook, "replace")
+  }
+}
+
