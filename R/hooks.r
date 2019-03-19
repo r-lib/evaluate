@@ -15,15 +15,11 @@
 #' set_hooks(hooks, "replace")
 #' plot(1)
 set_hooks <- function(hooks, action = "append") {
-  stopifnot(is.list(hooks))
-  stopifnot(!is.null(names(hooks)) && all(names(hooks) != ""))
-
   old <- list()
   for (hook_name in names(hooks)) {
     old[[hook_name]] <- getHook(hook_name)
     setHook(hook_name, hooks[[hook_name]], action = action)
   }
-
   invisible(old)
 }
 
@@ -45,9 +41,6 @@ set_hooks <- function(hooks, action = "append") {
 #' remove_hooks(new2)
 #' plot(1)
 remove_hooks <- function(hooks) {
-  stopifnot(is.list(hooks))
-  stopifnot(!is.null(names(hooks)) && all(names(hooks) != ""))
-
   for (hook_name in names(hooks)) {
     hook <- getHook(hook_name)
     for (fun in unlist(hooks[hook_name])) {
