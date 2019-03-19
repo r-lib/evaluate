@@ -133,11 +133,13 @@ evaluate_call <- function(call, src = NULL,
   capture_plot <- function() {
     handle_output(TRUE)
   }
-  old_hooks <- set_hooks(list(
+  hook_list <- list(
     persp = capture_plot,
     before.plot.new = capture_plot,
-    before.grid.newpage = capture_plot))
-  on.exit(set_hooks(old_hooks, "replace"), add = TRUE)
+    before.grid.newpage = capture_plot
+  )
+  set_hooks(hook_list)
+  on.exit(remove_hooks(hook_list), add = TRUE)
 
   handle_condition <- function(cond) {
     handle_output()

@@ -1,7 +1,8 @@
 Version 0.14
 ------------------------------------------------------------------------------
 
-
+* The hooks `persp`, `before.plot.new`, and `before.grid.newpage` set by users
+  will be respected throughout the R session (thanks, @KKPMW, #96).
 
 Version 0.13
 ------------------------------------------------------------------------------
