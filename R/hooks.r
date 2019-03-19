@@ -31,8 +31,7 @@ set_hooks <- function(hooks, action = "append") {
 #'
 #' This provides a way to remove previously set hook values.
 #'
-#' @param hooks a named list of hooks - each hook can either be a function or
-#'   a list of functions.
+#' @inheritParams set_hooks
 #' @keywords internal
 #' @export
 #' @examples
