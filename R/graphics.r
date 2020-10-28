@@ -5,7 +5,7 @@
 #" This means that only the last plot of a series will be captured.
 #"
 #" @return \code{NULL} if plot is blank or unchanged, otherwise the output of
-#"   \code{\link[grDevices]{recordPlot}}.
+#"   \code{\link{recordPlot}}.
 plot_snapshot <- local({
   last_plot <- NULL
 
