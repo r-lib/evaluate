@@ -24,9 +24,10 @@ Depends:
 Imports:
     methods
 Suggests:
-    testthat,
+    covr,
+    ggplot2,
     lattice,
-    ggplot2
+    testthat
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
