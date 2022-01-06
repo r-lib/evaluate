@@ -54,13 +54,17 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #' @param value Function to handle the values returned from evaluation. If it
 #'   only has one argument, only visible values are handled; if it has more
 #'   arguments, the second argument indicates whether the value is visible.
+#' @param calling_handlers List of [calling handlers][withCallingHandlers].
+#'   These handlers have precedence over the exiting handler installed
+#'   by [evaluate()] when `stop_on_error` is set to 0.
 #' @return A new `output_handler` object
 #' @aliases output_handler
 #' @export
 new_output_handler <- function(source = identity,
                                text = identity, graphics = identity,
                                message = identity, warning = identity,
-                               error = identity, value = render) {
+                               error = identity, value = render,
+                               calling_handlers = list()) {
   source <- match.fun(source)
   stopifnot(length(formals(source)) >= 1)
   text <- match.fun(text)
@@ -76,10 +80,39 @@ new_output_handler <- function(source = identity,
   value <- match.fun(value)
   stopifnot(length(formals(value)) >= 1)
 
+  check_handlers(calling_handlers)
+
   structure(list(source = source, text = text, graphics = graphics,
                  message = message, warning = warning, error = error,
-                 value = value),
+                 value = value, calling_handlers = calling_handlers),
             class = "output_handler")
+}
+
+check_handlers <- function(x) {
+  if (!is.list(x)) {
+    stop_bad_handlers()
+  }
+
+  if (!length(x)) {
+    return()
+  }
+
+  names <- names(x)
+  if (!is.character(names) || anyNA(names) || any(names == "")) {
+    stop_bad_handlers()
+  }
+
+  for (elt in x) {
+    if (!is.function(elt)) {
+      stop_bad_handlers()
+    }
+  }
+}
+stop_bad_handlers <- function() {
+  stop(simpleError(
+    "`calling_handlers` must be a named list of functions.",
+    call = call("new_output_handler")
+  ))
 }
 
 default_output_handler <- new_output_handler()

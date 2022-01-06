@@ -1,7 +1,7 @@
 Version 0.15
 ================================================================================
 
-
+- `new_output_handler()` gains a `calling_handlers` argument. These are passed to `withCallingHandlers()` before `evaluate()` captures any conditions.
 
 Version 0.14
 ================================================================================
