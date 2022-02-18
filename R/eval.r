@@ -101,7 +101,7 @@ evaluate_call <- function(call, src = NULL,
     output_handler$source(source)
     return(list(source))
   }
-  stopifnot(is.call(call) || is.language(call) || is.atomic(call))
+  stopifnot(is.call(call) || is.language(call) || is.atomic(call) || is.null(call))
 
   # Capture output
   w <- watchout(debug)
