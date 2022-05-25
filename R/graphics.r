@@ -61,9 +61,11 @@ is.empty <- function(x) {
 plot_calls <- function(plot) {
   el <- lapply(plot[[1]], "[[", 2)
   if (length(el) == 0) return()
-  sapply(el, function(x) {
-    x <- x[[1]]
-    # grid graphics do not have x$name
-    if (is.null(x[["name"]])) deparse(x) else x[["name"]]
-  })
+  unlist(lapply(el, function(x) {
+    # grid graphics do not have x[[1]]$name
+    if (!is.null(nm <- x[[1]][["name"]])) return(nm)
+    nm <- deparse(x[[1]])
+    # the plot element should not be empty
+    if (length(x[[2]]) > 0 || !grepl("^requireNamespace\\(", nm)) nm
+  }))
 }

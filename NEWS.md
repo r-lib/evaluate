@@ -1,6 +1,7 @@
 Version 0.16
 ================================================================================
 
+- Fixed a bug that an empty **ggplot2** plot could be recorded and incorrectly saved (thanks, @sjspielman, rstudio/rmarkdown#2363).
 
 Version 0.15
 ================================================================================
