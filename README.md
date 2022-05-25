@@ -1,7 +1,10 @@
 # Evaluate
 
-[![Build Status](https://travis-ci.org/r-lib/evaluate.svg)](https://travis-ci.org/r-lib/evaluate)
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/r-lib/evaluate/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/evaluate/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/evaluate)](https://CRAN.R-project.org/package=evaluate)
 [![Downloads from the RStudio CRAN mirror](https://cranlogs.r-pkg.org/badges/evaluate)](https://cran.r-project.org/package=evaluate)
+<!-- badges: end -->
 
 Evaluate provides tools that allow you to recreate the parsing, evaluation and
 display of R code, with enough information that you can accurately recreate what
