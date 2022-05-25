@@ -56,7 +56,7 @@ test_that("Empty ggplot should not be recorded", {
   ev <- evaluate(file(test_path("ggplot-empty-1.r")))
   expect_identical(classes(ev), c("source", "source", "simpleError"))
   ev <- evaluate(file(test_path("ggplot-empty-2.r")))
-  expect_identical(classes(ev), c("source", "source", "rlangError"))
+  expect_identical(classes(ev), c("source", "source", "rlang_error"))
 })
 
 test_that("multirow graphics are captured only when complete", {
