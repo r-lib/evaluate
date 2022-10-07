@@ -20,7 +20,7 @@ test_that("parse(allow_error = TRUE/FALSE)", {
 })
 
 # test some multibyte characters when the locale is UTF8 based
-if (identical(Sys.getlocale("LC_CTYPE"), "en_US.UTF-8")) {
+if (isTRUE(l10n_info()[['UTF-8']])) {
 
   test_that("double quotes in Chinese characters not destroyed", {
     expect_identical(parse_all(c('1+1', '"你好"'))[2, 1], '"你好"')
