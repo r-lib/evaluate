@@ -54,7 +54,10 @@ test_that("ggplot2 plots in a single expression are captured", {
 test_that("Empty ggplot should not be recorded", {
   skip_if_not_installed("ggplot2")
   ev <- evaluate(file(test_path("ggplot-empty-1.r")))
-  expect_identical(classes(ev), c("source", "source", "simpleError"))
+  expect_identical(classes(ev), c(
+    "source", "source",
+    if (packageVersion("ggplot2") > "3.3.6") "rlang_error" else "simpleError"
+  ))
   ev <- evaluate(file(test_path("ggplot-empty-2.r")))
   expect_identical(classes(ev), c("source", "source", "rlang_error"))
 })
