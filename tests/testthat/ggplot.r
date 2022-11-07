@@ -1,2 +1,2 @@
 suppressPackageStartupMessages(library(ggplot2))
-qplot(mpg, wt, data = mtcars)
+ggplot(mtcars, aes(mpg, wt)) + geom_point()
