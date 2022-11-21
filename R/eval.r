@@ -147,25 +147,27 @@ evaluate_call <- function(call, src = NULL,
   }
 
   # Handlers for warnings, errors and messages
-  wHandler <- if (keep_warning) function(wn) {
+  wHandler <- function(wn) {
     # do not handle the warning as it will be raised as error after
     if (getOption("warn") >= 2) return()
 
-    if (getOption("warn") >= 0) {
+    if (keep_warning && getOption("warn") >= 0) {
       handle_condition(wn)
       output_handler$warning(wn)
     }
     invokeRestart("muffleWarning")
-  } else function() {}
+  }
   eHandler <- if (use_try) function(e) {
     handle_condition(e)
     output_handler$error(e)
   } else identity
-  mHandler <- if (keep_message) function(m) {
-    handle_condition(m)
-    output_handler$message(m)
+  mHandler <- function(m) {
+    if (keep_message) {
+      handle_condition(m)
+      output_handler$message(m)
+    }
     invokeRestart("muffleMessage")
-  } else function() {}
+  }
 
   ev <- list(value = NULL, visible = FALSE)
 
