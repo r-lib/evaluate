@@ -156,7 +156,7 @@ evaluate_call <- function(call, src = NULL,
       output_handler$warning(wn)
     }
     invokeRestart("muffleWarning")
-  } else identity
+  } else function() {}
   eHandler <- if (use_try) function(e) {
     handle_condition(e)
     output_handler$error(e)
@@ -165,7 +165,7 @@ evaluate_call <- function(call, src = NULL,
     handle_condition(m)
     output_handler$message(m)
     invokeRestart("muffleMessage")
-  } else identity
+  } else function() {}
 
   ev <- list(value = NULL, visible = FALSE)
 
