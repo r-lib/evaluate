@@ -3,6 +3,8 @@ Version 0.19
 
 - In `evaluate()`, `keep_message` and `keep_warning` will completely drop messages and warnings, respectively, when their values are `FALSE`. Previously messages would still be emitted (to the console) even if they take `FALSE` values.
 
+- Fixed the bug that `parse_all()` fails with line directives (thanks, @ArcadeAntics, #114).
+
 Version 0.18
 ================================================================================
 

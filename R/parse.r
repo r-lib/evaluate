@@ -51,7 +51,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   srcref <- attr(exprs, "srcref", exact = TRUE)
 
   # Stard/End line numbers of expressions
-  pos <- do.call(rbind, lapply(srcref, unclass))[, c(1, 3), drop = FALSE]
+  pos <- do.call(rbind, lapply(srcref, unclass))[, c(7, 8), drop = FALSE]
   l1 <- pos[, 1]
   l2 <- pos[, 2]
   # Add a third column i to store the indices of expressions
