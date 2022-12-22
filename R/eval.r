@@ -20,7 +20,9 @@
 #'   without signaling the error, and you will get back all results up to that
 #'   point. If `0` will continue running all code, just as if you'd pasted
 #'   the code into the command line.
-#' @param keep_warning,keep_message whether to record warnings and messages.
+#' @param keep_warning,keep_message whether to record warnings and messages; if
+#'   `FALSE`, messages will be suppressed; if `NA`, they will not be captured
+#'   (normally they will be sent to the console).
 #' @param new_device if `TRUE`, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
@@ -147,7 +149,7 @@ evaluate_call <- function(call, src = NULL,
   }
 
   # Handlers for warnings, errors and messages
-  wHandler <- function(wn) {
+  wHandler <- if (is.na(keep_warning)) identity else function(wn) {
     # do not handle the warning as it will be raised as error after
     if (getOption("warn") >= 2) return()
 
@@ -161,7 +163,7 @@ evaluate_call <- function(call, src = NULL,
     handle_condition(e)
     output_handler$error(e)
   } else identity
-  mHandler <- function(m) {
+  mHandler <- if (is.na(keep_warning)) identity else function(m) {
     if (keep_message) {
       handle_condition(m)
       output_handler$message(m)

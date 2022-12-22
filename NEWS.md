@@ -1,6 +1,7 @@
 Version 0.20
 ================================================================================
 
+- The arguments `keep_message` and `keep_warning` of `evaluate()` can take the value `NA` now, which means `evaluate()` will not capture the messages and they will be sent to the console. This is equivalent to the `FALSE` value before v0.19 (thanks, @gadenbuie, https://github.com/yihui/yihui.org/discussions/1458).
 
 Version 0.19
 ================================================================================
