@@ -163,7 +163,7 @@ evaluate_call <- function(call, src = NULL,
     handle_condition(e)
     output_handler$error(e)
   } else identity
-  mHandler <- if (is.na(keep_warning)) identity else function(m) {
+  mHandler <- if (is.na(keep_message)) identity else function(m) {
     if (keep_message) {
       handle_condition(m)
       output_handler$message(m)
