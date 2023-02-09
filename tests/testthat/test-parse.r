@@ -28,3 +28,7 @@ if (isTRUE(l10n_info()[['UTF-8']])) {
     expect_identical(parse_all(code)$src, append_break(code))
   })
 }
+
+test_that("can ignore parse errors", {
+  expect_error(evaluate('x <-', stop_on_error = 0), NA)
+})
