@@ -1,5 +1,3 @@
-context("Evaluation")
-
 test_that("file with only comments runs", {
   ev <- evaluate(file("comment.r"))
   expect_that(length(ev), equals(2))

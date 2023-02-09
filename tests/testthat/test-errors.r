@@ -1,5 +1,3 @@
-context("Errors")
-
 test_that("all code run, even after error", {
   ev <- evaluate(file("error.r"))
   expect_that(length(ev), equals(4))

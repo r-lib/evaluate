@@ -1,5 +1,3 @@
-context("Evaluation: graphics")
-
 test_that("single plot is captured", {
   ev <- evaluate(file("plot.r"))
   expect_that(length(ev), equals(2))

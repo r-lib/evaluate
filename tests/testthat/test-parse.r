@@ -1,5 +1,3 @@
-context("Parsing")
-
 test_that("{ not removed", {
 
   f <- function() {

@@ -1,5 +1,3 @@
-context("Output handlers")
-
 test_that("text output handler is called with text", {
   text <- NULL
   oh <- new_output_handler(text = function(o) text <<- o)
