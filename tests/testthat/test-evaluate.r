@@ -1,13 +1,13 @@
 test_that("file with only comments runs", {
   ev <- evaluate(file("comment.r"))
-  expect_that(length(ev), equals(2))
+  expect_length(ev, 2)
 
-  expect_that(classes(ev), equals(c("source", "source")))
+  expect_equal(classes(ev), c("source", "source"))
 })
 
 test_that("data sets loaded", {
   ev <- evaluate(file("data.r"))
-  if (require("lattice", quietly = TRUE)) expect_that(length(ev), equals(3))
+  if (require("lattice", quietly = TRUE)) expect_length(ev, 3)
 })
 
 # # Don't know how to implement this
@@ -18,8 +18,8 @@ test_that("data sets loaded", {
 
 test_that("terminal newline not needed", {
   ev <- evaluate("cat('foo')")
-  expect_that(length(ev), equals(2))
-  expect_that(ev[[2]], equals("foo"))
+  expect_length(ev, 2)
+  expect_equal(ev[[2]], "foo")
 })
 
 test_that("S4 methods are displayed with show, not print", {
@@ -37,12 +37,12 @@ test_that("errors during printing visible values are captured", {
   a <- new('A', function() b)
 
   ev <- evaluate("a")
-  stopifnot("error" %in% class(ev[[2]]))
+  expect_s3_class(ev[[2]], "error")
 })
 
 test_that("options(warn = -1) suppresses warnings", {
   ev <- evaluate("op = options(warn = -1); warning('hi'); options(op)")
-  expect_that(classes(ev), equals("source"))
+  expect_equal(classes(ev), "source")
 })
 
 test_that("options(warn = 0) and options(warn = 1) produces warnings", {
