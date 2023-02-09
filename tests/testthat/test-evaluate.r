@@ -6,8 +6,10 @@ test_that("file with only comments runs", {
 })
 
 test_that("data sets loaded", {
+  skip_if_not_installed("lattice")
+
   ev <- evaluate(file("data.r"))
-  if (require("lattice", quietly = TRUE)) expect_length(ev, 3)
+  expect_length(ev, 3)
 })
 
 # # Don't know how to implement this
@@ -70,11 +72,16 @@ test_that("output and plots interleaved correctly", {
 })
 
 test_that("return value of value handler inserted directly in output list", {
-  ev <- evaluate(file("raw-output.r"), output_handler = new_output_handler(value = identity))
-  if (require("ggplot2", quietly = TRUE)) {
-    expect_equal(classes(ev),
-                 c("source", "numeric", "source", "source", "source", "gg"))
-  }
+  skip_if_not_installed("ggplot2")
+
+  ev <- evaluate(
+    file("raw-output.r"),
+    output_handler = new_output_handler(value = identity)
+  )
+  expect_equal(
+    classes(ev),
+    c("source", "numeric", "source", "source", "source", "gg")
+  )
 })
 
 test_that("invisible values can also be saved if value handler has two arguments", {

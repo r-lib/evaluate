@@ -5,11 +5,11 @@ test_that("single plot is captured", {
 })
 
 test_that("ggplot is captured", {
-  if (require("ggplot2", quietly = TRUE)) {
-    ev <- evaluate(file("ggplot.r"))
-    expect_length(ev, 3)
-    expect_equal(classes(ev), c("source", "source", "recordedplot"))
-  }
+  skip_if_not_installed("ggplot2")
+
+  ev <- evaluate(file("ggplot.r"))
+  expect_length(ev, 3)
+  expect_equal(classes(ev), c("source", "source", "recordedplot"))
 })
 
 test_that("plot additions are captured", {
@@ -40,12 +40,12 @@ test_that("base plots in a single expression are captured", {
 })
 
 test_that("ggplot2 plots in a single expression are captured", {
-  if (require("ggplot2", quietly = TRUE)) {
-    ev <- evaluate(file("ggplot-loop.r"))
-    expect_length(ev, 4)
+  skip_if_not_installed("ggplot2")
 
-    expect_equal(classes(ev), c(rep("source", 2), rep("recordedplot", 2)))
-  }
+  ev <- evaluate(file("ggplot-loop.r"))
+  expect_length(ev, 4)
+
+  expect_equal(classes(ev), c(rep("source", 2), rep("recordedplot", 2)))
 })
 
 test_that("Empty ggplot should not be recorded", {
