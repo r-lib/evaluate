@@ -1,5 +1,3 @@
-context("Parsing")
-
 test_that("{ not removed", {
 
   f <- function() {
@@ -9,8 +7,7 @@ test_that("{ not removed", {
     }
   }
 
-  expect_that(nrow(parse_all(f)), equals(1))
-
+  expect_equal(nrow(parse_all(f)), 1)
 })
 
 test_that("parse(allow_error = TRUE/FALSE)", {
@@ -30,5 +27,8 @@ if (isTRUE(l10n_info()[['UTF-8']])) {
     code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
     expect_identical(parse_all(code)$src, append_break(code))
   })
-
 }
+
+test_that("can ignore parse errors", {
+  expect_error(evaluate('x <-', stop_on_error = 0), NA)
+})
