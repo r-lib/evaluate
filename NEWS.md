@@ -1,3 +1,10 @@
+Version 0.21
+================================================================================
+
+- `evaluate()` gains `log_echo` and `log_warning` arguments. When set to `TRUE`
+  these cause code and warnings (respectively) to be immediately emitted to 
+  `stderr()`. This is useful for logging in unattended environments (#118).
+
 Version 0.20
 ================================================================================
 
