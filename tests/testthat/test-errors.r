@@ -1,13 +1,11 @@
-context("Errors")
-
 test_that("all code run, even after error", {
   ev <- evaluate(file("error.r"))
-  expect_that(length(ev), equals(4))
+  expect_length(ev, 4)
 })
 
 test_that("code aborts on error if stop_on_error == 1L", {
   ev <- evaluate(file("error.r"), stop_on_error = 1L)
-  expect_that(length(ev), equals(2))
+  expect_length(ev, 2)
 })
 
 test_that("code errors if stop_on_error == 2L", {
