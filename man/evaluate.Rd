@@ -42,6 +42,9 @@ the code into the command line.}
 \code{FALSE}, messages will be suppressed; if \code{NA}, they will not be captured
 (normally they will be sent to the console).}
 
+\item{log_echo, log_warning}{If \code{TRUE}, will immediately log code and
+warnings (respectively) to \code{stderr}.}
+
 \item{new_device}{if \code{TRUE}, will open a new graphics device and
 automatically close it after completion. This prevents evaluation from
 interfering with your existing graphics environment.}

@@ -23,6 +23,8 @@
 #' @param keep_warning,keep_message whether to record warnings and messages; if
 #'   `FALSE`, messages will be suppressed; if `NA`, they will not be captured
 #'   (normally they will be sent to the console).
+#' @param log_echo,log_warning If `TRUE`, will immediately log code and
+#'   warnings (respectively) to `stderr`.
 #' @param new_device if `TRUE`, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
