@@ -180,7 +180,7 @@ evaluate_call <- function(call,
   # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
     if (log_warning) {
-      cat("Warning message: ", conditionMessage(wn), "\n", sep = "", file = stderr())
+      cat(format_warning(wn), "\n", sep = "", file = stderr())
     }
     if (is.na(keep_warning)) return()
 
@@ -311,4 +311,18 @@ inject_funs <- function(...) {
   funs <- list(...)
   funs <- funs[names(funs) != '']
   .env$inject_funs <- Filter(is.function, funs)
+}
+
+format_warning <- function(x) {
+  if (inherits(x, "rlang_warning")) {
+    format(x)
+  } else {
+    msg <- "Warning"
+
+    call <- conditionCall(x)
+    if (!is.null(conditionCall(x))) {
+      msg <- paste0(msg, " in ", paste0(deparse(call), collapse = "\n"))
+    }
+    msg <- paste0(msg, ": ", conditionMessage(x))
+  }
 }
