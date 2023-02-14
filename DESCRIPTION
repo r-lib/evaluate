@@ -27,6 +27,7 @@ Suggests:
     covr,
     ggplot2,
     lattice,
+    rlang,
     testthat (>= 3.0.0),
     withr
 RoxygenNote: 7.2.3

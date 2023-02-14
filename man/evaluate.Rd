@@ -12,6 +12,8 @@ evaluate(
   stop_on_error = 0L,
   keep_warning = TRUE,
   keep_message = TRUE,
+  log_echo = FALSE,
+  log_warning = FALSE,
   new_device = TRUE,
   output_handler = default_output_handler,
   filename = NULL,
@@ -39,6 +41,9 @@ the code into the command line.}
 \item{keep_warning, keep_message}{whether to record warnings and messages; if
 \code{FALSE}, messages will be suppressed; if \code{NA}, they will not be captured
 (normally they will be sent to the console).}
+
+\item{log_echo, log_warning}{If \code{TRUE}, will immediately log code and
+warnings (respectively) to \code{stderr}.}
 
 \item{new_device}{if \code{TRUE}, will open a new graphics device and
 automatically close it after completion. This prevents evaluation from
