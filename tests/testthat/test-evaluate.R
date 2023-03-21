@@ -1,5 +1,5 @@
 test_that("file with only comments runs", {
-  ev <- evaluate(file("comment.r"))
+  ev <- evaluate(file("comment.R"))
   expect_length(ev, 2)
 
   expect_equal(classes(ev), c("source", "source"))
@@ -8,7 +8,7 @@ test_that("file with only comments runs", {
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
-  ev <- evaluate(file("data.r"))
+  ev <- evaluate(file("data.R"))
   expect_length(ev, 3)
 })
 
@@ -62,11 +62,11 @@ test_that("options(warn = 0) and options(warn = 1) produces warnings", {
 # })
 
 test_that("output and plots interleaved correctly", {
-  ev <- evaluate(file("interleave-1.r"))
+  ev <- evaluate(file("interleave-1.R"))
   expect_equal(classes(ev),
                c("source", "character", "recordedplot", "character", "recordedplot"))
 
-  ev <- evaluate(file("interleave-2.r"))
+  ev <- evaluate(file("interleave-2.R"))
   expect_equal(classes(ev),
                c("source", "recordedplot", "character", "recordedplot", "character"))
 })
@@ -75,7 +75,7 @@ test_that("return value of value handler inserted directly in output list", {
   skip_if_not_installed("ggplot2")
 
   ev <- evaluate(
-    file("raw-output.r"),
+    file("raw-output.R"),
     output_handler = new_output_handler(value = identity)
   )
   expect_equal(

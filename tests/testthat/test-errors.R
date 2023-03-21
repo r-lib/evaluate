@@ -1,19 +1,19 @@
 test_that("all code run, even after error", {
-  ev <- evaluate(file("error.r"))
+  ev <- evaluate(file("error.R"))
   expect_length(ev, 4)
 })
 
 test_that("code aborts on error if stop_on_error == 1L", {
-  ev <- evaluate(file("error.r"), stop_on_error = 1L)
+  ev <- evaluate(file("error.R"), stop_on_error = 1L)
   expect_length(ev, 2)
 })
 
 test_that("code errors if stop_on_error == 2L", {
-  expect_error(evaluate(file("error.r"), stop_on_error = 2L), "1")
+  expect_error(evaluate(file("error.R"), stop_on_error = 2L), "1")
 })
 
 test_that("traceback useful if stop_on_error == 2L", {
-  expect_error(evaluate(file("error-complex.r"), stop_on_error = 2L), "Error")
+  expect_error(evaluate(file("error-complex.R"), stop_on_error = 2L), "Error")
 
   ## Doesn't work because .Traceback not create when code run
   ## inside try or tryCatch. Can't figure out how to work around.
@@ -28,6 +28,6 @@ test_that("traceback useful if stop_on_error == 2L", {
 test_that("capture messages in try() (#88)", {
   skip_if(getRversion() < "3.4")
 
-  ev <- evaluate(file("try.r"))
+  ev <- evaluate(file("try.R"))
   expect_match(ev[[length(ev)]], "Obscure error")
 })
