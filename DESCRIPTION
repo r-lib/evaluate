@@ -12,7 +12,8 @@ Authors@R: c(
     person("Adam", "Ryczkowski", role = "ctb"),
     person("Hiroaki", "Yutani", role = "ctb"),
     person("Michel", "Lang", role = "ctb"),
-    person("Karolis", "Koncevičius", role = "ctb")
+    person("Karolis", "Koncevičius", role = "ctb"),
+    person(given = "Posit Software, PBC", role = c("cph", "fnd"))
     )
 Description: Parsing and evaluation tools that make it easy to recreate the
     command line behaviour of R.
