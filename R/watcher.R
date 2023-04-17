@@ -42,7 +42,7 @@ watchout <- function(debug = FALSE) {
     pause = function() sink(),
     unpause = function() sink(con, split = debug),
     close = function() {
-      test_con(con, isOpen)
+      if (!test_con(con, isOpen)) con_error('The connection has been closed')
       sink()
       close(con)
       output
@@ -52,10 +52,12 @@ watchout <- function(debug = FALSE) {
 }
 
 test_con = function(con, test) {
-  tryCatch(test(con), error = function(e) stop(
-    e$message, '... Please make sure not to call closeAllConnections().'
-  ))
+  tryCatch(test(con), error = function(e) con_error(e$message))
 }
+
+con_error = function(x) stop(
+  x, '... Please make sure not to call closeAllConnections().', call. = FALSE
+)
 
 .env = new.env()
 .env$flush_console = function() {}
