@@ -5,6 +5,8 @@ Version 0.21
   these cause code and warnings (respectively) to be immediately emitted to 
   `stderr()`. This is useful for logging in unattended environments (#118).
 
+- Improved the error message when users accidentally called `closeAllConnections()` (thanks, @guslipkin, quarto-dev/quarto-cli#5214).
+
 Version 0.20
 ================================================================================
 

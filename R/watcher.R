@@ -15,7 +15,7 @@ watchout <- function(debug = FALSE) {
   list(
     get_new = function(plot = FALSE, incomplete_plots = FALSE,
                        text_callback = identity, graphics_callback = identity) {
-      incomplete <- isIncomplete(con)
+      incomplete <- test_con(con, isIncomplete)
       if (incomplete) cat("\n")
 
       out <- list()
@@ -42,14 +42,19 @@ watchout <- function(debug = FALSE) {
     pause = function() sink(),
     unpause = function() sink(con, split = debug),
     close = function() {
-      if (!isOpen(con))
-        stop("something bad happened... did you use closeAllConnections()?")
+      test_con(con, isOpen)
       sink()
       close(con)
       output
     },
     get_con = function() con
   )
+}
+
+test_con = function(con, test) {
+  tryCatch(test(con), error = function(e) stop(
+    e$message, '... Please make sure not to call closeAllConnections().'
+  ))
 }
 
 .env = new.env()
