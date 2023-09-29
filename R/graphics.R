@@ -65,7 +65,8 @@ plot_calls <- function(plot) {
     # grid graphics do not have x[[1]]$name
     if (!is.null(nm <- x[[1]][["name"]])) return(nm)
     nm <- deparse(x[[1]])
-    # the plot element should not be empty
-    if (length(x[[2]]) > 0 || !grepl("^requireNamespace\\(", nm)) nm
+    # the plot element should not be empty, and ignore calls that are simply
+    # requireNamespace()
+    if (length(x[[2]]) > 0 || !all(grepl("^requireNamespace\\(", nm))) nm
   }))
 }
