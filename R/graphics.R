@@ -10,7 +10,9 @@ plot_snapshot <- local({
   last_plot <- NULL
 
   function(incomplete = FALSE) {
-    if (is.null(dev.list())) return(NULL)
+    # to record a plot, at least one device must be open; the list of devices
+    # must not have changed since evaluate() started
+    if (is.null(devs <- dev.list()) || !identical(devs, .env$dev_list)) return(NULL)
     if (!incomplete && !par('page')) return(NULL)  # current page not complete
 
     plot <- recordPlot()

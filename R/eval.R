@@ -75,11 +75,21 @@ evaluate <- function(input,
     dev <- dev.cur()
     on.exit(dev.off(dev))
   }
+  # record the list of current devices
+  devs <- .env$dev_list; on.exit(.env$dev_list <- devs, add = TRUE)
+  devn <- length(.env$dev_list <- dev.list())
+  dev <- dev.cur()
+
   # clean up the last_plot object after an evaluate() call (cf yihui/knitr#722)
   on.exit(assign("last_plot", NULL, envir = environment(plot_snapshot)), add = TRUE)
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
+    # if dev.off() was called, make sure to restore device to the one opened by
+    # evaluate() or existed before evaluate()
+    if (length(dev.list()) < devn) dev.set(dev)
+    devn <- length(dev.list())
+
     expr <- parsed$expr[[i]]
     if (!is.null(expr))
       expr <- as.expression(expr)

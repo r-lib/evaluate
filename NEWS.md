@@ -1,6 +1,7 @@
 Version 0.23
 ================================================================================
 
+- Prevent existing plots from leaking into `evaluate()` results (thanks, @dmurdoch, yihui/knitr#2297).
 
 Version 0.22
 ================================================================================
