@@ -22,7 +22,10 @@
 #'   the code into the command line.
 #' @param keep_warning,keep_message whether to record warnings and messages; if
 #'   `FALSE`, messages will be suppressed; if `NA`, they will not be captured
-#'   (normally they will be sent to the console).
+#'   (normally they will be sent to the console). Note that if the environment
+#'   variable `R_EVALUATE_BYPASS_MESSAGES` is set to true, these arguments will
+#'   always be set to `NA`, meaning that messages will not be captured by this
+#'   function.
 #' @param log_echo,log_warning If `TRUE`, will immediately log code and
 #'   warnings (respectively) to `stderr`.
 #' @param new_device if `TRUE`, will open a new graphics device and
@@ -82,6 +85,10 @@ evaluate <- function(input,
 
   # clean up the last_plot object after an evaluate() call (cf yihui/knitr#722)
   on.exit(assign("last_plot", NULL, envir = environment(plot_snapshot)), add = TRUE)
+
+  # if this env var is set to true, always bypass messages
+  if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
+    keep_message = keep_warning = NA
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {

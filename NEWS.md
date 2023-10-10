@@ -3,6 +3,8 @@ Version 0.23
 
 - Prevent existing plots from leaking into `evaluate()` results (thanks, @dmurdoch, yihui/knitr#2297).
 
+- If the environment variable `R_EVALUATE_BYPASS_MESSAGES` is set to true, the arguments `keep_message` and `keep_warning` of `evaluate()` will be set to `NA`, regardless of user input, which means messages and warnings will not be captured by `evaluate()`. This provides a possibility to force logging messages and warnings (thanks, @slodge, yihui/yihui.org#1458).
+
 Version 0.22
 ================================================================================
 

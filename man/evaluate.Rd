@@ -40,7 +40,10 @@ the code into the command line.}
 
 \item{keep_warning, keep_message}{whether to record warnings and messages; if
 \code{FALSE}, messages will be suppressed; if \code{NA}, they will not be captured
-(normally they will be sent to the console).}
+(normally they will be sent to the console). Note that if the environment
+variable \code{R_EVALUATE_BYPASS_MESSAGES} is set to true, these arguments will
+always be set to \code{NA}, meaning that messages will not be captured by this
+function.}
 
 \item{log_echo, log_warning}{If \code{TRUE}, will immediately log code and
 warnings (respectively) to \code{stderr}.}
