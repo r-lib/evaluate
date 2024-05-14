@@ -33,6 +33,7 @@ Suggests:
     rlang,
     testthat (>= 3.0.0),
     withr
+Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
