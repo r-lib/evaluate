@@ -19,8 +19,23 @@ new_value <- function(value, visible = TRUE) {
   structure(list(value = value, visible = visible), class = "value")
 }
 
-new_source <- function(src) {
-  structure(list(src = src), class = "source")
+new_source <- function(src, call, handler = NULL) {
+  src <- structure(list(src = src), class = "source")
+  if (is.null(handler)) {
+    return(src)
+  }
+  
+  n_args <- length(formals(handler))
+  if (n_args == 1) {
+    # Old format only called for side effects
+    handler(src)
+    src
+  } else if (n_args == 2) {
+    # New format can influence result
+    handler(src, call)
+  } else {
+    stop("Source output handler must have one or two arguments")
+  }
 }
 
 classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
@@ -45,6 +60,11 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #' printing, then the `text` or `graphics` handlers may be called.
 #'
 #' @param source Function to handle the echoed source code under evaluation.
+#'  This function should take two arguments (`src` and `call`), and return
+#'  an object that will be inserted into the evaluate outputs. 
+#' 
+#'  Return `src` for the default evaluate behaviour. Return `NULL` to 
+#'  drop the source from the output.
 #' @param text Function to handle any textual console output.
 #' @param graphics Function to handle graphics, as returned by
 #'   [recordPlot()].

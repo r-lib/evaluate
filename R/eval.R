@@ -58,8 +58,7 @@ evaluate <- function(input,
 
   parsed <- parse_all(input, filename, stop_on_error != 2L)
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
-    source <- new_source(parsed$src)
-    output_handler$source(source)
+    source <- new_source(parsed$src, call[[1]], output_handler$source)
     output_handler$error(err)
     err$call <- NULL  # the call is unlikely to be useful
     return(list(source, err))
@@ -124,6 +123,9 @@ evaluate <- function(input,
     }
   }
 
+  is_empty <- vapply(out, identical, list(NULL), FUN.VALUE = logical(1))
+  out <- out[!is_empty]
+
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
@@ -143,8 +145,7 @@ evaluate_call <- function(call,
   if (debug) message(src)
 
   if (is.null(call) && !last) {
-    source <- new_source(src)
-    output_handler$source(source)
+    source <- new_source(src, call[[1]], output_handler$source)
     return(list(source))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call) || is.null(call))
@@ -161,8 +162,7 @@ evaluate_call <- function(call,
     cat(src, "\n", sep = "", file = stderr())
   }
 
-  source <- new_source(src)
-  output_handler$source(source)
+  source <- new_source(src, call[[1]], output_handler$source)
   output <- list(source)
 
   dev <- dev.cur()

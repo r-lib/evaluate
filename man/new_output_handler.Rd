@@ -17,7 +17,12 @@ new_output_handler(
 )
 }
 \arguments{
-\item{source}{Function to handle the echoed source code under evaluation.}
+\item{source}{Function to handle the echoed source code under evaluation.
+This function should take two arguments (\code{src} and \code{call}), and return
+an object that will be inserted into the evaluate outputs.
+
+Return \code{src} for the default evaluate behaviour. Return \code{NULL} to
+drop the source from the output.}
 
 \item{text}{Function to handle any textual console output.}
 

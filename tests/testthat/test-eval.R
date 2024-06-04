@@ -43,3 +43,19 @@ test_that("show_warning handles different types of warning", {
   })
 
 })
+
+test_that("can conditionally omit output with output handler", {
+  hide_source <- function(src, call) {
+    if (is.call(call) && identical(call[[1]], quote(hide))) {
+      NULL
+    } else {
+      src
+    }
+  }
+  handler <- new_output_handler(source = hide_source)
+  hide <- function(x) invisible(x)
+
+  out <- evaluate("hide(x <- 1)\nx", output_handler = handler)
+  expect_length(out, 2)
+  expect_snapshot(replay(out))
+})
