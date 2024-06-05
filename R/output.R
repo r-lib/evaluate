@@ -61,7 +61,9 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #'
 #' @param source Function to handle the echoed source code under evaluation.
 #'  This function should take two arguments (`src` and `call`), and return
-#'  an object that will be inserted into the evaluate outputs. 
+#'  an object that will be inserted into the evaluate outputs. `src` is the
+#'  unparsed text of the source code, and `call` is the parsed language object 
+#'  If `src` is unparsable, `call` will be `expression()`.
 #' 
 #'  Return `src` for the default evaluate behaviour. Return `NULL` to 
 #'  drop the source from the output.

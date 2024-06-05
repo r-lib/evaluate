@@ -58,7 +58,7 @@ evaluate <- function(input,
 
   parsed <- parse_all(input, filename, stop_on_error != 2L)
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
-    source <- new_source(parsed$src, call[[1]], output_handler$source)
+    source <- new_source(parsed$src, expression(), output_handler$source)
     output_handler$error(err)
     err$call <- NULL  # the call is unlikely to be useful
     return(list(source, err))

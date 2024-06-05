@@ -59,3 +59,19 @@ test_that("can conditionally omit output with output handler", {
   expect_length(out, 2)
   expect_snapshot(replay(out))
 })
+
+test_that("source handled called correctly when src is unparseable", {
+  src <- NULL
+  call <- NULL
+  capture_args <- function(src, call) {
+    src <<- src
+    call <<- call
+
+    src
+  }
+  handler <- new_output_handler(source = capture_args)
+
+  evaluate("x + ", output_handler = handler)
+  expect_equal(src, new_source("x + "))
+  expect_equal(call, expression())
+})
