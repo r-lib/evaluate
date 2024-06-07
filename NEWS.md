@@ -1,6 +1,7 @@
 # evaluate (development version)
 
-* The `source` output handler can now take two arguments (the unparsed `src` and the parsed `call`) and choose to affect the displayed source.
+* The `source` output handler can now take two arguments (the unparsed `src` 
+  and the parsed `call`) and choose to affect the displayed source.
 
 # Version 0.23
 
