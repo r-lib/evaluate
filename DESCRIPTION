@@ -23,7 +23,7 @@ License: MIT + file LICENSE
 URL: https://github.com/r-lib/evaluate
 BugReports: https://github.com/r-lib/evaluate/issues
 Depends:
-    R (>= 3.0.2)
+    R (>= 4.0.0)
 Imports:
     methods
 Suggests:
