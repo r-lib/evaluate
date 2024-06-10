@@ -28,7 +28,7 @@
     
     <a class="navbar-brand me-2" href="index.html">evaluate</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.24.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,19 +63,21 @@
 </nav><div class="container template-home" id="container">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="evaluate">Evaluate<a class="anchor" aria-label="anchor" href="#evaluate"></a>
+<div class="page-header"><h1 id="evaluate">evaluate<a class="anchor" aria-label="anchor" href="#evaluate"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>Evaluate provides tools that allow you to recreate the parsing, evaluation and display of R code, with enough information that you can accurately recreate what happens at the command line. Evaluate + replay works very similarly to <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code>, but is written in such a way to make it easy to adapt for other output formats, such as html or latex.</p>
+<p>evaluate provides tools that allow you to recreate the parsing, evaluation and display of R code, with enough information that you can accurately recreate what happens at the command line. Evaluate + replay works very similarly to <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code>, but is written in such a way to make it easy to adapt for other output formats, such as html or latex.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/evaluate" class="external-link">evaluate</a></span><span class="op">)</span></span></code></pre></div>
 <p>There are three components to the <code>evaluate</code> package:</p>
 <ul>
 <li>
-<code>parse_all</code>, a version of parse that keeps expressions with their original source code, maintaining formatting and comments.</li>
+<code><a href="reference/parse_all.html">parse_all()</a></code>, a version of parse that keeps expressions with their original source code, maintaining formatting and comments.</li>
 <li>
-<code>evaluate</code>, which evaluates each expression produced by <code>parse_all</code>, tracking all output, messages, warnings, and errors as their occur, and interleaving them in the correct order with the original source and value of the expression.</li>
+<code><a href="reference/evaluate.html">evaluate()</a></code>, which evaluates each expression produced by <code><a href="reference/parse_all.html">parse_all()</a></code>, tracking all output, messages, warnings, and errors as their occur, and interleaving them in the correct order with the original source and value of the expression.</li>
 <li>
-<code>replay</code>, which outputs these pieces in a way that makes it look like you’ve entered the code at the command line. This function also serves as a template for other output formats.</li>
+<code><a href="reference/replay.html">replay()</a></code>, which outputs these pieces in a way that makes it look like you’ve entered the code at the command line. This function also serves as a template for other output formats.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><div class="links">
