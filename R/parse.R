@@ -16,11 +16,6 @@ parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_
 
 #' @export
 parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
-
-  # Do not convert strings to factors by default in data.frame()
-  op <- options(stringsAsFactors = FALSE)
-  on.exit(options(op), add = TRUE)
-
   if (length(grep("\n", x))) {
     # strsplit('a\n', '\n') needs to return c('a', '') instead of c('a')
     x <- gsub("\n$", "\n\n", x)
@@ -112,18 +107,6 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
 append_break <- function(x) {
   n <- length(x)
   if (n <= 1) x else paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
-}
-
-# YX: This hack is because srcfilecopy() uses grepl("\n", fixed = TRUE), which
-# does not work when the source lines contain multibyte characters that are not
-# representable in the current locale on Windows (see
-# https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=16264). In our case, we
-# have already split the lines by \n, so there is no need to do that again like
-# srcfilecopy() does internally.
-if (getRversion() <= '3.2.2') srcfilecopy <- function(filename, lines, ...) {
-  src <- base::srcfilecopy(filename, lines = "", ...)
-  src$lines <- lines
-  src
 }
 
 #' @export
