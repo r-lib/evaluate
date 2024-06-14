@@ -2,7 +2,7 @@
 % Please edit documentation in R/replay.R
 \name{replay}
 \alias{replay}
-\title{Replay a list of evaluated results.}
+\title{Replay a list of evaluated results}
 \usage{
 replay(x)
 }

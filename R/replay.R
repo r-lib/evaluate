@@ -1,4 +1,4 @@
-#' Replay a list of evaluated results.
+#' Replay a list of evaluated results
 #'
 #' Replay a list of evaluated results, as if you'd run them in an R
 #' terminal.

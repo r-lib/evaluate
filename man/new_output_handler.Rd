@@ -3,7 +3,7 @@
 \name{new_output_handler}
 \alias{new_output_handler}
 \alias{output_handler}
-\title{Custom output handlers.}
+\title{Custom output handlers}
 \usage{
 new_output_handler(
   source = identity,
