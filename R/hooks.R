@@ -1,33 +1,11 @@
-#' Set hooks.
+#' Set and remove hooks
 #'
-#' This wraps the base [setHook()] function to provide a return
+#' This interface wraps the base [setHook()] function to provide a return
 #' value that makes it easy to undo.
 #'
 #' @param hooks a named list of hooks - each hook can either be a function or
 #'   a list of functions.
 #' @param action `"replace"`, `"append"` or `"prepend"`
-#' @keywords internal
-#' @export
-#' @examples
-#' new <- list(before.plot.new = function() print("Plotted!"))
-#' hooks <- set_hooks(new)
-#' plot(1)
-#' set_hooks(hooks, "replace")
-#' plot(1)
-set_hooks <- function(hooks, action = "append") {
-  old <- list()
-  for (hook_name in names(hooks)) {
-    old[[hook_name]] <- getHook(hook_name)
-    setHook(hook_name, hooks[[hook_name]], action = action)
-  }
-  invisible(old)
-}
-
-#' Remove hooks.
-#'
-#' This provides a way to remove previously set hook values.
-#'
-#' @inheritParams set_hooks
 #' @keywords internal
 #' @export
 #' @examples
@@ -40,6 +18,17 @@ set_hooks <- function(hooks, action = "append") {
 #' plot(1)
 #' remove_hooks(new2)
 #' plot(1)
+set_hooks <- function(hooks, action = "append") {
+  old <- list()
+  for (hook_name in names(hooks)) {
+    old[[hook_name]] <- getHook(hook_name)
+    setHook(hook_name, hooks[[hook_name]], action = action)
+  }
+  invisible(old)
+}
+
+#' @rdname set_hooks
+#' @export
 remove_hooks <- function(hooks) {
   for (hook_name in names(hooks)) {
     hook <- getHook(hook_name)
@@ -49,4 +38,3 @@ remove_hooks <- function(hooks) {
     setHook(hook_name, hook, "replace")
   }
 }
-
