@@ -132,19 +132,19 @@ test_that("by default, evaluate() always records plots regardless of the device"
 })
 
 test_that("Rplots.pdf files are not created", {
-  op <- options(device = pdf)
-  on.exit(options(op))
-  evaluate(file("plot.R"))
+  ev <- evaluate("plot(1)")
   expect_false(file.exists("Rplots.pdf"))
 })
 
 # https://github.com/yihui/knitr/issues/2297
 test_that("existing plots will not leak into evaluate()", {
+  withr::local_options(device = function() pdf(NULL))
+  
   pdf(NULL)
   dev.control('enable')
   d <- dev.cur()
   plot(1, 1)
-  ev <- evaluate(c('dev.new()', 'dev.off()', 'plot.new()', 'plot(1:10, 1:10)'))
+  ev <- evaluate(c('pdf(NULL)', 'dev.off()', 'plot.new()', 'plot(1:10, 1:10)'))
   dev.off(d)
   expect_equal(tail(classes(ev), 6), c('source', 'character', 'recordedplot')[c(1, 2, 1, 3, 1, 3)])
 })
