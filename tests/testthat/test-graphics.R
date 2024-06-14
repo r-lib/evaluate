@@ -144,7 +144,7 @@ test_that("existing plots will not leak into evaluate()", {
   dev.control('enable')
   d <- dev.cur()
   plot(1, 1)
-  ev <- evaluate(c('pdf(NULL)', 'dev.off()', 'plot.new()', 'plot(1:10, 1:10)'))
+  ev <- evaluate(c('dev.new()', 'dev.off()', 'plot.new()', 'plot(1:10, 1:10)'))
   dev.off(d)
   expect_equal(tail(classes(ev), 6), c('source', 'character', 'recordedplot')[c(1, 2, 1, 3, 1, 3)])
 })
