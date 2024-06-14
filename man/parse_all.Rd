@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse.R
 \name{parse_all}
 \alias{parse_all}
-\title{Parse, retaining comments.}
+\title{Parse, retaining comments}
 \usage{
 parse_all(x, filename = NULL, allow_error = FALSE)
 }

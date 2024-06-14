@@ -2,7 +2,7 @@
 % Please edit documentation in R/traceback.R
 \name{create_traceback}
 \alias{create_traceback}
-\title{Generate a traceback from a list of calls.}
+\title{Generate a traceback from a list of calls}
 \usage{
 create_traceback(callstack)
 }
@@ -11,6 +11,6 @@ create_traceback(callstack)
 \code{\link[base:sys.parent]{base::sys.calls()}}}
 }
 \description{
-Generate a traceback from a list of calls.
+Generate a traceback from a list of calls
 }
 \keyword{internal}

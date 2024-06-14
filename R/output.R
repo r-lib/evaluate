@@ -47,7 +47,7 @@ classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
 
 render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 
-#' Custom output handlers.
+#' Custom output handlers
 #'
 #' An `output_handler` handles the results of [evaluate()],
 #' including the values, graphics, conditions. Each type of output is handled by

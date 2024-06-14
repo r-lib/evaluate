@@ -2,7 +2,7 @@
 % Please edit documentation in R/traceback.R
 \name{try_capture_stack}
 \alias{try_capture_stack}
-\title{Try, capturing stack on error.}
+\title{Try, capturing stack on error}
 \usage{
 try_capture_stack(quoted_code, env)
 }

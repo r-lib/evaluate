@@ -2,7 +2,7 @@
 % Please edit documentation in R/eval.R
 \name{evaluate}
 \alias{evaluate}
-\title{Evaluate input and return all details of evaluation.}
+\title{Evaluate input and return all details of evaluation}
 \usage{
 evaluate(
   input,

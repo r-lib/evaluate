@@ -1,4 +1,4 @@
-#' Evaluate input and return all details of evaluation.
+#' Evaluate input and return all details of evaluation
 #'
 #' Compare to [eval()], `evaluate` captures all of the
 #' information necessary to recreate the output as if you had copied and pasted
