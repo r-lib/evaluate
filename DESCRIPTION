@@ -20,7 +20,7 @@ Authors@R: c(
 Description: Parsing and evaluation tools that make it easy to recreate
     the command line behaviour of R.
 License: MIT + file LICENSE
-URL: https://github.com/r-lib/evaluate
+URL: https://evaluate.r-lib.org/, https://github.com/r-lib/evaluate
 BugReports: https://github.com/r-lib/evaluate/issues
 Depends:
     R (>= 4.0.0)
