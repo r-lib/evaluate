@@ -1,4 +1,4 @@
-#' Watch for changes in output, text and graphical.
+#' Watch for changes in output, text and graphics
 #'
 #' @param debug activate debug mode where output will be both printed to
 #'   screen and captured.
