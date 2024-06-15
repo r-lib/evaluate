@@ -1,19 +1,25 @@
 test_that("all code run, even after error", {
-  ev <- evaluate(file("error.R"))
+  ev <- evaluate_('stop("1")\n2')
   expect_length(ev, 4)
 })
 
 test_that("code aborts on error if stop_on_error == 1L", {
-  ev <- evaluate(file("error.R"), stop_on_error = 1L)
+  ev <- evaluate('stop("1")\n2', stop_on_error = 1L)
   expect_length(ev, 2)
 })
 
 test_that("code errors if stop_on_error == 2L", {
-  expect_error(evaluate(file("error.R"), stop_on_error = 2L), "1")
+  expect_snapshot(evaluate('stop("1")', stop_on_error = 2L), error = TRUE)
 })
 
 test_that("traceback useful if stop_on_error == 2L", {
-  expect_error(evaluate(file("error-complex.R"), stop_on_error = 2L), "Error")
+  expect_error(evaluate_('
+    f <- function() g()
+    g <- function() h()
+    h <- function() stop("Error")
+
+    f()
+  ', stop_on_error = 2L), "Error")
 
   ## Doesn't work because .Traceback not create when code run
   ## inside try or tryCatch. Can't figure out how to work around.
@@ -26,6 +32,12 @@ test_that("traceback useful if stop_on_error == 2L", {
 })
 
 test_that("capture messages in try() (#88)", {
-  ev <- evaluate(file("try.R"))
+   # TODO: figure out why this doesn't work interactively
+   ev <- evaluate_('
+    g <- function() f("error")
+    f <- function(x) stop(paste0("Obscure ", x))
+    
+    try(g())
+  ')  
   expect_match(ev[[length(ev)]], "Obscure error")
 })

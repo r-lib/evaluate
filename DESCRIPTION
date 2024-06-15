@@ -28,7 +28,7 @@ Imports:
     methods
 Suggests:
     covr,
-    ggplot2,
+    ggplot2 (>= 3.3.6),
     lattice,
     rlang,
     testthat (>= 3.0.0),
