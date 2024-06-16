@@ -64,8 +64,8 @@ evaluate <- function(input,
     return(list(source, err))
   }
 
-  if (is.null(enclos)) {
-    enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
+  if (is.list(envir)) {
+    envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
 
   if (new_device) {
@@ -103,7 +103,6 @@ evaluate <- function(input,
       expr,
       parsed$src[[i]],
       envir = envir,
-      enclos = enclos,
       debug = debug,
       last = i == length(out),
       use_try = stop_on_error != 2L,
@@ -132,7 +131,6 @@ evaluate <- function(input,
 evaluate_call <- function(call,
                           src = NULL,
                           envir = parent.frame(),
-                          enclos = NULL,
                           debug = FALSE,
                           last = FALSE,
                           use_try = FALSE,
@@ -254,7 +252,7 @@ evaluate_call <- function(call,
     srcindex <- length(output)
     time <- timing_fn(handle(
       ev <- withCallingHandlers(
-        withVisible(eval_with_user_handlers(expr, envir, enclos, user_handlers)),
+        withVisible(eval_with_user_handlers(expr, envir, user_handlers)),
         warning = wHandler,
         error = eHandler,
         message = mHandler
@@ -286,9 +284,9 @@ evaluate_call <- function(call,
   output
 }
 
-eval_with_user_handlers <- function(expr, envir, enclos, calling_handlers) {
+eval_with_user_handlers <- function(expr, envir, calling_handlers) {
   if (!length(calling_handlers)) {
-    return(eval(expr, envir, enclos))
+    return(eval(expr, envir))
   }
 
   if (!is.list(calling_handlers)) {
@@ -297,7 +295,7 @@ eval_with_user_handlers <- function(expr, envir, enclos, calling_handlers) {
 
   call <- as.call(c(
     quote(withCallingHandlers),
-    quote(eval(expr, envir, enclos)),
+    quote(eval(expr, envir)),
     calling_handlers
   ))
 
