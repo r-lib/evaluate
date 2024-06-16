@@ -42,24 +42,27 @@ test_that("errors during printing visible values are captured", {
   expect_s3_class(ev[[2]], "error")
 })
 
-test_that("options(warn = -1) suppresses warnings", {
-  ev <- evaluate("op = options(warn = -1); warning('hi'); options(op)")
+test_that("respects warn options", {
+  # suppress warnings
+  withr::local_options(warn = -1)
+  ev <- evaluate("warning('hi')")
   expect_equal(classes(ev), "source")
-})
 
-test_that("options(warn = 0) and options(warn = 1) produces warnings", {
-  ev <- evaluate("op = options(warn = 0); warning('hi'); options(op)")
+  # delayed warnings are always immediate in knitr
+  withr::local_options(warn = 0)
+  ev <- evaluate("warning('hi')")
   expect_equal(classes(ev), c("source", "simpleWarning"))
 
-  ev <- evaluate("op = options(warn = 1); warning('hi'); options(op)")
+  # immediate warnings
+  withr::local_options(warn = 1)
+  ev <- evaluate("warning('hi')")
   expect_equal(classes(ev), c("source", "simpleWarning"))
-})
 
-# See https://github.com/r-lib/evaluate/pull/81#issuecomment-367685196
-# test_that("options(warn = 2) produces errors instead of warnings", {
-#   ev_warn_2 <- evaluate("op = options(warn = 2); warning('hi'); options(op)")
-#   expect_equal(classes(ev_warn_2), c("source", "simpleError"))
-# })
+  # warnings become errors
+  withr::local_options(warn = 2)
+  ev <- evaluate("warning('hi')")
+  expect_equal(classes(ev), c("source", "simpleError"))
+})
 
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.R"))
