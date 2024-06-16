@@ -96,7 +96,7 @@ evaluate <- function(input,
     if (length(dev.list()) < devn) dev.set(dev)
     devn <- length(dev.list())
 
-    out[[i]] <- evaluate_call(
+    out[[i]] <- evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
       src = parsed$src[[i]],
       envir = envir,
@@ -126,19 +126,19 @@ evaluate <- function(input,
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
-evaluate_call <- function(exprs,
-                          src = NULL,
-                          envir = parent.frame(),
-                          enclos = NULL,
-                          debug = FALSE,
-                          last = FALSE,
-                          use_try = FALSE,
-                          keep_warning = TRUE,
-                          keep_message = TRUE,
-                          log_echo = FALSE,
-                          log_warning = FALSE,
-                          output_handler = new_output_handler(),
-                          include_timing = FALSE) {
+evaluate_top_level_expression <- function(exprs,
+                                          src = NULL,
+                                          envir = parent.frame(),
+                                          enclos = NULL,
+                                          debug = FALSE,
+                                          last = FALSE,
+                                          use_try = FALSE,
+                                          keep_warning = TRUE,
+                                          keep_message = TRUE,
+                                          log_echo = FALSE,
+                                          log_warning = FALSE,
+                                          output_handler = new_output_handler(),
+                                          include_timing = FALSE) {
   stopifnot(is.expression(exprs))
   if (debug) message(src)
 
