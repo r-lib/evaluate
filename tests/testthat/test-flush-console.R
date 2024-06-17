@@ -1,6 +1,18 @@
-test_that("flush_console() is a null op at top-level", {
-  expect_no_error(flush_console())
 
+
+test_that("flush_console() is a null op by default", {
+  expect_no_error(flush_console())
+})
+
+test_that("can set and restore output handler", {
+  f <- function() message("Hi")
+  old <- set_output_handler(function() message("Hi"))
+  expect_equal(.env$output_handler, f)
+  expect_equal(old, NULL)
+
+  expect_message(flush_console(), "Hi")
+  old2 <- set_output_handler(old)
+  expect_equal(old2, f)
 })
 
 test_that("can use flush_console() inside evaluate", {
