@@ -2,7 +2,6 @@
 % Please edit documentation in R/evaluate-package.R
 \docType{package}
 \name{evaluate-package}
-\alias{evaluate}
 \alias{evaluate-package}
 \title{evaluate: Parsing and Evaluation Tools that Provide More Details than the Default}
 \description{
