@@ -248,18 +248,15 @@ evaluate_call <- function(call,
   }
 
   user_handlers <- output_handler$calling_handlers
+  evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
+  handlers <- c(user_handlers, evaluate_handlers)
 
   multi_args <- length(formals(value_handler)) > 1
   for (expr in call) {
     srcindex <- length(output)
     time <- timing_fn(handle(
-      ev <- withCallingHandlers(
-        withVisible(eval_with_user_handlers(expr, envir, enclos, user_handlers)),
-        warning = wHandler,
-        error = eHandler,
-        message = mHandler
-      )
-    ))
+      ev <- eval_with_visibility(expr, envir, enclos, handlers))
+    )
     handle_output(TRUE)
     if (!is.null(time))
       attr(output[[srcindex]]$src, 'timing') <- time
@@ -286,18 +283,14 @@ evaluate_call <- function(call,
   output
 }
 
-eval_with_user_handlers <- function(expr, envir, enclos, calling_handlers) {
-  if (!length(calling_handlers)) {
-    return(eval(expr, envir, enclos))
-  }
-
+eval_with_visibility <- function(expr, envir, enclos, calling_handlers = list()) {
   if (!is.list(calling_handlers)) {
     stop("`calling_handlers` must be a list", call. = FALSE)
   }
 
   call <- as.call(c(
     quote(withCallingHandlers),
-    quote(eval(expr, envir, enclos)),
+    quote(withVisible(eval(expr, envir, enclos))),
     calling_handlers
   ))
 
