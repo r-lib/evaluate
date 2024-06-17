@@ -1,15 +1,14 @@
 test_that("file with only comments runs", {
   ev <- evaluate(file("comment.R"))
-  expect_length(ev, 2)
-
-  expect_equal(classes(ev), c("source", "source"))
+  
+  expect_output_types(ev, c("source", "source"))
 })
 
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
   ev <- evaluate(file("data.R"))
-  expect_length(ev, 3)
+  expect_output_types(ev, c("source", "source", "text"))
 })
 
 # # Don't know how to implement this
@@ -20,7 +19,8 @@ test_that("data sets loaded", {
 
 test_that("terminal newline not needed", {
   ev <- evaluate("cat('foo')")
-  expect_length(ev, 2)
+
+  expect_output_types(ev, c("source", "text"))
   expect_equal(ev[[2]], "foo")
 })
 
@@ -39,36 +39,34 @@ test_that("errors during printing visible values are captured", {
   a <- new('A', function() b)
 
   ev <- evaluate("a")
-  expect_s3_class(ev[[2]], "error")
+  expect_output_types(ev, c("source", "error"))
 })
 
 test_that("options(warn = -1) suppresses warnings", {
   ev <- evaluate("op = options(warn = -1); warning('hi'); options(op)")
-  expect_equal(classes(ev), "source")
+  expect_output_types(ev, "source")
 })
 
 test_that("options(warn = 0) and options(warn = 1) produces warnings", {
   ev <- evaluate("op = options(warn = 0); warning('hi'); options(op)")
-  expect_equal(classes(ev), c("source", "simpleWarning"))
+  expect_output_types(ev, c("source", "warning"))
 
   ev <- evaluate("op = options(warn = 1); warning('hi'); options(op)")
-  expect_equal(classes(ev), c("source", "simpleWarning"))
+  expect_output_types(ev, c("source", "warning"))
 })
 
 # See https://github.com/r-lib/evaluate/pull/81#issuecomment-367685196
 # test_that("options(warn = 2) produces errors instead of warnings", {
 #   ev_warn_2 <- evaluate("op = options(warn = 2); warning('hi'); options(op)")
-#   expect_equal(classes(ev_warn_2), c("source", "simpleError"))
+#   expect_output_types(ev_warn_2, c("source", "error"))
 # })
 
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.R"))
-  expect_equal(classes(ev),
-               c("source", "character", "recordedplot", "character", "recordedplot"))
+  expect_output_types(ev, c("source", "text", "plot", "text", "plot"))
 
   ev <- evaluate(file("interleave-2.R"))
-  expect_equal(classes(ev),
-               c("source", "recordedplot", "character", "recordedplot", "character"))
+  expect_output_types(ev, c("source", "plot", "text", "plot", "text"))
 })
 
 test_that("return value of value handler inserted directly in output list", {
@@ -78,10 +76,7 @@ test_that("return value of value handler inserted directly in output list", {
     file("raw-output.R"),
     output_handler = new_output_handler(value = identity)
   )
-  expect_equal(
-    classes(ev),
-    c("source", "numeric", "source", "source", "source", "gg")
-  )
+  expect_output_types(ev, c("source", "numeric", "source", "source", "source", "gg"))
 })
 
 test_that("invisible values can also be saved if value handler has two arguments", {
@@ -89,17 +84,18 @@ test_that("invisible values can also be saved if value handler has two arguments
     x  # always returns a visible value
   })
   ev <- evaluate("x<-1:10", output_handler = handler)
-  expect_equal(classes(ev), c("source", "integer"))
+  expect_output_types(ev, c("source", "integer"))
 })
 
 test_that("multiple expressions on one line can get printed as expected", {
   ev <- evaluate("x <- 1; y <- 2; x; y")
-  expect_equal(classes(ev), c("source", "character", "character"))
+  expect_output_types(ev, c("source", "text", "text"))
 })
 
 test_that("multiple lines of comments do not lose the terminating \\n", {
   ev <- evaluate("# foo\n#bar")
-  expect_equal(ev[[1]][["src"]], "# foo\n")
+  expect_output_types(ev, c("source", "source"))
+  expect_equal(ev[[1]]$src, "# foo\n")
 })
 
 test_that("user can register calling handlers", {

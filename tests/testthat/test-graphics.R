@@ -1,115 +1,98 @@
 test_that("single plot is captured", {
   ev <- evaluate(file("plot.R"))
-  expect_length(ev, 2)
-  expect_equal(classes(ev), c("source", "recordedplot"))
+  expect_output_types(ev, c("source", "plot"))
 })
 
 test_that("ggplot is captured", {
   skip_if_not_installed("ggplot2")
 
   ev <- evaluate(file("ggplot.R"))
-  expect_length(ev, 3)
-  expect_equal(classes(ev), c("source", "source", "recordedplot"))
+  expect_output_types(ev, c("source", "source", "plot"))
 })
 
 test_that("plot additions are captured", {
   ev <- evaluate(file("plot-additions.R"))
-  expect_length(ev, 4)
-
-  expect_equal(
-    classes(ev),
-    c("source", "recordedplot", "source", "recordedplot")
-  )
+  expect_output_types(ev, c("source", "plot", "source", "plot"))
 })
 
 test_that("blank plots by plot.new() are preserved", {
   ev <- evaluate(file("plot-new.R"))
-  expect_length(ev, 10)
-
-  expect_equal(
-    classes(ev),
-    rep(c("source", "recordedplot"), 5)
+  expect_output_types(ev, rep(c("source", "plot"), 5)
   )
 })
 
 test_that("base plots in a single expression are captured", {
   ev <- evaluate(file("plot-loop.R"))
-  expect_length(ev, 4)
-
-  expect_equal(classes(ev), c("source", rep("recordedplot", 3)))
+  expect_output_types(ev, c("source", "plot", "plot", "plot"))
 })
 
 test_that("ggplot2 plots in a single expression are captured", {
   skip_if_not_installed("ggplot2")
 
   ev <- evaluate(file("ggplot-loop.R"))
-  expect_length(ev, 4)
-
-  expect_equal(classes(ev), c(rep("source", 2), rep("recordedplot", 2)))
+  expect_output_types(ev, c("source", "source", "plot", "plot"))
 })
 
 test_that("Empty ggplot should not be recorded", {
   skip_if_not_installed("ggplot2")
   ev <- evaluate(file(test_path("ggplot-empty-1.R")))
-  expect_identical(classes(ev), c(
-    "source", "source",
-    if (packageVersion("ggplot2") > "3.3.6") "rlang_error" else "simpleError"
-  ))
+  expect_output_types(ev, c("source", "source", "error"))
+  
   ev <- evaluate(file(test_path("ggplot-empty-2.R")))
-  expect_identical(classes(ev), c("source", "source", "rlang_error"))
+  expect_output_types(ev, c("source", "source", "error"))
 })
 
 test_that("multirow graphics are captured only when complete", {
   ev <- evaluate(file("plot-multi.R"))
 
-  expect_equal(classes(ev), c(rep("source", 5), "recordedplot"))
+  expect_output_types(ev, c(rep("source", 5), "plot"))
 })
 
 test_that("multirow graphics are captured on close", {
   ev <- evaluate(file("plot-multi-missing.R"))
 
-  expect_equal(classes(ev), c(rep("source", 4), "recordedplot"))
+  expect_output_types(ev, c(rep("source", 4), "plot"))
 })
 
 test_that("plots are captured in a non-rectangular layout", {
   ev <- evaluate(file("plot-multi-layout.R"))
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(1, 3)))
+  expect_output_types(ev, c("source", "plot", "plot", "plot"))
 
   ev <- evaluate(file("plot-multi-layout2.R"))
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(4, 2)))
+  expect_output_types(ev, rep(c("source", "plot"), c(4, 2)))
 })
 
 test_that("changes in parameters don't generate new plots", {
   ev <- evaluate(file("plot-par.R"))
-  expect_equal(
-    classes(ev),
-    c("source", "recordedplot", "source", "source", "recordedplot")
-  )
+  expect_output_types(ev, c("source", "plot", "source", "source", "plot"))
 })
 
 test_that("plots in a loop are captured even the changes seem to be from par only", {
   ev <- evaluate(file("plot-par2.R"))
-  expect_equal(classes(ev), c("source", "recordedplot")[c(1, 2, 1, 1, 2, 2, 2)])
+  expect_output_types(
+    ev,
+    c("source", "plot", "source", "source", "plot", "plot", "plot")
+  )
 })
 
 test_that("strwidth()/strheight() should not produce new plots", {
   ev <- evaluate(file("plot-strwidth.R"))
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(4, 1)))
+  expect_output_types(ev, c("source", "source", "source", "source", "plot"))
 })
 
 test_that("clip() does not produce new plots", {
   ev <- evaluate(file("plot-clip.R"))
-  expect_equal(classes(ev), c("source", "recordedplot")[c(1, 2, 1, 1, 2)])
+  expect_output_types(ev, c("source", "plot", "source", "source", "plot"))
 })
 
 test_that("perspective plots are captured", {
   ev <- evaluate(file("plot-persp.R"))
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(6, 3)))
+  expect_output_types(ev, rep(c("source", "plot"), c(6, 3)))
 })
 
 test_that("an incomplete plot with a comment in the end is also captured", {
   ev <- evaluate(file("plot-last-comment.R"))
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(3, 1)))
+  expect_output_types(ev, rep(c("source", "plot"), c(3, 1)))
 })
 
 # a bug report yihui/knitr#722
@@ -146,5 +129,5 @@ test_that("existing plots will not leak into evaluate()", {
   plot(1, 1)
   ev <- evaluate(c('dev.new()', 'dev.off()', 'plot.new()', 'plot(1:10, 1:10)'))
   dev.off(d)
-  expect_equal(tail(classes(ev), 6), c('source', 'character', 'recordedplot')[c(1, 2, 1, 3, 1, 3)])
+  expect_output_types(ev, c('source', 'text', 'plot')[c(1, 1, 2, 1, 3, 1, 3)])
 })
