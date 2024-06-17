@@ -39,7 +39,10 @@ drop the source from the output.}
 
 \item{value}{Function to handle the values returned from evaluation. If it
 only has one argument, only visible values are handled; if it has more
-arguments, the second argument indicates whether the value is visible.}
+arguments, the second argument indicates whether the value is visible.
+
+If the expression errored and \code{stop_on_error} is not \code{2}, value
+will be set to \code{NULL} and visible will  be set to \code{FALSE}.}
 
 \item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.
 These handlers have precedence over the exiting handler installed

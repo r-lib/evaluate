@@ -224,10 +224,12 @@ evaluate_call <- function(call,
     invokeRestart("muffleMessage")
   }
 
-  ev <- list(value = NULL, visible = FALSE)
-
   if (use_try) {
-    handle <- function(f) try(f, silent = TRUE)
+    handle <- function(code) {
+      tryCatch(code, error = function(err) {
+        list(value = NULL, visible = FALSE)
+      })
+    }
   } else {
     handle <- force
   }
@@ -252,8 +254,8 @@ evaluate_call <- function(call,
   multi_args <- length(formals(value_handler)) > 1
   for (expr in call) {
     srcindex <- length(output)
-    time <- timing_fn(handle(
-      ev <- withCallingHandlers(
+    time <- timing_fn(ev <- handle(
+      withCallingHandlers(
         withVisible(eval_with_user_handlers(expr, envir, enclos, user_handlers)),
         warning = wHandler,
         error = eHandler,
@@ -266,11 +268,10 @@ evaluate_call <- function(call,
 
     # If visible or the value handler has multi args, process and capture output
     if (ev$visible || multi_args) {
-      pv <- list(value = NULL, visible = FALSE)
       value_fun <- if (multi_args) value_handler else {
         function(x, visible) value_handler(x)
       }
-      handle(pv <- withCallingHandlers(withVisible(
+      pv <- handle(withCallingHandlers(withVisible(
         value_fun(ev$value, ev$visible)
       ), warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)

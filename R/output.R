@@ -81,6 +81,9 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #' @param value Function to handle the values returned from evaluation. If it
 #'   only has one argument, only visible values are handled; if it has more
 #'   arguments, the second argument indicates whether the value is visible.
+#' 
+#'   If the expression errored and `stop_on_error` is not `2`, value 
+#'   will be set to `NULL` and visible will  be set to `FALSE`.
 #' @param calling_handlers List of [calling handlers][withCallingHandlers].
 #'   These handlers have precedence over the exiting handler installed
 #'   by [evaluate()] when `stop_on_error` is set to 0.

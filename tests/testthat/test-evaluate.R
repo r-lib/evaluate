@@ -5,6 +5,11 @@ test_that("file with only comments runs", {
   expect_equal(classes(ev), c("source", "source"))
 })
 
+test_that("error after output works correctly", {
+  ev <- evaluate::evaluate("1;stop('x')")
+  expect_equal(classes(ev), c("source", "character", "simpleError"))
+})
+
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
