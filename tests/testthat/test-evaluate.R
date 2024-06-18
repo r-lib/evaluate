@@ -3,9 +3,7 @@ test_that("file with only comments runs", {
     # This test case contains no executable code
     # but it shouldn't throw an error
   ")
-  expect_length(ev, 2)
-
-  expect_equal(classes(ev), c("source", "source"))
+  expect_output_types(ev, c("source", "source"))
 })
 
 test_that("data sets loaded", {
@@ -15,7 +13,7 @@ test_that("data sets loaded", {
     data(barley, package = "lattice")
     barley
   ')
-  expect_length(ev, 3)
+  expect_output_types(ev, c("source", "source", "text"))
 })
 
 # # Don't know how to implement this
@@ -26,7 +24,7 @@ test_that("data sets loaded", {
 
 test_that("terminal newline not needed", {
   ev <- evaluate("cat('foo')")
-  expect_length(ev, 2)
+  expect_output_types(ev, c("source", "text"))
   expect_equal(ev[[2]], "foo")
 })
 
@@ -45,29 +43,29 @@ test_that("errors during printing visible values are captured", {
   a <- new('A', function() b)
 
   ev <- evaluate("a")
-  expect_s3_class(ev[[2]], "error")
+  expect_output_types(ev, c("source", "error"))
 })
 
 test_that("respects warn options", {
   # suppress warnings
   withr::local_options(warn = -1)
   ev <- evaluate("warning('hi')")
-  expect_equal(classes(ev), "source")
+  expect_output_types(ev, "source")
 
   # delayed warnings are always immediate in knitr
   withr::local_options(warn = 0)
   ev <- evaluate("warning('hi')")
-  expect_equal(classes(ev), c("source", "simpleWarning"))
+  expect_output_types(ev, c("source", "warning"))
 
   # immediate warnings
   withr::local_options(warn = 1)
   ev <- evaluate("warning('hi')")
-  expect_equal(classes(ev), c("source", "simpleWarning"))
+  expect_output_types(ev, c("source", "warning"))
 
   # warnings become errors
   withr::local_options(warn = 2)
   ev <- evaluate("warning('hi')")
-  expect_equal(classes(ev), c("source", "simpleError"))
+  expect_output_types(ev, c("source", "error"))
 })
 
 test_that("output and plots interleaved correctly", {
@@ -77,10 +75,7 @@ test_that("output and plots interleaved correctly", {
       plot(i)
     }
   ")
-  expect_equal(
-    classes(ev),
-    c("source", "character", "recordedplot", "character", "recordedplot")
-  )
+  expect_output_types(ev, c("source", "text", "plot", "text", "plot"))
 
   ev <- evaluate_("
     for (i in 1:2) {
@@ -88,10 +83,7 @@ test_that("output and plots interleaved correctly", {
       cat(i)
     }
   ")
-  expect_equal(
-    classes(ev),
-    c("source", "recordedplot", "character", "recordedplot", "character")
-  )
+  expect_output_types(ev, c("source", "plot", "text", "plot", "text"))
 })
 
 test_that("return value of value handler inserted directly in output list", {
@@ -104,10 +96,7 @@ test_that("return value of value handler inserted directly in output list", {
     ggplot(mtcars, aes(mpg, wt)) + geom_point()
   ', output_handler = new_output_handler(value = identity)
   )
-  expect_equal(
-    classes(ev),
-    c("source", "numeric", "source", "source", "source", "gg")
-  )
+  expect_output_types(ev, c("source", "numeric", "source", "source", "source", "gg"))
 })
 
 test_that("invisible values can also be saved if value handler has two arguments", {
@@ -117,17 +106,18 @@ test_that("invisible values can also be saved if value handler has two arguments
   expect_true(show_value(handler, FALSE))
 
   ev <- evaluate("x<-1:10", output_handler = handler)
-  expect_equal(classes(ev), c("source", "integer"))
+  expect_output_types(ev, c("source", "integer"))
 })
 
 test_that("multiple expressions on one line can get printed as expected", {
   ev <- evaluate("x <- 1; y <- 2; x; y")
-  expect_equal(classes(ev), c("source", "character", "character"))
+  expect_output_types(ev, c("source", "text", "text"))
 })
 
 test_that("multiple lines of comments do not lose the terminating \\n", {
   ev <- evaluate("# foo\n#bar")
-  expect_equal(ev[[1]][["src"]], "# foo\n")
+  expect_output_types(ev, c("source", "source"))
+  expect_equal(ev[[1]]$src, "# foo\n")
 })
 
 test_that("user can register calling handlers", {
