@@ -227,8 +227,13 @@ evaluate_top_level_expression <- function(exprs,
 
   for (expr in exprs) {
     srcindex <- length(output)
-    time <- timing_fn(handle(
-      ev <- eval_with_visibility(expr, envir, handlers))
+    time <- timing_fn(
+      handle(
+        ev <- with_handlers(
+          withVisible(eval(expr, envir)),
+          handlers
+        )
+      )
     )
     handle_output(TRUE)
     if (!is.null(time))
@@ -236,9 +241,14 @@ evaluate_top_level_expression <- function(exprs,
 
     if (show_value(output_handler, ev$visible)) {
       pv <- list(value = NULL, visible = FALSE)
-      handle(pv <- withCallingHandlers(withVisible(
-        handle_value(output_handler, ev$value, ev$visible)
-      ), warning = wHandler, error = eHandler, message = mHandler))
+      handle(
+        pv <- with_handlers(
+          withVisible(
+            handle_value(output_handler, ev$value, ev$visible)
+          ),
+          handlers
+        )
+      )
       handle_output(TRUE)
       # If the return value is visible, save the value to the output
       if (pv$visible) output <- c(output, list(pv$value))
@@ -252,17 +262,16 @@ evaluate_top_level_expression <- function(exprs,
   output
 }
 
-eval_with_visibility <- function(expr, envir, calling_handlers) {
+with_handlers <- function(code, calling_handlers) {
   if (!is.list(calling_handlers)) {
     stop("`calling_handlers` must be a list", call. = FALSE)
   }
 
   call <- as.call(c(
     quote(withCallingHandlers),
-    quote(withVisible(eval(expr, envir))),
+    quote(code),
     calling_handlers
   ))
-
   eval(call)
 }
 
