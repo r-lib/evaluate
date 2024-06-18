@@ -10,10 +10,7 @@
 watchout <- function(handler = new_output_handler(),
                      debug = FALSE,
                      frame = parent.frame()) {
-  output <- character()
-  prev   <- character()
-
-  con <- textConnection("output", "wr", local = TRUE)
+  con <- file("", "w+b")
   defer(frame = frame, {
     if (!test_con(con, isOpen)) {
       con_error('The connection has been closed')
@@ -27,30 +24,33 @@ watchout <- function(handler = new_output_handler(),
   old <- options(try.outFile = con)
   defer(options(old), frame = frame)
 
-  function(plot = FALSE, incomplete_plots = FALSE) {
-    incomplete <- test_con(con, isIncomplete)
-    if (incomplete) cat("\n")
-
-    out <- list()
-
-    if (plot) {
-      out$graphics <- plot_snapshot(incomplete_plots)
-      if (!is.null(out$graphics)) handler$graphics(out$graphics)
+  function(plot = TRUE, incomplete_plots = FALSE) {
+    out <- list(
+      if (plot) plot_snapshot(incomplete_plots),
+      read_con(con)
+    )
+    if (!is.null(out[[1]])) {
+      handler$graphics(out[[1]])
     }
-
-    n0 <- length(prev)
-    n1 <- length(output)
-    if (n1 > n0) {
-      new <- output[n0 + seq_len(n1 - n0)]
-      prev <<- output
-
-      out$text <- paste0(new, collapse = "\n")
-      if (!incomplete) out$text <- paste0(out$text, "\n")
-
-      handler$text(out$text)
+    if (!is.null(out[[2]])) {
+      handler$text(out[[2]])
     }
+    
+    compact(out)
+  }
+}
 
-    unname(out)
+read_con <- function(con, buffer = 1024) {
+  bytes <- raw()
+  repeat {
+    new <- readBin(con, "raw", n = buffer)
+    if (length(new) == 0) break
+    bytes <- c(bytes, new)
+  }
+  if (length(bytes) == 0) {
+    NULL
+  } else {
+    rawToChar(bytes)
   }
 }
 
