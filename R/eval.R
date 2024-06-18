@@ -61,7 +61,7 @@ evaluate <- function(input,
     source <- new_source(parsed$src, expression(), output_handler$source)
     output_handler$error(err)
     err$call <- NULL  # the call is unlikely to be useful
-    return(list(source, err))
+    return(new_evaluation(list(source, err)))
   }
 
   if (is.list(envir)) {
@@ -122,7 +122,8 @@ evaluate <- function(input,
   is_empty <- vapply(out, identical, list(NULL), FUN.VALUE = logical(1))
   out <- out[!is_empty]
 
-  unlist(out, recursive = FALSE, use.names = FALSE)
+  out <- unlist(out, recursive = FALSE, use.names = FALSE)
+  new_evaluation(out)
 }
 
 evaluate_top_level_expression <- function(exprs,
@@ -178,7 +179,7 @@ evaluate_top_level_expression <- function(exprs,
   # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
     if (log_warning) {
-      cat(format_warning(wn), "\n", sep = "", file = stderr())
+      cat(format_condition(wn), "\n", sep = "", file = stderr())
     }
     if (is.na(keep_warning)) return()
 
@@ -275,16 +276,40 @@ eval_with_user_handlers <- function(expr, envir, calling_handlers) {
   eval(call)
 }
 
-format_warning <- function(x) {
-  if (inherits(x, "rlang_warning")) {
-    format(x)
-  } else {
-    msg <- "Warning"
+new_evaluation <- function(x) {
+  # Needs explicit list for backwards compatibility
+  structure(x, class = c("evaluate_evaluation", "list"))
+}
 
-    call <- conditionCall(x)
-    if (!is.null(conditionCall(x))) {
-      msg <- paste0(msg, " in ", paste0(deparse(call), collapse = "\n"))
+#' @export
+print.evaluate_evaluation <- function(x, ...) {
+  cat_line("<evaluation>")
+  for (component in x) {
+    if (inherits(component, "source")) {
+      cat_line("Source code: ")
+      cat_line(indent(component$src))
+    } else if (is.character(component)) {
+      cat_line("Text output: ")
+      cat_line(indent(component))
+    } else if (inherits(component, "condition")) {
+      cat_line("Condition: ")
+      cat_line(indent(format_condition(component)))
+    } else if (inherits(component, "recordedplot")) {
+      dl <- component[[1]]
+      cat_line("Plot [", length(dl), "]:")
+      for (call in dl) {
+        fun_call <- call[[2]][[1]]
+        if (hasName(fun_call, "name")) {
+          cat_line("  <base> ", fun_call$name, "()")
+        } else {
+          cat_line("  <grid> ", deparse(fun_call))
+        }
+      }
+    } else {
+      cat_line("Other: ")
+      cat(" "); str(component, indent.str = "  ")
     }
-    msg <- paste0(msg, ": ", conditionMessage(x))
   }
+
+  invisible(x)
 }
