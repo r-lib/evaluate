@@ -103,9 +103,10 @@ drop the source from the output.</p></dd>
 
 
 <dt>value</dt>
-<dd><p>Function to handle the values returned from evaluation. If it
-only has one argument, only visible values are handled; if it has more
-arguments, the second argument indicates whether the value is visible.</p></dd>
+<dd><p>Function to handle the values returned from evaluation.</p><ul><li><p>If it has one argument, it called on visible values.</p></li>
+<li><p>If it has two arguments, it handles all values, with the second
+argument indicating whether or not the value is visible.</p></li>
+</ul></dd>
 
 
 <dt>calling_handlers</dt>
