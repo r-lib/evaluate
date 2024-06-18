@@ -32,8 +32,8 @@ test_that("traceback useful if stop_on_error == 2L", {
 })
 
 test_that("capture messages in try() (#88)", {
-   # TODO: figure out why this doesn't work interactively
-   ev <- evaluate_('
+  # TODO: figure out why this doesn't work interactively
+  ev <- evaluate_('
     g <- function() f("error")
     f <- function(x) stop(paste0("Obscure ", x))
     
