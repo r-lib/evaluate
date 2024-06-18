@@ -29,18 +29,18 @@ test_that("terminal newline not needed", {
 })
 
 test_that("S4 methods are displayed with show, not print", {
-  setClass("A", contains = "function", where = environment())
-  setMethod("show", "A", function(object) cat("B"))
-  a <- new('A', function() b)
+  methods::setClass("A", contains = "function", where = environment())
+  methods::setMethod("show", "A", function(object) cat("B"))
+  a <- methods::new('A', function() b)
 
   ev <- evaluate("a")
   expect_equal(ev[[2]], "B")
 })
 
 test_that("errors during printing visible values are captured", {
-  setClass("A", contains = "function", where = environment())
-  setMethod("show", "A", function(object) stop("B"))
-  a <- new('A', function() b)
+  methods::setClass("A", contains = "function", where = environment())
+  methods::setMethod("show", "A", function(object) stop("B"))
+  a <- methods::new('A', function() b)
 
   ev <- evaluate("a")
   expect_output_types(ev, c("source", "error"))

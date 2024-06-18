@@ -24,12 +24,11 @@ URL: https://evaluate.r-lib.org/, https://github.com/r-lib/evaluate
 BugReports: https://github.com/r-lib/evaluate/issues
 Depends:
     R (>= 4.0.0)
-Imports:
-    methods
 Suggests:
     covr,
     ggplot2 (>= 3.3.6),
     lattice,
+    methods,
     rlang,
     testthat (>= 3.0.0),
     withr
