@@ -69,10 +69,9 @@ evaluate <- function(input,
   }
 
   if (new_device) {
-    # Start new graphics device and clean up afterwards
-    if (identical(grDevices::pdf, getOption("device"))) {
-      dev.new(file = NULL)
-    } else dev.new()
+    # Ensure we have a graphics device available for recording, but choose
+    # one that's available on all platforms and doesn't write to disk
+    pdf(file = NULL)
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     on.exit(dev.off(dev))

@@ -177,7 +177,7 @@ test_that("clip() does not produce new plots", {
 
 test_that("perspective plots are captured", {
   ev <- evaluate_("
-    x <- seq(-10, 10, length = 30)
+    x <- seq(-10, 10, length.out = 30)
     y <- x
     ff <- function(x,y) { r <- sqrt(x^2 + y^2); 10 * sin(r) / r }
     z <- outer(x, y, ff)
@@ -219,14 +219,14 @@ test_that("by default, evaluate() always records plots regardless of the device"
 })
 
 test_that("Rplots.pdf files are not created", {
-  op <- options(device = pdf)
-  on.exit(options(op))
-  evaluate("plot(1)")
+  ev <- evaluate("plot(1)")
   expect_false(file.exists("Rplots.pdf"))
 })
 
 # https://github.com/yihui/knitr/issues/2297
 test_that("existing plots will not leak into evaluate()", {
+  withr::local_options(device = function() pdf(NULL))
+  
   pdf(NULL)
   dev.control('enable')
   d <- dev.cur()
