@@ -155,7 +155,7 @@ evaluate_top_level_expression <- function(exprs,
   output <- list(source)
 
   dev <- dev.cur()
-  handle_output <- function(plot = FALSE, incomplete_plots = FALSE) {
+  handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
     # if dev.cur() has changed, we should not record plots any more
     plot <- plot && identical(dev, dev.cur())
     out <- w$get_new(plot, incomplete_plots,
@@ -166,21 +166,13 @@ evaluate_top_level_expression <- function(exprs,
   local_output_handler(function() handle_output(FALSE))
 
   # Hooks to capture plot creation
-  capture_plot <- function() {
-    handle_output(TRUE)
-  }
   hook_list <- list(
-    persp = capture_plot,
-    before.plot.new = capture_plot,
-    before.grid.newpage = capture_plot
+    persp = handle_output,
+    before.plot.new = handle_output,
+    before.grid.newpage = handle_output
   )
   set_hooks(hook_list)
   on.exit(remove_hooks(hook_list), add = TRUE)
-
-  handle_condition <- function(cond) {
-    handle_output()
-    output <<- c(output, list(cond))
-  }
 
   # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
@@ -193,21 +185,28 @@ evaluate_top_level_expression <- function(exprs,
     if (getOption("warn") >= 2) return()
 
     if (keep_warning && getOption("warn") >= 0) {
-      handle_condition(wn)
+      handle_output()
+      output <<- c(output, list(wn))
       output_handler$warning(wn)
     }
     invokeRestart("muffleWarning")
   }
-  eHandler <- if (use_try) function(e) {
-    handle_condition(e)
-    output_handler$error(e)
-  } else identity
-  mHandler <- if (is.na(keep_message)) identity else function(m) {
-    if (keep_message) {
-      handle_condition(m)
-      output_handler$message(m)
+  eHandler <- function(e) {
+    handle_output()
+    if (use_try) {
+      output <<- c(output, list(e))
+      output_handler$error(e)
     }
-    invokeRestart("muffleMessage")
+  }
+  mHandler <- function(m) {
+    handle_output()
+    if (isTRUE(keep_message)) {
+      output <<- c(output, list(m))
+      output_handler$message(m)
+      invokeRestart("muffleMessage")
+    } else if (isFALSE(keep_message)) {
+      invokeRestart("muffleMessage")
+    }
   }
 
   ev <- list(value = NULL, visible = FALSE)
