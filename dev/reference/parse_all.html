@@ -76,11 +76,51 @@ If a connection, will be opened and closed only if it was closed initially.</p><
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data.frame with columns <code>src</code>, the source code, and
-<code>expr</code>. If there are syntax errors in <code>x</code> and <code>allow_error = TRUE</code>, the data frame has an attribute <code>PARSE_ERROR</code> that stores the
-error object.</p>
+<p>A data frame with columns <code>src</code>, a character vector of source code, and
+<code>expr</code>, a list-column of parsed expressions. There will be one row for each
+top-level expression in <code>x</code>. A top-level expression is a complete expression
+which would trigger execution if typed at the console. The <code>expression</code></p>
+
+
+<p>object in <code>expr</code> can be of any length: it will be 0 if the top-level
+expression contains only whitespace and/or comments; 1 if the top-level
+expression is a single scalar (like <code>TRUE</code>, <code>1</code>, or <code>"x"</code>), name, or call;
+or 2 if the top-level expression uses <code>;</code> to put multiple expressions on
+one line.</p>
+
+
+<p>If there are syntax errors in <code>x</code> and <code>allow_error = TRUE</code>, the data
+frame will have an attribute <code>PARSE_ERROR</code> that stores the error object.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">source</span> <span class="op">&lt;-</span> <span class="st">"</span></span></span>
+<span class="r-in"><span><span class="st">  # a comment</span></span></span>
+<span class="r-in"><span><span class="st">  x</span></span></span>
+<span class="r-in"><span><span class="st">  x;y</span></span></span>
+<span class="r-in"><span><span class="st">"</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu">parse_all</span><span class="op">(</span><span class="va">source</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">$</span><span class="va">expr</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 1 2</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">$</span><span class="va">expr</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> List of 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression()</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression()</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :length 1 expression(x)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "srcref")=List of 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 3 3 3 3 3 3 3 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x56357f0f1850&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :length 2 expression(x, y)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "srcref")=List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 4 3 4 3 3 3 4 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x56357f0f1850&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 4 5 4 5 5 5 4 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x56357f0f1850&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, "class")= chr "AsIs"</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
