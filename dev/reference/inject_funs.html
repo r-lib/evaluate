@@ -49,7 +49,7 @@ the environment are injected."><meta name="robots" content="noindex"><!-- mathja
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Inject functions into the environment of <code>evaluate()</code></h1>
-      <small class="dont-index">Source: <a href="https://github.com/r-lib/evaluate/blob/HEAD/R/eval.R" class="external-link"><code>R/eval.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-lib/evaluate/blob/HEAD/R/inject-funs.R" class="external-link"><code>R/inject-funs.R</code></a></small>
       <div class="d-none name"><code>inject_funs.Rd</code></div>
     </div>
 
@@ -74,6 +74,12 @@ functions will be emptied.</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>Invisibly returns previous values.</p>
+    </div>
+    <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p>For expert use only. Do not use it unless you clearly understand it.</p>
     </div>
@@ -88,7 +94,9 @@ functions will be emptied.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   system('R --version')</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># replace the system() function</span></span></span>
-<span class="r-in"><span><span class="fu">inject_funs</span><span class="op">(</span>system <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="va">...</span>, intern <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">'\n'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu">inject_funs</span><span class="op">(</span>system <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="va">...</span>, intern <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">'\n'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="evaluate.html">evaluate</a></span><span class="op">(</span><span class="st">"system('R --version')"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
@@ -106,7 +114,8 @@ functions will be emptied.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   https://www.gnu.org/licenses/.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">inject_funs</span><span class="op">(</span><span class="op">)</span>  <span class="co"># empty previously injected functions</span></span></span>
+<span class="r-in"><span><span class="co"># restore previously injected functions</span></span></span>
+<span class="r-in"><span><span class="fu">inject_funs</span><span class="op">(</span><span class="va">old</span><span class="op">)</span> </span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
