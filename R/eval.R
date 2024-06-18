@@ -208,10 +208,12 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
 
-  ev <- list(value = NULL, visible = FALSE)
-
   if (use_try) {
-    handle <- function(f) try(f, silent = TRUE)
+    handle <- function(code) {
+      tryCatch(code, error = function(err) {
+        list(value = NULL, visible = FALSE)
+      })
+    }
   } else {
     handle <- force
   }
@@ -228,8 +230,8 @@ evaluate_top_level_expression <- function(exprs,
   for (expr in exprs) {
     srcindex <- length(output)
     time <- timing_fn(
-      handle(
-        ev <- with_handlers(
+      ev <- handle(
+        with_handlers(
           withVisible(eval(expr, envir)),
           handlers
         )
@@ -240,9 +242,8 @@ evaluate_top_level_expression <- function(exprs,
       attr(output[[srcindex]]$src, 'timing') <- time
 
     if (show_value(output_handler, ev$visible)) {
-      pv <- list(value = NULL, visible = FALSE)
-      handle(
-        pv <- with_handlers(
+      pv <- handle(
+        with_handlers(
           withVisible(
             handle_value(output_handler, ev$value, ev$visible)
           ),
