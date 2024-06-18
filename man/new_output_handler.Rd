@@ -37,9 +37,12 @@ drop the source from the output.}
 
 \item{error}{Function to handle \code{\link[=stop]{stop()}} output.}
 
-\item{value}{Function to handle the values returned from evaluation. If it
-only has one argument, only visible values are handled; if it has more
-arguments, the second argument indicates whether the value is visible.}
+\item{value}{Function to handle the values returned from evaluation.
+\itemize{
+\item If it has one argument, it called on visible values.
+\item If it has two arguments, it handles all values, with the second
+argument indicating whether or not the value is visible.
+}}
 
 \item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.
 These handlers have precedence over the exiting handler installed

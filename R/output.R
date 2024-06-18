@@ -43,7 +43,22 @@ new_source <- function(src, call, handler = NULL) {
   }
 }
 
-classes <- function(x) vapply(x, function(x) class(x)[1], character(1))
+# If the output handler has two arguments, then the user has opted into
+# handling the value regardless of whether it's not visible.
+show_value <- function(handler, visible) {
+  visible || length(formals(handler$value)) > 1
+}
+
+handle_value <- function(handler, value, visible) {
+  n_args <- length(formals(handler$value))
+  if (n_args == 1) {
+    handler$value(value)
+  } else if (n_args == 2) {
+    handler$value(value, visible)
+  } else {
+    stop("Value output handler must have one or two arguments")
+  }
+}
 
 render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 
@@ -78,9 +93,10 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #' @param message Function to handle [message()] output.
 #' @param warning Function to handle [warning()] output.
 #' @param error Function to handle [stop()] output.
-#' @param value Function to handle the values returned from evaluation. If it
-#'   only has one argument, only visible values are handled; if it has more
-#'   arguments, the second argument indicates whether the value is visible.
+#' @param value Function to handle the values returned from evaluation. 
+#'   * If it has one argument, it called on visible values.
+#'   * If it has two arguments, it handles all values, with the second
+#'     argument indicating whether or not the value is visible.
 #' @param calling_handlers List of [calling handlers][withCallingHandlers].
 #'   These handlers have precedence over the exiting handler installed
 #'   by [evaluate()] when `stop_on_error` is set to 0.

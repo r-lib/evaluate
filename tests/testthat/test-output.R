@@ -1,6 +1,6 @@
 test_that("open plot windows maintained", {
   n <- length(dev.list())
-  evaluate(file("plot.R"))
+  evaluate("plot(1)")
   expect_length(dev.list(), n)
 })
 

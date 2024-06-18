@@ -61,18 +61,18 @@ evaluate <- function(input,
     source <- new_source(parsed$src, expression(), output_handler$source)
     output_handler$error(err)
     err$call <- NULL  # the call is unlikely to be useful
-    return(list(source, err))
+    return(new_evaluation(list(source, err)))
   }
 
-  if (is.null(enclos)) {
-    enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
+  if (is.list(envir)) {
+    envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
+  local_inject_funs(envir)
 
   if (new_device) {
-    # Start new graphics device and clean up afterwards
-    if (identical(grDevices::pdf, getOption("device"))) {
-      dev.new(file = NULL)
-    } else dev.new()
+    # Ensure we have a graphics device available for recording, but choose
+    # one that's available on all platforms and doesn't write to disk
+    pdf(file = NULL)
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     on.exit(dev.off(dev))
@@ -89,22 +89,25 @@ evaluate <- function(input,
   if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
     keep_message = keep_warning = NA
 
+  # Capture output
+  watcher <- watchout(output_handler, debug = debug)
+
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
+    if (debug) {
+      message(parsed$src[[i]])
+    }
+
     # if dev.off() was called, make sure to restore device to the one opened by
     # evaluate() or existed before evaluate()
     if (length(dev.list()) < devn) dev.set(dev)
     devn <- length(dev.list())
 
-    expr <- parsed$expr[[i]]
-    if (!is.null(expr))
-      expr <- as.expression(expr)
-    out[[i]] <- evaluate_call(
-      expr,
-      parsed$src[[i]],
+    out[[i]] <- evaluate_top_level_expression(
+      exprs = parsed$expr[[i]],
+      src = parsed$src[[i]],
+      watcher = watcher,
       envir = envir,
-      enclos = enclos,
-      debug = debug,
       last = i == length(out),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning,
@@ -126,80 +129,54 @@ evaluate <- function(input,
   is_empty <- vapply(out, identical, list(NULL), FUN.VALUE = logical(1))
   out <- out[!is_empty]
 
-  unlist(out, recursive = FALSE, use.names = FALSE)
+  out <- unlist(out, recursive = FALSE, use.names = FALSE)
+  new_evaluation(out)
 }
 
-evaluate_call <- function(call,
-                          src = NULL,
-                          envir = parent.frame(),
-                          enclos = NULL,
-                          debug = FALSE,
-                          last = FALSE,
-                          use_try = FALSE,
-                          keep_warning = TRUE,
-                          keep_message = TRUE,
-                          log_echo = FALSE,
-                          log_warning = FALSE,
-                          output_handler = new_output_handler(),
-                          include_timing = FALSE) {
-  if (debug) message(src)
-
-  if (is.null(call) && !last) {
-    source <- new_source(src, call[[1]], output_handler$source)
-    return(list(source))
-  }
-  stopifnot(is.call(call) || is.language(call) || is.atomic(call) || is.null(call))
-
-  # Capture output
-  w <- watchout(debug)
-  on.exit(w$close())
-
-  # Capture error output from try() (#88)
-  old_try_outfile <- options(try.outFile = w$get_con())
-  on.exit(options(old_try_outfile), add = TRUE)
+evaluate_top_level_expression <- function(exprs,
+                                          src,
+                                          watcher,
+                                          envir = parent.frame(),
+                                          last = FALSE,
+                                          use_try = FALSE,
+                                          keep_warning = TRUE,
+                                          keep_message = TRUE,
+                                          log_echo = FALSE,
+                                          log_warning = FALSE,
+                                          output_handler = new_output_handler(),
+                                          include_timing = FALSE) {
+  stopifnot(is.expression(exprs))
 
   if (log_echo && !is.null(src)) {
     cat(src, "\n", sep = "", file = stderr())
   }
 
-  source <- new_source(src, call[[1]], output_handler$source)
+  source <- new_source(src, exprs[[1]], output_handler$source)
   output <- list(source)
 
   dev <- dev.cur()
-  handle_output <- function(plot = FALSE, incomplete_plots = FALSE) {
+  handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
     # if dev.cur() has changed, we should not record plots any more
     plot <- plot && identical(dev, dev.cur())
-    out <- w$get_new(plot, incomplete_plots,
-      output_handler$text, output_handler$graphics)
+    out <- watcher(plot, incomplete_plots)
     output <<- c(output, out)
   }
 
-  flush_old <- .env$flush_console; on.exit({
-    .env$flush_console <- flush_old
-  }, add = TRUE)
-  .env$flush_console <- function() handle_output(FALSE)
+  local_output_handler(function() handle_output(FALSE))
 
   # Hooks to capture plot creation
-  capture_plot <- function() {
-    handle_output(TRUE)
-  }
   hook_list <- list(
-    persp = capture_plot,
-    before.plot.new = capture_plot,
-    before.grid.newpage = capture_plot
+    persp = handle_output,
+    before.plot.new = handle_output,
+    before.grid.newpage = handle_output
   )
   set_hooks(hook_list)
   on.exit(remove_hooks(hook_list), add = TRUE)
 
-  handle_condition <- function(cond) {
-    handle_output()
-    output <<- c(output, list(cond))
-  }
-
   # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
     if (log_warning) {
-      cat(format_warning(wn), "\n", sep = "", file = stderr())
+      cat(format_condition(wn), "\n", sep = "", file = stderr())
     }
     if (is.na(keep_warning)) return()
 
@@ -207,21 +184,28 @@ evaluate_call <- function(call,
     if (getOption("warn") >= 2) return()
 
     if (keep_warning && getOption("warn") >= 0) {
-      handle_condition(wn)
+      handle_output()
+      output <<- c(output, list(wn))
       output_handler$warning(wn)
     }
     invokeRestart("muffleWarning")
   }
-  eHandler <- if (use_try) function(e) {
-    handle_condition(e)
-    output_handler$error(e)
-  } else identity
-  mHandler <- if (is.na(keep_message)) identity else function(m) {
-    if (keep_message) {
-      handle_condition(m)
-      output_handler$message(m)
+  eHandler <- function(e) {
+    handle_output()
+    if (use_try) {
+      output <<- c(output, list(e))
+      output_handler$error(e)
     }
-    invokeRestart("muffleMessage")
+  }
+  mHandler <- function(m) {
+    handle_output()
+    if (isTRUE(keep_message)) {
+      output <<- c(output, list(m))
+      output_handler$message(m)
+      invokeRestart("muffleMessage")
+    } else if (isFALSE(keep_message)) {
+      invokeRestart("muffleMessage")
+    }
   }
 
   ev <- list(value = NULL, visible = FALSE)
@@ -231,44 +215,29 @@ evaluate_call <- function(call,
   } else {
     handle <- force
   }
-  value_handler <- output_handler$value
   if (include_timing) {
     timing_fn <- function(x) system.time(x)[1:3]
   } else {
-    timing_fn <- function(x) {x; NULL};
-  }
-
-  if (length(funs <- .env$inject_funs)) {
-    funs_names <- names(funs)
-    funs_new <- !vapply(funs_names, exists, logical(1), envir, inherits = FALSE)
-    funs_names <- funs_names[funs_new]
-    funs <- funs[funs_new]
-    on.exit(rm(list = funs_names, envir = envir), add = TRUE)
-    for (i in seq_along(funs_names)) assign(funs_names[i], funs[[i]], envir)
+    timing_fn <- function(x) {x; NULL}
   }
 
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
   handlers <- c(user_handlers, evaluate_handlers)
 
-  multi_args <- length(formals(value_handler)) > 1
-  for (expr in call) {
+  for (expr in exprs) {
     srcindex <- length(output)
     time <- timing_fn(handle(
-      ev <- eval_with_visibility(expr, envir, enclos, handlers))
+      ev <- eval_with_visibility(expr, envir, handlers))
     )
     handle_output(TRUE)
     if (!is.null(time))
       attr(output[[srcindex]]$src, 'timing') <- time
 
-    # If visible or the value handler has multi args, process and capture output
-    if (ev$visible || multi_args) {
+    if (show_value(output_handler, ev$visible)) {
       pv <- list(value = NULL, visible = FALSE)
-      value_fun <- if (multi_args) value_handler else {
-        function(x, visible) value_handler(x)
-      }
       handle(pv <- withCallingHandlers(withVisible(
-        value_fun(ev$value, ev$visible)
+        handle_value(output_handler, ev$value, ev$visible)
       ), warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)
       # If the return value is visible, save the value to the output
@@ -283,58 +252,54 @@ evaluate_call <- function(call,
   output
 }
 
-eval_with_visibility <- function(expr, envir, enclos, calling_handlers = list()) {
+eval_with_visibility <- function(expr, envir, calling_handlers) {
   if (!is.list(calling_handlers)) {
     stop("`calling_handlers` must be a list", call. = FALSE)
   }
 
   call <- as.call(c(
     quote(withCallingHandlers),
-    quote(withVisible(eval(expr, envir, enclos))),
+    quote(withVisible(eval(expr, envir))),
     calling_handlers
   ))
 
   eval(call)
 }
 
-#' Inject functions into the environment of `evaluate()`
-#'
-#' Create functions in the environment specified in the `envir` argument of
-#' [evaluate()]. This can be helpful if you want to substitute certain
-#' functions when evaluating the code. To make sure it does not wipe out
-#' existing functions in the environment, only functions that do not exist in
-#' the environment are injected.
-#' @param ... Named arguments of functions. If empty, previously injected
-#'   functions will be emptied.
-#' @note For expert use only. Do not use it unless you clearly understand it.
-#' @keywords internal
-#' @examples library(evaluate)
-#' # normally you cannot capture the output of system
-#' evaluate("system('R --version')")
-#'
-#' # replace the system() function
-#' inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = '\n'))
-#'
-#' evaluate("system('R --version')")
-#'
-#' inject_funs()  # empty previously injected functions
-#' @export
-inject_funs <- function(...) {
-  funs <- list(...)
-  funs <- funs[names(funs) != '']
-  .env$inject_funs <- Filter(is.function, funs)
+new_evaluation <- function(x) {
+  # Needs explicit list for backwards compatibility
+  structure(x, class = c("evaluate_evaluation", "list"))
 }
 
-format_warning <- function(x) {
-  if (inherits(x, "rlang_warning")) {
-    format(x)
-  } else {
-    msg <- "Warning"
-
-    call <- conditionCall(x)
-    if (!is.null(conditionCall(x))) {
-      msg <- paste0(msg, " in ", paste0(deparse(call), collapse = "\n"))
+#' @export
+print.evaluate_evaluation <- function(x, ...) {
+  cat_line("<evaluation>")
+  for (component in x) {
+    if (inherits(component, "source")) {
+      cat_line("Source code: ")
+      cat_line(indent(component$src))
+    } else if (is.character(component)) {
+      cat_line("Text output: ")
+      cat_line(indent(component))
+    } else if (inherits(component, "condition")) {
+      cat_line("Condition: ")
+      cat_line(indent(format_condition(component)))
+    } else if (inherits(component, "recordedplot")) {
+      dl <- component[[1]]
+      cat_line("Plot [", length(dl), "]:")
+      for (call in dl) {
+        fun_call <- call[[2]][[1]]
+        if (hasName(fun_call, "name")) {
+          cat_line("  <base> ", fun_call$name, "()")
+        } else {
+          cat_line("  <grid> ", deparse(fun_call))
+        }
+      }
+    } else {
+      cat_line("Other: ")
+      cat(" "); str(component, indent.str = "  ")
     }
-    msg <- paste0(msg, ": ", conditionMessage(x))
   }
+
+  invisible(x)
 }

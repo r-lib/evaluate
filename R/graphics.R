@@ -10,65 +10,78 @@ plot_snapshot <- local({
   last_plot <- NULL
 
   function(incomplete = FALSE) {
-    # to record a plot, at least one device must be open; the list of devices
-    # must not have changed since evaluate() started
-    if (is.null(devs <- dev.list()) || !identical(devs, .env$dev_list)) return(NULL)
-    if (!incomplete && !par('page')) return(NULL)  # current page not complete
-
-    plot <- recordPlot()
-    if (identical(last_plot, plot) || is_par_change(last_plot, plot)) {
-      return(NULL)
+    devs <- dev.list()
+    # No graphics devices 
+    if (is.null(devs)) {
+      return()
     }
 
-    if (is.empty(plot)) return(NULL)
+    # Current graphics device changed since evaluate started
+    if (!identical(devs, .env$dev_list)) {
+      return()
+    }
+
+    # current page is incomplete
+    if (!par("page") && !incomplete) {
+      return()
+    }
+
+    plot <- recordPlot()
+    if (!makes_visual_change(plot[[1]])) {
+      return()
+    }
+
+    if (!looks_different(last_plot[[1]], plot[[1]])) {
+      return()
+    }
+
     last_plot <<- plot
     plot
   }
 })
 
-is_par_change <- function(p1, p2) {
-  calls1 <- plot_calls(p1)
-  calls2 <- plot_calls(p2)
+looks_different <- function(old_dl, new_dl) {
+  if (identical(old_dl, new_dl)) {
+    return(FALSE)
+  }
 
-  n1 <- length(calls1)
-  n2 <- length(calls2)
+  # If the new plot has fewer calls, it must be a visual change
+  if (length(new_dl) < length(old_dl)) {
+    return(TRUE)
+  }
+  
+  # If the initial calls are different, it must be a visual change
+  if (!identical(old_dl[], new_dl[seq_along(old_dl)])) {
+    return(TRUE)
+  }
 
-  if (n2 <= n1) return(FALSE)
-  i1 <- seq_len(n1)
-  if (!identical(calls1, calls2[i1])) return(FALSE)
-  # also check if the content of the display list is still the same (note we
-  # need p1[[1]][] as well because [] turns a dotted pair list into a list)
-  if (!identical(p1[[1]][i1], p2[[1]][i1])) return(FALSE)
-
-  last <- calls2[(n1 + 1):n2]
-  all(last %in% empty_calls)
+  # If the last calls involve visual changes then it's a visual change
+  added_dl <- new_dl[-seq_along(old_dl)]
+  makes_visual_change(added_dl)
 }
 
-# if all calls are in these elements, the plot is basically empty
-empty_calls <- c("layout", "par", "clip")
-empty_calls <- c(
-  "palette", "palette2",
-  sprintf("C_%s", c(empty_calls, "strWidth", "strHeight", "plot_window"))
+makes_visual_change <- function(plot) {
+  xs <- lapply(plot, function(x) x[[2]][[1]])
+
+  for (x in xs) {
+    if (hasName(x, "name")) { # base graphics
+      if (!x$name %in% non_visual_calls) {
+        return(TRUE)
+      }
+    } else if (is.call(x)) { # grid graphics
+      if (as.character(x[[1]]) != "requireNamespace") {
+        return(TRUE)
+      }
+    }
+  }
+  FALSE
+}
+
+non_visual_calls <- c(
+  "C_clip", 
+  "C_layout", 
+  "C_par", 
+  "C_plot_window", 
+  "C_strHeight", "C_strWidth", 
+  "palette", "palette2"
 )
-
-is.empty <- function(x) {
-  if (is.null(x)) return(TRUE)
-
-  pc <- plot_calls(x)
-  if (length(pc) == 0) return(TRUE)
-
-  all(pc %in% empty_calls)
-}
-
-plot_calls <- function(plot) {
-  el <- lapply(plot[[1]], "[[", 2)
-  if (length(el) == 0) return()
-  unlist(lapply(el, function(x) {
-    # grid graphics do not have x[[1]]$name
-    if (!is.null(nm <- x[[1]][["name"]])) return(nm)
-    nm <- deparse(x[[1]])
-    # the plot element should not be empty, and ignore calls that are simply
-    # requireNamespace()
-    if (length(x[[2]]) > 0 || !all(grepl("^requireNamespace\\(", nm))) nm
-  }))
-}
