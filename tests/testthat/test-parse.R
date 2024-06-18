@@ -1,3 +1,12 @@
+test_that("expr is always an expression", {
+  expect_equal(parse_all("#")$expr[[1]], expression())
+  expect_equal(parse_all("1")$expr[[1]], expression(1), ignore_attr = "srcref")
+  expect_equal(parse_all("1;2")$expr[[1]], expression(1, 2), ignore_attr = "srcref")
+
+  parsed <- parse_all("#\n1\n1;2")
+  expect_equal(lengths(parsed$expr), c(0, 1, 2))
+})
+
 test_that("{ not removed", {
 
   f <- function() {

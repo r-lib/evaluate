@@ -69,10 +69,9 @@ evaluate <- function(input,
   }
 
   if (new_device) {
-    # Start new graphics device and clean up afterwards
-    if (identical(grDevices::pdf, getOption("device"))) {
-      dev.new(file = NULL)
-    } else dev.new()
+    # Ensure we have a graphics device available for recording, but choose
+    # one that's available on all platforms and doesn't write to disk
+    pdf(file = NULL)
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     on.exit(dev.off(dev))
@@ -96,12 +95,9 @@ evaluate <- function(input,
     if (length(dev.list()) < devn) dev.set(dev)
     devn <- length(dev.list())
 
-    expr <- parsed$expr[[i]]
-    if (!is.null(expr))
-      expr <- as.expression(expr)
-    out[[i]] <- evaluate_call(
-      expr,
-      parsed$src[[i]],
+    out[[i]] <- evaluate_top_level_expression(
+      exprs = parsed$expr[[i]],
+      src = parsed$src[[i]],
       envir = envir,
       debug = debug,
       last = i == length(out),
@@ -128,25 +124,20 @@ evaluate <- function(input,
   unlist(out, recursive = FALSE, use.names = FALSE)
 }
 
-evaluate_call <- function(call,
-                          src = NULL,
-                          envir = parent.frame(),
-                          debug = FALSE,
-                          last = FALSE,
-                          use_try = FALSE,
-                          keep_warning = TRUE,
-                          keep_message = TRUE,
-                          log_echo = FALSE,
-                          log_warning = FALSE,
-                          output_handler = new_output_handler(),
-                          include_timing = FALSE) {
+evaluate_top_level_expression <- function(exprs,
+                                          src = NULL,
+                                          envir = parent.frame(),
+                                                          debug = FALSE,
+                                          last = FALSE,
+                                          use_try = FALSE,
+                                          keep_warning = TRUE,
+                                          keep_message = TRUE,
+                                          log_echo = FALSE,
+                                          log_warning = FALSE,
+                                          output_handler = new_output_handler(),
+                                          include_timing = FALSE) {
+  stopifnot(is.expression(exprs))
   if (debug) message(src)
-
-  if (is.null(call) && !last) {
-    source <- new_source(src, call[[1]], output_handler$source)
-    return(list(source))
-  }
-  stopifnot(is.call(call) || is.language(call) || is.atomic(call) || is.null(call))
 
   # Capture output
   w <- watchout(debug)
@@ -160,7 +151,7 @@ evaluate_call <- function(call,
     cat(src, "\n", sep = "", file = stderr())
   }
 
-  source <- new_source(src, call[[1]], output_handler$source)
+  source <- new_source(src, exprs[[1]], output_handler$source)
   output <- list(source)
 
   dev <- dev.cur()
@@ -248,7 +239,7 @@ evaluate_call <- function(call,
   user_handlers <- output_handler$calling_handlers
 
   multi_args <- length(formals(value_handler)) > 1
-  for (expr in call) {
+  for (expr in exprs) {
     srcindex <- length(output)
     time <- timing_fn(handle(
       ev <- withCallingHandlers(
