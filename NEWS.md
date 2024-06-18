@@ -1,6 +1,7 @@
 # evaluate (development version)
 
 * `evaluate()` gains an output class (`evaluate_evaluation`/`list`) and a basic print method.
+* `evaluate()` now correctly captures plots created before messages/warnings/errors (#28).
 
 # evaluate 0.24.0
 
