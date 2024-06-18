@@ -1,5 +1,7 @@
 # evaluate (development version)
 
+* `evaluate()` gains an output class (`evaluate_evaluation`/`list`) and a basic print method.
+
 # evaluate 0.24.0
 
 * The `source` output handler can now take two arguments (the unparsed `src` 

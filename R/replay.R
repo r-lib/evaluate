@@ -37,7 +37,7 @@ replay.source <- function(x) {
 
 #' @export
 replay.warning <- function(x) {
-  message("Warning message:\n", x$message)
+  message(format_condition(x))
 }
 
 #' @export
@@ -47,12 +47,7 @@ replay.message <- function(x) {
 
 #' @export
 replay.error <- function(x) {
-  if (is.null(x$call)) {
-    message("Error: ", x$message)
-  } else {
-    call <- deparse(x$call)
-    message("Error in ", call, ": ", x$message)
-  }
+  message(format_condition(x))
 }
 
 #' @export
@@ -95,6 +90,23 @@ render_sec <- function(s) {
   h <- h - d*24
   return(paste0(d, 'd', h, 'h'))
 }
+
+
+format_condition <- function(x) {
+  if (inherits(x, "rlang_warning") || inherits(x, "rlang_error")) {
+    format(x)
+  } else {
+    msg <- if (inherits(x, "warning")) "Warning" else "Error"
+
+    call <- conditionCall(x)
+    if (!is.null(conditionCall(x))) {
+      msg <- paste0(msg, " in ", deparse1(call))
+    }
+    msg <- paste0(msg, ":\n", conditionMessage(x))
+    msg
+  }
+}
+
 
 #' Line prompt.
 #'
