@@ -5,16 +5,11 @@ test_that("single plot is captured", {
 })
 
 test_that("ggplot is captured", {
-  # TODO: figure out why this doesn't work interactively: probably because
-  # the root environment is wrong - needs to be parent of global env
   skip_if_not_installed("ggplot2")
-
-  ev <- evaluate_("
-    suppressPackageStartupMessages(library(ggplot2))
-    ggplot(mtcars, aes(mpg, wt)) + geom_point()
-  ")
-  expect_length(ev, 3)
-  expect_equal(classes(ev), c("source", "source", "recordedplot"))
+  ev <- evaluate(
+    "ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) + ggplot2::geom_point()"
+  )
+  expect_equal(classes(ev), c("source", "recordedplot"))
 })
 
 test_that("plot additions are captured", {
