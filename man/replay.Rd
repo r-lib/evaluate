@@ -14,10 +14,20 @@ Replay a list of evaluated results, as if you'd run them in an R
 terminal.
 }
 \examples{
-samples <- system.file("tests", "testthat", package = "evaluate")
-if (file_test("-d", samples)) {
-  replay(evaluate(file(file.path(samples, "order.R"))))
-  replay(evaluate(file(file.path(samples, "plot.R"))))
-  replay(evaluate(file(file.path(samples, "data.R"))))
+f1 <- function() {
+  cat("1\n")
+  print("2")
+  warning("3")
+  print("4")
+  message("5")
+  stop("6")
 }
+replay(evaluate("f1()"))
+
+f2 <- function() {
+  message("Hello")
+  plot(1:10)
+  message("Goodbye")
+}
+replay(evaluate("f2()"))
 }
