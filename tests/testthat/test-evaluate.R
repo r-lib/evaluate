@@ -1,5 +1,8 @@
 test_that("file with only comments runs", {
-  ev <- evaluate(file("comment.R"))
+  ev <- evaluate_("
+    # This test case contains no executable code
+    # but it shouldn't throw an error
+  ")
   expect_length(ev, 2)
 
   expect_equal(classes(ev), c("source", "source"))
@@ -8,7 +11,10 @@ test_that("file with only comments runs", {
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
-  ev <- evaluate(file("data.R"))
+  ev <- evaluate_('
+    data(barley, package = "lattice")
+    barley
+  ')
   expect_length(ev, 3)
 })
 
@@ -42,41 +48,61 @@ test_that("errors during printing visible values are captured", {
   expect_s3_class(ev[[2]], "error")
 })
 
-test_that("options(warn = -1) suppresses warnings", {
-  ev <- evaluate("op = options(warn = -1); warning('hi'); options(op)")
+test_that("respects warn options", {
+  # suppress warnings
+  withr::local_options(warn = -1)
+  ev <- evaluate("warning('hi')")
   expect_equal(classes(ev), "source")
-})
 
-test_that("options(warn = 0) and options(warn = 1) produces warnings", {
-  ev <- evaluate("op = options(warn = 0); warning('hi'); options(op)")
+  # delayed warnings are always immediate in knitr
+  withr::local_options(warn = 0)
+  ev <- evaluate("warning('hi')")
   expect_equal(classes(ev), c("source", "simpleWarning"))
 
-  ev <- evaluate("op = options(warn = 1); warning('hi'); options(op)")
+  # immediate warnings
+  withr::local_options(warn = 1)
+  ev <- evaluate("warning('hi')")
   expect_equal(classes(ev), c("source", "simpleWarning"))
-})
 
-# See https://github.com/r-lib/evaluate/pull/81#issuecomment-367685196
-# test_that("options(warn = 2) produces errors instead of warnings", {
-#   ev_warn_2 <- evaluate("op = options(warn = 2); warning('hi'); options(op)")
-#   expect_equal(classes(ev_warn_2), c("source", "simpleError"))
-# })
+  # warnings become errors
+  withr::local_options(warn = 2)
+  ev <- evaluate("warning('hi')")
+  expect_equal(classes(ev), c("source", "simpleError"))
+})
 
 test_that("output and plots interleaved correctly", {
-  ev <- evaluate(file("interleave-1.R"))
-  expect_equal(classes(ev),
-               c("source", "character", "recordedplot", "character", "recordedplot"))
+  ev <- evaluate_("
+    for (i in 1:2) {
+      cat(i)
+      plot(i)
+    }
+  ")
+  expect_equal(
+    classes(ev),
+    c("source", "character", "recordedplot", "character", "recordedplot")
+  )
 
-  ev <- evaluate(file("interleave-2.R"))
-  expect_equal(classes(ev),
-               c("source", "recordedplot", "character", "recordedplot", "character"))
+  ev <- evaluate_("
+    for (i in 1:2) {
+      plot(i)
+      cat(i)
+    }
+  ")
+  expect_equal(
+    classes(ev),
+    c("source", "recordedplot", "character", "recordedplot", "character")
+  )
 })
 
 test_that("return value of value handler inserted directly in output list", {
   skip_if_not_installed("ggplot2")
 
-  ev <- evaluate(
-    file("raw-output.R"),
-    output_handler = new_output_handler(value = identity)
+  ev <- evaluate_('
+    rnorm(10)
+    x <- list("I\'m a list!")
+    suppressPackageStartupMessages(library(ggplot2))
+    ggplot(mtcars, aes(mpg, wt)) + geom_point()
+  ', output_handler = new_output_handler(value = identity)
   )
   expect_equal(
     classes(ev),
