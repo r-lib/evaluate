@@ -40,7 +40,7 @@ watchout <- function(handler = new_output_handler(),
   }
 }
 
-read_con <- function(con, buffer = 1024) {
+read_con <- function(con, buffer = 32 * 1024) {
   bytes <- raw()
   repeat {
     new <- readBin(con, "raw", n = buffer)
