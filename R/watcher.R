@@ -2,53 +2,56 @@
 #'
 #' @param debug activate debug mode where output will be both printed to
 #'   screen and captured.
+#' @param handler An ouptut handler object.
+#' @param frame When this frame terminates, the watcher will automatically close.` 
 #' @return list containing four functions: `get_new`, `pause`,
 #'  `unpause`, `close`.
 #' @keywords internal
-watchout <- function(debug = FALSE) {
+watchout <- function(handler = new_output_handler(),
+                     debug = FALSE,
+                     frame = parent.frame()) {
   output <- character()
   prev   <- character()
 
   con <- textConnection("output", "wr", local = TRUE)
+  defer(frame = frame, {
+    if (!test_con(con, isOpen)) {
+      con_error('The connection has been closed')
+    }
+    sink()
+    close(con)
+  })
   sink(con, split = debug)
 
-  list(
-    get_new = function(plot = FALSE, incomplete_plots = FALSE,
-                       text_callback = identity, graphics_callback = identity) {
-      incomplete <- test_con(con, isIncomplete)
-      if (incomplete) cat("\n")
+  # try() defaults to using stderr() so we need to explicitly override(#88)
+  old <- options(try.outFile = con)
+  defer(options(old), frame = frame)
 
-      out <- list()
+  function(plot = FALSE, incomplete_plots = FALSE) {
+    incomplete <- test_con(con, isIncomplete)
+    if (incomplete) cat("\n")
 
-      if (plot) {
-        out$graphics <- plot_snapshot(incomplete_plots)
-        if (!is.null(out$graphics)) graphics_callback(out$graphics)
-      }
+    out <- list()
 
-      n0 <- length(prev)
-      n1 <- length(output)
-      if (n1 > n0) {
-        new <- output[n0 + seq_len(n1 - n0)]
-        prev <<- output
+    if (plot) {
+      out$graphics <- plot_snapshot(incomplete_plots)
+      if (!is.null(out$graphics)) handler$graphics(out$graphics)
+    }
 
-        out$text <- paste0(new, collapse = "\n")
-        if (!incomplete) out$text <- paste0(out$text, "\n")
+    n0 <- length(prev)
+    n1 <- length(output)
+    if (n1 > n0) {
+      new <- output[n0 + seq_len(n1 - n0)]
+      prev <<- output
 
-        text_callback(out$text)
-      }
+      out$text <- paste0(new, collapse = "\n")
+      if (!incomplete) out$text <- paste0(out$text, "\n")
 
-      unname(out)
-    },
-    pause = function() sink(),
-    unpause = function() sink(con, split = debug),
-    close = function() {
-      if (!test_con(con, isOpen)) con_error('The connection has been closed')
-      sink()
-      close(con)
-      output
-    },
-    get_con = function() con
-  )
+      handler$text(out$text)
+    }
+
+    unname(out)
+  }
 }
 
 test_con = function(con, test) {

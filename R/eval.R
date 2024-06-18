@@ -89,8 +89,15 @@ evaluate <- function(input,
   if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
     keep_message = keep_warning = NA
 
+  # Capture output
+  watcher <- watchout(output_handler, debug = debug)
+
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
+    if (debug) {
+      message(parsed$src[[i]])
+    }
+
     # if dev.off() was called, make sure to restore device to the one opened by
     # evaluate() or existed before evaluate()
     if (length(dev.list()) < devn) dev.set(dev)
@@ -102,9 +109,9 @@ evaluate <- function(input,
     out[[i]] <- evaluate_call(
       expr,
       parsed$src[[i]],
+      watcher = watcher,
       envir = envir,
       enclos = enclos,
-      debug = debug,
       last = i == length(out),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning,
@@ -130,10 +137,10 @@ evaluate <- function(input,
 }
 
 evaluate_call <- function(call,
-                          src = NULL,
+                          src,
+                          watcher,
                           envir = parent.frame(),
                           enclos = NULL,
-                          debug = FALSE,
                           last = FALSE,
                           use_try = FALSE,
                           keep_warning = TRUE,
@@ -142,21 +149,11 @@ evaluate_call <- function(call,
                           log_warning = FALSE,
                           output_handler = new_output_handler(),
                           include_timing = FALSE) {
-  if (debug) message(src)
-
   if (is.null(call) && !last) {
     source <- new_source(src, call[[1]], output_handler$source)
     return(list(source))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call) || is.null(call))
-
-  # Capture output
-  w <- watchout(debug)
-  on.exit(w$close())
-
-  # Capture error output from try() (#88)
-  old_try_outfile <- options(try.outFile = w$get_con())
-  on.exit(options(old_try_outfile), add = TRUE)
 
   if (log_echo && !is.null(src)) {
     cat(src, "\n", sep = "", file = stderr())
@@ -169,8 +166,7 @@ evaluate_call <- function(call,
   handle_output <- function(plot = FALSE, incomplete_plots = FALSE) {
     # if dev.cur() has changed, we should not record plots any more
     plot <- plot && identical(dev, dev.cur())
-    out <- w$get_new(plot, incomplete_plots,
-      output_handler$text, output_handler$graphics)
+    out <- watcher(plot, incomplete_plots)
     output <<- c(output, out)
   }
 
@@ -235,7 +231,7 @@ evaluate_call <- function(call,
   if (include_timing) {
     timing_fn <- function(x) system.time(x)[1:3]
   } else {
-    timing_fn <- function(x) {x; NULL};
+    timing_fn <- function(x) {x; NULL}
   }
 
   if (length(funs <- .env$inject_funs)) {

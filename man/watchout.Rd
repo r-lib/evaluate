@@ -4,11 +4,15 @@
 \alias{watchout}
 \title{Watch for changes in output, text and graphics}
 \usage{
-watchout(debug = FALSE)
+watchout(handler = new_output_handler(), debug = FALSE, frame = parent.frame())
 }
 \arguments{
+\item{handler}{An ouptut handler object.}
+
 \item{debug}{activate debug mode where output will be both printed to
 screen and captured.}
+
+\item{frame}{When this frame terminates, the watcher will automatically close.`}
 }
 \value{
 list containing four functions: \code{get_new}, \code{pause},
