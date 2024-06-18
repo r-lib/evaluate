@@ -1,5 +1,8 @@
 test_that("file with only comments runs", {
-  ev <- evaluate(file("comment.R"))
+  ev <- evaluate_("
+    # This test case contains no executable code
+    # but it shouldn't throw an error
+  ")
   expect_length(ev, 2)
 
   expect_equal(classes(ev), c("source", "source"))
@@ -8,7 +11,10 @@ test_that("file with only comments runs", {
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
-  ev <- evaluate(file("data.R"))
+  ev <- evaluate_('
+    data(barley, package = "lattice")
+    barley
+  ')
   expect_length(ev, 3)
 })
 
@@ -65,21 +71,38 @@ test_that("respects warn options", {
 })
 
 test_that("output and plots interleaved correctly", {
-  ev <- evaluate(file("interleave-1.R"))
-  expect_equal(classes(ev),
-               c("source", "character", "recordedplot", "character", "recordedplot"))
+  ev <- evaluate_("
+    for (i in 1:2) {
+      cat(i)
+      plot(i)
+    }
+  ")
+  expect_equal(
+    classes(ev),
+    c("source", "character", "recordedplot", "character", "recordedplot")
+  )
 
-  ev <- evaluate(file("interleave-2.R"))
-  expect_equal(classes(ev),
-               c("source", "recordedplot", "character", "recordedplot", "character"))
+  ev <- evaluate_("
+    for (i in 1:2) {
+      plot(i)
+      cat(i)
+    }
+  ")
+  expect_equal(
+    classes(ev),
+    c("source", "recordedplot", "character", "recordedplot", "character")
+  )
 })
 
 test_that("return value of value handler inserted directly in output list", {
   skip_if_not_installed("ggplot2")
 
-  ev <- evaluate(
-    file("raw-output.R"),
-    output_handler = new_output_handler(value = identity)
+  ev <- evaluate_('
+    rnorm(10)
+    x <- list("I\'m a list!")
+    suppressPackageStartupMessages(library(ggplot2))
+    ggplot(mtcars, aes(mpg, wt)) + geom_point()
+  ', output_handler = new_output_handler(value = identity)
   )
   expect_equal(
     classes(ev),
