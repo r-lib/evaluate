@@ -1,4 +1,4 @@
-x <- seq(-10, 10, length = 30)
+x <- seq(-10, 10, length.out = 30)
 y <- x
 ff <- function(x,y) { r <- sqrt(x^2 + y^2); 10 * sin(r) / r }
 z <- outer(x, y, ff)
