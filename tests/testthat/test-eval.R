@@ -89,27 +89,12 @@ test_that("log_warning causes warnings to be immediately written to stderr()", {
     res <- evaluate("f()", log_warning = TRUE),
     type = "message"
   )
-  expect_equal(out, "Warning in f(): Hi!")
+  expect_equal(out, c("Warning in f():", "Hi!"))
 
   # But still recorded in eval result
   expect_length(res, 2)
   expect_equal(res[[1]]$src, "f()")
   expect_equal(res[[2]], simpleWarning("Hi!", quote(f())))
-})
-
-test_that("show_warning handles different types of warning", {
-
-  expect_snapshot({
-    w1 <- simpleWarning("This is a warning")
-    cat(format_warning(w1))
-    w2 <- simpleWarning("This is a warning", call = quote(f()))
-    cat(format_warning(w2))
-    w3 <- rlang::warning_cnd(message = "This is a warning")
-    cat(format_warning(w3))
-    w4 <- rlang::warning_cnd(message = "This is a warning")
-    cat(format_warning(w4))
-  })
-
 })
 
 test_that("can conditionally omit output with output handler", {
@@ -142,4 +127,18 @@ test_that("source handled called correctly when src is unparseable", {
   evaluate("x + ", output_handler = handler)
   expect_equal(src, new_source("x + "))
   expect_equal(call, expression())
+})
+
+test_that("has a reasonable print method", {
+  f <- function() {
+    print("1")
+    message("2")
+    warning("3")
+    stop("4")
+  }
+
+  expect_snapshot({
+    evaluate("f()")
+    evaluate("plot(1:3)")
+  })  
 })
