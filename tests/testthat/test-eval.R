@@ -69,7 +69,7 @@ test_that("log_echo causes output to be immediately written to stderr()", {
   expect_equal(out, "f()")
 
   # But still recorded in eval result
-  expect_length(res, 2)
+  expect_output_types(res, c("source", "text"))
   expect_equal(res[[1]]$src, "f()")
 })
 
@@ -84,7 +84,6 @@ test_that("log_warning causes warnings to be immediately written to stderr()", {
   expect_equal(out, c("Warning in f():", "Hi!"))
 
   # But still recorded in eval result
-  expect_length(res, 2)
   expect_equal(res[[1]]$src, "f()")
   expect_equal(res[[2]], simpleWarning("Hi!", quote(f())))
 })
@@ -101,7 +100,7 @@ test_that("can conditionally omit output with output handler", {
   hide <- function(x) invisible(x)
 
   out <- evaluate("hide(x <- 1)\nx", output_handler = handler)
-  expect_length(out, 2)
+  expect_output_types(out, c("source", "text"))
   expect_snapshot(replay(out))
 })
 

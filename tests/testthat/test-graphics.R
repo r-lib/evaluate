@@ -200,7 +200,7 @@ test_that("by default, evaluate() always records plots regardless of the device"
   op <- options(device = pdf)
   on.exit(options(op))
   ev <- evaluate("plot(1)")
-  expect_length(ev, 2)
+  expect_output_types(ev, c("source", "plot"))
 })
 
 test_that("Rplots.pdf files are not created", {
