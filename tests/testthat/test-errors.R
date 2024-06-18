@@ -1,11 +1,11 @@
 test_that("all code run, even after error", {
   ev <- evaluate_('stop("1")\n2')
-  expect_length(ev, 4)
+  expect_output_types(ev, c("source", "error", "source", "text"))
 })
 
 test_that("code aborts on error if stop_on_error == 1L", {
   ev <- evaluate('stop("1")\n2', stop_on_error = 1L)
-  expect_length(ev, 2)
+  expect_output_types(ev, c("source", "error"))
 })
 
 test_that("code errors if stop_on_error == 2L", {

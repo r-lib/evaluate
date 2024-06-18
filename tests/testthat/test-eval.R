@@ -7,17 +7,9 @@ test_that("all condition handlers first capture output", {
     plot(3, main = "three")
     stop("this is an error")
   }
-  expect_equal(
-    classes(evaluate("test()")),
-    c(
-      "source",
-      "recordedplot",
-      "simpleMessage",
-      "recordedplot",
-      "simpleWarning",
-      "recordedplot",
-      "simpleError"
-    )
+  expect_output_types(
+    evaluate("test()"),
+    c("source", "plot", "message", "plot", "warning", "plot", "error")
   )
 })
 
@@ -28,15 +20,15 @@ test_that("all three states of keep_warning work as expected", {
 
   # warning captured in output
   expect_no_warning(ev <- evaluate("test()", keep_warning = TRUE))
-  expect_equal(classes(ev), c("source", "simpleWarning"))
+  expect_output_types(ev, c("source", "warning"))
 
   # warning propagated
   expect_warning(ev <- evaluate("test()", keep_warning = NA), "Hi")
-  expect_equal(classes(ev), "source")
+  expect_output_types(ev, "source")
 
   # warning ignored
   expect_no_warning(ev <- evaluate("test()", keep_warning = FALSE))
-  expect_equal(classes(ev), "source")
+  expect_output_types(ev, "source")
 })
 
 test_that("all three states of keep_message work as expected", {
@@ -46,15 +38,15 @@ test_that("all three states of keep_message work as expected", {
 
   # message captured in output
   expect_no_message(ev <- evaluate("test()", keep_message = TRUE))
-  expect_equal(classes(ev), c("source", "simpleMessage"))
+  expect_output_types(ev, c("source", "message"))
 
   # message propagated
   expect_message(ev <- evaluate("test()", keep_message = NA), "Hi")
-  expect_equal(classes(ev), "source")
+  expect_output_types(ev, "source")
 
   # message ignored
   expect_no_message(ev <- evaluate("test()", keep_message = FALSE))
-  expect_equal(classes(ev), "source")
+  expect_output_types(ev, "source")
 })
 
 test_that("can evaluate expressions of all lengths", {
@@ -77,7 +69,7 @@ test_that("log_echo causes output to be immediately written to stderr()", {
   expect_equal(out, "f()")
 
   # But still recorded in eval result
-  expect_length(res, 2)
+  expect_output_types(res, c("source", "text"))
   expect_equal(res[[1]]$src, "f()")
 })
 
@@ -89,27 +81,11 @@ test_that("log_warning causes warnings to be immediately written to stderr()", {
     res <- evaluate("f()", log_warning = TRUE),
     type = "message"
   )
-  expect_equal(out, "Warning in f(): Hi!")
+  expect_equal(out, c("Warning in f():", "Hi!"))
 
   # But still recorded in eval result
-  expect_length(res, 2)
   expect_equal(res[[1]]$src, "f()")
   expect_equal(res[[2]], simpleWarning("Hi!", quote(f())))
-})
-
-test_that("show_warning handles different types of warning", {
-
-  expect_snapshot({
-    w1 <- simpleWarning("This is a warning")
-    cat(format_warning(w1))
-    w2 <- simpleWarning("This is a warning", call = quote(f()))
-    cat(format_warning(w2))
-    w3 <- rlang::warning_cnd(message = "This is a warning")
-    cat(format_warning(w3))
-    w4 <- rlang::warning_cnd(message = "This is a warning")
-    cat(format_warning(w4))
-  })
-
 })
 
 test_that("can conditionally omit output with output handler", {
@@ -124,7 +100,7 @@ test_that("can conditionally omit output with output handler", {
   hide <- function(x) invisible(x)
 
   out <- evaluate("hide(x <- 1)\nx", output_handler = handler)
-  expect_length(out, 2)
+  expect_output_types(out, c("source", "text"))
   expect_snapshot(replay(out))
 })
 
@@ -142,4 +118,18 @@ test_that("source handled called correctly when src is unparseable", {
   evaluate("x + ", output_handler = handler)
   expect_equal(src, new_source("x + "))
   expect_equal(call, expression())
+})
+
+test_that("has a reasonable print method", {
+  f <- function() {
+    print("1")
+    message("2")
+    warning("3")
+    stop("4")
+  }
+
+  expect_snapshot({
+    evaluate("f()")
+    evaluate("plot(1:3)")
+  })  
 })

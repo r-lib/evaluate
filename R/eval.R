@@ -61,12 +61,13 @@ evaluate <- function(input,
     source <- new_source(parsed$src, expression(), output_handler$source)
     output_handler$error(err)
     err$call <- NULL  # the call is unlikely to be useful
-    return(list(source, err))
+    return(new_evaluation(list(source, err)))
   }
 
   if (is.list(envir)) {
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
+  local_inject_funs(envir)
 
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
@@ -128,7 +129,8 @@ evaluate <- function(input,
   is_empty <- vapply(out, identical, list(NULL), FUN.VALUE = logical(1))
   out <- out[!is_empty]
 
-  unlist(out, recursive = FALSE, use.names = FALSE)
+  out <- unlist(out, recursive = FALSE, use.names = FALSE)
+  new_evaluation(out)
 }
 
 evaluate_top_level_expression <- function(exprs,
@@ -174,7 +176,7 @@ evaluate_top_level_expression <- function(exprs,
   # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
     if (log_warning) {
-      cat(format_warning(wn), "\n", sep = "", file = stderr())
+      cat(format_condition(wn), "\n", sep = "", file = stderr())
     }
     if (is.na(keep_warning)) return()
 
@@ -217,15 +219,6 @@ evaluate_top_level_expression <- function(exprs,
     timing_fn <- function(x) system.time(x)[1:3]
   } else {
     timing_fn <- function(x) {x; NULL}
-  }
-
-  if (length(funs <- .env$inject_funs)) {
-    funs_names <- names(funs)
-    funs_new <- !vapply(funs_names, exists, logical(1), envir, inherits = FALSE)
-    funs_names <- funs_names[funs_new]
-    funs <- funs[funs_new]
-    on.exit(rm(list = funs_names, envir = envir), add = TRUE)
-    for (i in seq_along(funs_names)) assign(funs_names[i], funs[[i]], envir)
   }
 
   user_handlers <- output_handler$calling_handlers
@@ -280,44 +273,40 @@ eval_with_user_handlers <- function(expr, envir, calling_handlers) {
   eval(call)
 }
 
-#' Inject functions into the environment of `evaluate()`
-#'
-#' Create functions in the environment specified in the `envir` argument of
-#' [evaluate()]. This can be helpful if you want to substitute certain
-#' functions when evaluating the code. To make sure it does not wipe out
-#' existing functions in the environment, only functions that do not exist in
-#' the environment are injected.
-#' @param ... Named arguments of functions. If empty, previously injected
-#'   functions will be emptied.
-#' @note For expert use only. Do not use it unless you clearly understand it.
-#' @keywords internal
-#' @examples library(evaluate)
-#' # normally you cannot capture the output of system
-#' evaluate("system('R --version')")
-#'
-#' # replace the system() function
-#' inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = '\n'))
-#'
-#' evaluate("system('R --version')")
-#'
-#' inject_funs()  # empty previously injected functions
-#' @export
-inject_funs <- function(...) {
-  funs <- list(...)
-  funs <- funs[names(funs) != '']
-  .env$inject_funs <- Filter(is.function, funs)
+new_evaluation <- function(x) {
+  # Needs explicit list for backwards compatibility
+  structure(x, class = c("evaluate_evaluation", "list"))
 }
 
-format_warning <- function(x) {
-  if (inherits(x, "rlang_warning")) {
-    format(x)
-  } else {
-    msg <- "Warning"
-
-    call <- conditionCall(x)
-    if (!is.null(conditionCall(x))) {
-      msg <- paste0(msg, " in ", paste0(deparse(call), collapse = "\n"))
+#' @export
+print.evaluate_evaluation <- function(x, ...) {
+  cat_line("<evaluation>")
+  for (component in x) {
+    if (inherits(component, "source")) {
+      cat_line("Source code: ")
+      cat_line(indent(component$src))
+    } else if (is.character(component)) {
+      cat_line("Text output: ")
+      cat_line(indent(component))
+    } else if (inherits(component, "condition")) {
+      cat_line("Condition: ")
+      cat_line(indent(format_condition(component)))
+    } else if (inherits(component, "recordedplot")) {
+      dl <- component[[1]]
+      cat_line("Plot [", length(dl), "]:")
+      for (call in dl) {
+        fun_call <- call[[2]][[1]]
+        if (hasName(fun_call, "name")) {
+          cat_line("  <base> ", fun_call$name, "()")
+        } else {
+          cat_line("  <grid> ", deparse(fun_call))
+        }
+      }
+    } else {
+      cat_line("Other: ")
+      cat(" "); str(component, indent.str = "  ")
     }
-    msg <- paste0(msg, ": ", conditionMessage(x))
   }
+
+  invisible(x)
 }

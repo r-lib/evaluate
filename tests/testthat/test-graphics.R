@@ -1,7 +1,6 @@
 test_that("single plot is captured", {
   ev <- evaluate("plot(1:10)")
-  expect_length(ev, 2)
-  expect_equal(classes(ev), c("source", "recordedplot"))
+  expect_output_types(ev, c("source", "plot"))
 })
 
 test_that("ggplot is captured", {
@@ -9,7 +8,7 @@ test_that("ggplot is captured", {
   ev <- evaluate(
     "ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) + ggplot2::geom_point()"
   )
-  expect_equal(classes(ev), c("source", "recordedplot"))
+  expect_output_types(ev, c("source", "plot"))
 })
 
 test_that("plot additions are captured", {
@@ -17,12 +16,7 @@ test_that("plot additions are captured", {
     plot(1:10)
     lines(1:10)
   ")
-  expect_length(ev, 4)
-
-  expect_equal(
-    classes(ev),
-    c("source", "recordedplot", "source", "recordedplot")
-  )
+  expect_output_types(ev, c("source", "plot", "source", "plot"))
 })
 
 test_that("blank plots by plot.new() are preserved", {
@@ -33,8 +27,7 @@ test_that("blank plots by plot.new() are preserved", {
     plot(1:10)
     plot.new()
   ")
-  expect_length(ev, 10)
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), 5))
+  expect_output_types(ev, rep(c("source", "plot"), 5))
 })
 
 test_that("base plots in a single expression are captured", {
@@ -43,8 +36,7 @@ test_that("base plots in a single expression are captured", {
       plot(rnorm(100))
     }
   ")
-  expect_length(ev, 4)
-  expect_equal(classes(ev), c("source", rep("recordedplot", 3)))
+  expect_output_types(ev, c("source", "plot", "plot", "plot"))
 })
 
 test_that("ggplot2 plots in a single expression are captured", {
@@ -57,9 +49,7 @@ test_that("ggplot2 plots in a single expression are captured", {
       print(ggplot(data.frame(x = rnorm(30), y = runif(30)), aes(x, y)) + geom_point())
     }
   ")
-  expect_length(ev, 4)
-
-  expect_equal(classes(ev), c(rep("source", 2), rep("recordedplot", 2)))
+  expect_output_types(ev, c("source", "source", "plot", "plot"))
 })
 
 test_that("erroring ggplots should not be recorded", {
@@ -70,14 +60,14 @@ test_that("erroring ggplots should not be recorded", {
     suppressPackageStartupMessages(library(ggplot2))
     ggplot(iris) + aes(XXXXXXXXXX, Sepal.Length) + geom_boxplot()
   ")
-  expect_identical(classes(ev), c("source", "source", "rlang_error"))
+  expect_output_types(ev, c("source", "source", "error"))
   
   # error in geom
   ev <- evaluate_("
     suppressPackageStartupMessages(library(ggplot2))
     ggplot(iris) + aes(Species, Sepal.Length) + geom_bar()
   ")
-  expect_identical(classes(ev), c("source", "source", "rlang_error"))
+  expect_output_types(ev, c("source", "source", "error"))
 })
 
 test_that("multirow graphics are captured only when complete", {
@@ -88,7 +78,7 @@ test_that("multirow graphics are captured only when complete", {
     plot(3)
     plot(4)
   ")
-  expect_equal(classes(ev), c(rep("source", 5), "recordedplot"))
+  expect_output_types(ev, c(rep("source", 5), "plot"))
 })
 
 test_that("multirow graphics are captured on close", {
@@ -99,7 +89,7 @@ test_that("multirow graphics are captured on close", {
     plot(3)
   ")
 
-  expect_equal(classes(ev), c(rep("source", 4), "recordedplot"))
+  expect_output_types(ev, c(rep("source", 4), "plot"))
 })
 
 test_that("plots are captured in a non-rectangular layout", {
@@ -112,7 +102,7 @@ test_that("plots are captured in a non-rectangular layout", {
       plot(rnorm(10))
     }
   ")
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(1, 3)))
+  expect_output_types(ev, c("source", "plot", "plot", "plot"))
 
   ev <- evaluate_("
     layout(matrix(c(1, 2, 1, 3, 4, 4), 3, 2, byrow = TRUE))
@@ -125,7 +115,7 @@ test_that("plots are captured in a non-rectangular layout", {
       plot(rnorm(10))
     }
   ")
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(4, 2)))
+  expect_output_types(ev, rep(c("source", "plot"), c(4, 2)))
 })
 
 test_that("changes in parameters don't generate new plots", {
@@ -134,10 +124,7 @@ test_that("changes in parameters don't generate new plots", {
     par(mar = rep(0, 4))
     plot(2)
   ")
-  expect_equal(
-    classes(ev),
-    c("source", "recordedplot", "source", "source", "recordedplot")
-  )
+  expect_output_types(ev, c("source", "plot", "source", "source", "plot"))
 })
 
 test_that("plots in a loop are captured even the changes seem to be from par only", {
@@ -148,7 +135,10 @@ test_that("plots in a loop are captured even the changes seem to be from par onl
       barplot(table(mtcars$mpg[mtcars$cyl == numcyl]), main = paste("cyl = ", numcyl))
     }
   ')
-  expect_equal(classes(ev), c("source", "recordedplot")[c(1, 2, 1, 1, 2, 2, 2)])
+  expect_output_types(
+    ev,
+    c("source", "plot", "source", "source", "plot", "plot", "plot")
+  )
 })
 
 test_that("strwidth()/strheight() should not produce new plots", {
@@ -158,7 +148,7 @@ test_that("strwidth()/strheight() should not produce new plots", {
     par(mar = c(4, 4, 1, 1))
     plot(1)
   ")
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(4, 1)))
+  expect_output_types(ev, c("source", "source", "source", "source", "plot"))
 })
 
 test_that("clip() does not produce new plots", {
@@ -167,7 +157,7 @@ test_that("clip() does not produce new plots", {
     clip(-1, 1, -1, 1)
     points(rnorm(100), rnorm(100), col = 'red')
   ")
-  expect_equal(classes(ev), c("source", "recordedplot")[c(1, 2, 1, 1, 2)])
+  expect_output_types(ev, c("source", "plot", "source", "source", "plot"))
 })
 
 test_that("perspective plots are captured", {
@@ -181,7 +171,7 @@ test_that("perspective plots are captured", {
       persp(x, y, z, phi = 30 + i * 10, theta = 30)
     }
   ")
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(6, 3)))
+  expect_output_types(ev, rep(c("source", "plot"), c(6, 3)))
 })
 
 test_that("an incomplete plot with a comment in the end is also captured", {
@@ -191,7 +181,7 @@ test_that("an incomplete plot with a comment in the end is also captured", {
       image(volcano)
     # comment
   ")
-  expect_equal(classes(ev), rep(c("source", "recordedplot"), c(3, 1)))
+  expect_output_types(ev, rep(c("source", "plot"), c(3, 1)))
 })
 
 # a bug report yihui/knitr#722
@@ -210,7 +200,7 @@ test_that("by default, evaluate() always records plots regardless of the device"
   op <- options(device = pdf)
   on.exit(options(op))
   ev <- evaluate("plot(1)")
-  expect_length(ev, 2)
+  expect_output_types(ev, c("source", "plot"))
 })
 
 test_that("Rplots.pdf files are not created", {
@@ -228,5 +218,5 @@ test_that("existing plots will not leak into evaluate()", {
   plot(1, 1)
   ev <- evaluate(c('dev.new()', 'dev.off()', 'plot.new()', 'plot(1:10, 1:10)'))
   dev.off(d)
-  expect_equal(tail(classes(ev), 6), c('source', 'character', 'recordedplot')[c(1, 2, 1, 3, 1, 3)])
+  expect_output_types(ev, c('source', 'text', 'plot')[c(1, 1, 2, 1, 3, 1, 3)])
 })
