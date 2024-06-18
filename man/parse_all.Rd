@@ -15,11 +15,31 @@ If a connection, will be opened and closed only if it was closed initially.}
 \item{allow_error}{whether to allow syntax errors in \code{x}}
 }
 \value{
-A data.frame with columns \code{src}, the source code, and
-\code{expr}. If there are syntax errors in \code{x} and \code{allow_error = TRUE}, the data frame has an attribute \code{PARSE_ERROR} that stores the
-error object.
+A data frame with columns \code{src}, a character vector of source code, and
+\code{expr}, a list-column of parsed expressions. There will be one row for each
+top-level expression in \code{x}. A top-level expression is a complete expression
+which would trigger execution if typed at the console. The \code{expression}
+object in \code{expr} can be of any length: it will be 0 if the top-level
+expression contains only whitespace and/or comments; 1 if the top-level
+expression is a single scalar (like \code{TRUE}, \code{1}, or \code{"x"}), name, or call;
+or 2 if the top-level expression uses \verb{;} to put multiple expressions on
+one line.
+
+If there are syntax errors in \code{x} and \code{allow_error = TRUE}, the data
+frame will have an attribute \code{PARSE_ERROR} that stores the error object.
 }
 \description{
 Works very similarly to parse, but also keeps original formatting and
 comments.
+}
+\examples{
+source <- "
+  # a comment
+  x
+  x;y
+"
+parsed <- parse_all(source)
+lengths(parsed$expr)
+str(parsed$expr)
+
 }
