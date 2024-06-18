@@ -51,14 +51,22 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">watchout</span><span class="op">(</span>debug <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">watchout</span><span class="op">(</span>handler <span class="op">=</span> <span class="fu"><a href="new_output_handler.html">new_output_handler</a></span><span class="op">(</span><span class="op">)</span>, debug <span class="op">=</span> <span class="cn">FALSE</span>, frame <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>debug</dt>
+    <dl><dt>handler</dt>
+<dd><p>An ouptut handler object.</p></dd>
+
+
+<dt>debug</dt>
 <dd><p>activate debug mode where output will be both printed to
 screen and captured.</p></dd>
+
+
+<dt>frame</dt>
+<dd><p>When this frame terminates, the watcher will automatically close.`</p></dd>
 
 </dl></div>
     <div class="section level2">
