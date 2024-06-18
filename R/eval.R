@@ -67,6 +67,7 @@ evaluate <- function(input,
   if (is.list(envir)) {
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
+  local_inject_funs(envir)
 
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
@@ -223,15 +224,6 @@ evaluate_top_level_expression <- function(exprs,
     timing_fn <- function(x) {x; NULL};
   }
 
-  if (length(funs <- .env$inject_funs)) {
-    funs_names <- names(funs)
-    funs_new <- !vapply(funs_names, exists, logical(1), envir, inherits = FALSE)
-    funs_names <- funs_names[funs_new]
-    funs <- funs[funs_new]
-    on.exit(rm(list = funs_names, envir = envir), add = TRUE)
-    for (i in seq_along(funs_names)) assign(funs_names[i], funs[[i]], envir)
-  }
-
   user_handlers <- output_handler$calling_handlers
 
   for (expr in exprs) {
@@ -282,34 +274,6 @@ eval_with_user_handlers <- function(expr, envir, calling_handlers) {
   ))
 
   eval(call)
-}
-
-#' Inject functions into the environment of `evaluate()`
-#'
-#' Create functions in the environment specified in the `envir` argument of
-#' [evaluate()]. This can be helpful if you want to substitute certain
-#' functions when evaluating the code. To make sure it does not wipe out
-#' existing functions in the environment, only functions that do not exist in
-#' the environment are injected.
-#' @param ... Named arguments of functions. If empty, previously injected
-#'   functions will be emptied.
-#' @note For expert use only. Do not use it unless you clearly understand it.
-#' @keywords internal
-#' @examples library(evaluate)
-#' # normally you cannot capture the output of system
-#' evaluate("system('R --version')")
-#'
-#' # replace the system() function
-#' inject_funs(system = function(...) cat(base::system(..., intern = TRUE), sep = '\n'))
-#'
-#' evaluate("system('R --version')")
-#'
-#' inject_funs()  # empty previously injected functions
-#' @export
-inject_funs <- function(...) {
-  funs <- list(...)
-  funs <- funs[names(funs) != '']
-  .env$inject_funs <- Filter(is.function, funs)
 }
 
 new_evaluation <- function(x) {
