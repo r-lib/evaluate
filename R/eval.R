@@ -67,6 +67,7 @@ evaluate <- function(input,
   if (is.null(enclos)) {
     enclos <- if (is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv()
   }
+  local_inject_funs(envir)
 
   if (new_device) {
     # Start new graphics device and clean up afterwards
@@ -237,8 +238,6 @@ evaluate_call <- function(call,
   } else {
     timing_fn <- function(x) {x; NULL};
   }
-
-  local_inject_funs(envir)
 
   user_handlers <- output_handler$calling_handlers
 
