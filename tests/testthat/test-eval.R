@@ -1,3 +1,71 @@
+test_that("all condition handlers first capture output", {
+  test <- function(){
+    plot(1, main = "one")
+    message("this is an message!")
+    plot(2, main = "two")
+    warning("this is a warning")
+    plot(3, main = "three")
+    stop("this is an error")
+  }
+  expect_equal(
+    classes(evaluate("test()")),
+    c(
+      "source",
+      "recordedplot",
+      "simpleMessage",
+      "recordedplot",
+      "simpleWarning",
+      "recordedplot",
+      "simpleError"
+    )
+  )
+})
+
+test_that("all three states of keep_warning work as expected", {
+  test <- function() {
+    warning("Hi!")
+  }
+
+  # warning captured in output
+  expect_no_warning(ev <- evaluate("test()", keep_warning = TRUE))
+  expect_equal(classes(ev), c("source", "simpleWarning"))
+
+  # warning propagated
+  expect_warning(ev <- evaluate("test()", keep_warning = NA), "Hi")
+  expect_equal(classes(ev), "source")
+
+  # warning ignored
+  expect_no_warning(ev <- evaluate("test()", keep_warning = FALSE))
+  expect_equal(classes(ev), "source")
+})
+
+test_that("all three states of keep_message work as expected", {
+  test <- function() {
+    message("Hi!")
+  }
+
+  # message captured in output
+  expect_no_message(ev <- evaluate("test()", keep_message = TRUE))
+  expect_equal(classes(ev), c("source", "simpleMessage"))
+
+  # message propagated
+  expect_message(ev <- evaluate("test()", keep_message = NA), "Hi")
+  expect_equal(classes(ev), "source")
+
+  # message ignored
+  expect_no_message(ev <- evaluate("test()", keep_message = FALSE))
+  expect_equal(classes(ev), "source")
+})
+
+test_that("can evaluate expressions of all lengths", {
+  source <- "
+    # a comment
+    1
+    x <- 2; x
+  "
+  expect_no_error(evaluate(source))
+})
+
 test_that("log_echo causes output to be immediately written to stderr()", {
   f <- function() {
     1

@@ -7,11 +7,30 @@
 #'   If a connection, will be opened and closed only if it was closed initially.
 #' @param filename string overriding the file name
 #' @param allow_error whether to allow syntax errors in `x`
-#' @return A data.frame with columns `src`, the source code, and
-#'   `expr`. If there are syntax errors in `x` and `allow_error =
-#'   TRUE`, the data frame has an attribute `PARSE_ERROR` that stores the
-#'   error object.
+#' @return 
+#' A data frame with columns `src`, a character vector of source code, and 
+#' `expr`, a list-column of parsed expressions. There will be one row for each 
+#' top-level expression in `x`. A top-level expression is a complete expression 
+#' which would trigger execution if typed at the console. The `expression`
+#' object in `expr` can be of any length: it will be 0 if the top-level 
+#' expression contains only whitespace and/or comments; 1 if the top-level 
+#' expression is a single scalar (like `TRUE`, `1`, or `"x"`), name, or call; 
+#' or 2 if the top-level expression uses `;` to put multiple expressions on 
+#' one line.
+#' 
+#' If there are syntax errors in `x` and `allow_error = TRUE`, the data 
+#' frame will have an attribute `PARSE_ERROR` that stores the error object.
 #' @export
+#' @examples
+#' source <- "
+#'   # a comment
+#'   x
+#'   x;y
+#' "
+#' parsed <- parse_all(source)
+#' lengths(parsed$expr)
+#' str(parsed$expr)
+#' 
 parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_all")
 
 #' @export
@@ -40,7 +59,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   # No code, only comments and/or empty lines
   ne <- length(exprs)
   if (ne == 0) {
-    return(data.frame(src = append_break(x), expr = I(rep(list(NULL), n))))
+    return(data.frame(src = append_break(x), expr = I(rep(list(expression()), n))))
   }
 
   srcref <- attr(exprs, "srcref", exact = TRUE)
@@ -78,7 +97,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
     r <- p[1]:p[2]
     data.frame(
       src = x[r],
-      expr = I(rep(list(NULL), p[2] - p[1] + 1)),
+      expr = I(rep(list(expression()), p[2] - p[1] + 1)),
       line = r - 1
     )
   }))
