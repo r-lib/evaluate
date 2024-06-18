@@ -216,7 +216,6 @@ evaluate_top_level_expression <- function(exprs,
   } else {
     handle <- force
   }
-  value_handler <- output_handler$value
   if (include_timing) {
     timing_fn <- function(x) system.time(x)[1:3]
   } else {
@@ -234,7 +233,6 @@ evaluate_top_level_expression <- function(exprs,
 
   user_handlers <- output_handler$calling_handlers
 
-  multi_args <- length(formals(value_handler)) > 1
   for (expr in exprs) {
     srcindex <- length(output)
     time <- timing_fn(handle(
@@ -249,14 +247,10 @@ evaluate_top_level_expression <- function(exprs,
     if (!is.null(time))
       attr(output[[srcindex]]$src, 'timing') <- time
 
-    # If visible or the value handler has multi args, process and capture output
-    if (ev$visible || multi_args) {
+    if (show_value(output_handler, ev$visible)) {
       pv <- list(value = NULL, visible = FALSE)
-      value_fun <- if (multi_args) value_handler else {
-        function(x, visible) value_handler(x)
-      }
       handle(pv <- withCallingHandlers(withVisible(
-        value_fun(ev$value, ev$visible)
+        handle_value(output_handler, ev$value, ev$visible)
       ), warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)
       # If the return value is visible, save the value to the output
