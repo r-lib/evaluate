@@ -1,3 +1,12 @@
+test_that("can evaluate expressions of all lengths", {
+  source <- "
+    # a comment
+    1
+    x <- 2; x
+  "
+  expect_no_error(evaluate(source))
+})
+
 test_that("log_echo causes output to be immediately written to stderr()", {
   f <- function() {
     1
