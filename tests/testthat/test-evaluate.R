@@ -3,7 +3,6 @@ test_that("file with only comments runs", {
     # This test case contains no executable code
     # but it shouldn't throw an error
   ")
-  
   expect_output_types(ev, c("source", "source"))
 })
 
@@ -25,7 +24,6 @@ test_that("data sets loaded", {
 
 test_that("terminal newline not needed", {
   ev <- evaluate("cat('foo')")
-
   expect_output_types(ev, c("source", "text"))
   expect_equal(ev[[2]], "foo")
 })
