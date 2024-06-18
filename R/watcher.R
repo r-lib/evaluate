@@ -2,53 +2,56 @@
 #'
 #' @param debug activate debug mode where output will be both printed to
 #'   screen and captured.
+#' @param handler An ouptut handler object.
+#' @param frame When this frame terminates, the watcher will automatically close.` 
 #' @return list containing four functions: `get_new`, `pause`,
 #'  `unpause`, `close`.
 #' @keywords internal
-watchout <- function(debug = FALSE) {
-  output <- character()
-  prev   <- character()
-
-  con <- textConnection("output", "wr", local = TRUE)
+watchout <- function(handler = new_output_handler(),
+                     debug = FALSE,
+                     frame = parent.frame()) {
+  con <- file("", "w+b")
+  defer(frame = frame, {
+    if (!test_con(con, isOpen)) {
+      con_error('The connection has been closed')
+    }
+    sink()
+    close(con)
+  })
   sink(con, split = debug)
 
-  list(
-    get_new = function(plot = FALSE, incomplete_plots = FALSE,
-                       text_callback = identity, graphics_callback = identity) {
-      incomplete <- test_con(con, isIncomplete)
-      if (incomplete) cat("\n")
+  # try() defaults to using stderr() so we need to explicitly override(#88)
+  old <- options(try.outFile = con)
+  defer(options(old), frame = frame)
 
-      out <- list()
+  function(plot = TRUE, incomplete_plots = FALSE) {
+    out <- list(
+      if (plot) plot_snapshot(incomplete_plots),
+      read_con(con)
+    )
+    if (!is.null(out[[1]])) {
+      handler$graphics(out[[1]])
+    }
+    if (!is.null(out[[2]])) {
+      handler$text(out[[2]])
+    }
+    
+    compact(out)
+  }
+}
 
-      if (plot) {
-        out$graphics <- plot_snapshot(incomplete_plots)
-        if (!is.null(out$graphics)) graphics_callback(out$graphics)
-      }
-
-      n0 <- length(prev)
-      n1 <- length(output)
-      if (n1 > n0) {
-        new <- output[n0 + seq_len(n1 - n0)]
-        prev <<- output
-
-        out$text <- paste0(new, collapse = "\n")
-        if (!incomplete) out$text <- paste0(out$text, "\n")
-
-        text_callback(out$text)
-      }
-
-      unname(out)
-    },
-    pause = function() sink(),
-    unpause = function() sink(con, split = debug),
-    close = function() {
-      if (!test_con(con, isOpen)) con_error('The connection has been closed')
-      sink()
-      close(con)
-      output
-    },
-    get_con = function() con
-  )
+read_con <- function(con, buffer = 32 * 1024) {
+  bytes <- raw()
+  repeat {
+    new <- readBin(con, "raw", n = buffer)
+    if (length(new) == 0) break
+    bytes <- c(bytes, new)
+  }
+  if (length(bytes) == 0) {
+    NULL
+  } else {
+    rawToChar(bytes)
+  }
 }
 
 test_con = function(con, test) {
