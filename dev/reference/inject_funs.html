@@ -83,28 +83,28 @@ functions will be emptied.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://evaluate.r-lib.org/">evaluate</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># normally you cannot capture the output of system</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="evaluate.html">evaluate</a></span><span class="op">(</span><span class="st">"system('R --version')"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $src</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "system('R --version')"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "source"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   system('R --version')</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># replace the system() function</span></span></span>
 <span class="r-in"><span><span class="fu">inject_funs</span><span class="op">(</span>system <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="va">...</span>, intern <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">'\n'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="evaluate.html">evaluate</a></span><span class="op">(</span><span class="st">"system('R --version')"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $src</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "system('R --version')"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "source"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "R version 4.4.1 (2024-06-14) -- \"Race for Your Life\"\nCopyright (C) 2024 The R Foundation for Statistical Computing\nPlatform: x86_64-pc-linux-gnu\n\nR is free software and comes with ABSOLUTELY NO WARRANTY.\nYou are welcome to redistribute it under the terms of the\nGNU General Public License versions 2 or 3.\nFor more information about these matters see\nhttps://www.gnu.org/licenses/.\n\n"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   system('R --version')</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   R version 4.4.1 (2024-06-14) -- "Race for Your Life"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Copyright (C) 2024 The R Foundation for Statistical Computing</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Platform: x86_64-pc-linux-gnu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   R is free software and comes with ABSOLUTELY NO WARRANTY.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   You are welcome to redistribute it under the terms of the</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   GNU General Public License versions 2 or 3.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   For more information about these matters see</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   https://www.gnu.org/licenses/.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">inject_funs</span><span class="op">(</span><span class="op">)</span>  <span class="co"># empty previously injected functions</span></span></span>
 </code></pre></div>
