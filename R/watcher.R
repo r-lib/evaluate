@@ -10,6 +10,9 @@
 watchout <- function(handler = new_output_handler(),
                      debug = FALSE,
                      frame = parent.frame()) {
+  
+  dev <- dev.cur()
+
   con <- file("", "w+b")
   defer(frame = frame, {
     if (!test_con(con, isOpen)) {
@@ -25,6 +28,9 @@ watchout <- function(handler = new_output_handler(),
   defer(options(old), frame = frame)
 
   function(plot = TRUE, incomplete_plots = FALSE) {
+    # if dev.cur() has changed, we should not record plots any more
+    plot <- plot && identical(dev, dev.cur())
+
     out <- list(
       if (plot) plot_snapshot(incomplete_plots),
       read_con(con)

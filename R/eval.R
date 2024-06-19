@@ -154,10 +154,7 @@ evaluate_top_level_expression <- function(exprs,
   source <- new_source(src, exprs[[1]], output_handler$source)
   output <- list(source)
 
-  dev <- dev.cur()
   handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
-    # if dev.cur() has changed, we should not record plots any more
-    plot <- plot && identical(dev, dev.cur())
     out <- watcher(plot, incomplete_plots)
     output <<- c(output, out)
   }
