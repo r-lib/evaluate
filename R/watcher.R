@@ -37,15 +37,6 @@ watchout <- function(handler = new_output_handler(),
     if (!identical(dev.cur(), dev)) {
       return()
     }
-    # cur_devs <- dev.list()
-    # # No graphics devices 
-    # if (is.null(cur_devs)) {
-    #   return()
-    # }
-    # # Current graphics device changed since evaluate started
-    # if (!identical(cur_devs, devs)) {
-    #   return()
-    # }
 
     # current page is incomplete
     if (!par("page") && !incomplete) {
