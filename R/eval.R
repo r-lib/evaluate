@@ -74,8 +74,12 @@ evaluate <- function(input,
     keep_message = keep_warning = NA
 
   # Capture output
-  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
-  output <- growable()
+  output <- growable(output_handler)
+  watcher <- watchout(
+    output = output,
+    new_device = new_device,
+    debug = debug
+  )
 
   for (i in seq_len(nrow(parsed))) {
     if (log_echo || debug) {
@@ -102,7 +106,7 @@ evaluate <- function(input,
   }
 
   # Always capture last plot, even if incomplete
-  output$push(watcher$capture_plot(incomplete = TRUE))
+  watcher$capture_plot(incomplete = TRUE)
 
   new_evaluation(output$get())
 }
@@ -123,24 +127,6 @@ evaluate_top_level_expression <- function(exprs,
   source <- new_source(src, exprs[[1]], output_handler$source)
   output$push(source)
 
-  handle_output <- function(plot = TRUE) {
-    if (plot) {
-      output$push(watcher$capture_plot())
-    }
-    output$push(watcher$capture_output())
-  }
-
-  local_output_handler(function() handle_output(FALSE))
-
-  # Hooks to capture plot creation
-  hook_list <- list(
-    persp = handle_output,
-    before.plot.new = handle_output,
-    before.grid.newpage = handle_output
-  )
-  set_hooks(hook_list)
-  on.exit(remove_hooks(hook_list), add = TRUE)
-
   # Handlers for warnings, errors and messages
   wHandler <- function(cnd) {
     if (log_warning) {
@@ -151,24 +137,21 @@ evaluate_top_level_expression <- function(exprs,
     # do not handle the warning as it will be raised as error after
     if (getOption("warn") >= 2) return()
 
-    handle_output()
+    watcher$capture_plot_and_output()
     if (keep_warning && getOption("warn") >= 0) {
       output$push(cnd)
-      output_handler$warning(cnd)
     }
     invokeRestart("muffleWarning")
   }
   eHandler <- function(cnd) {
-    handle_output()
+    watcher$capture_plot_and_output()
     output$push(cnd)
     output$errored()
-    output_handler$error(cnd)
   }
   mHandler <- function(cnd) {
-    handle_output()
+    watcher$capture_plot_and_output()
     if (isTRUE(keep_message)) {
       output$push(cnd)
-      output_handler$message(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
       invokeRestart("muffleMessage")
@@ -205,7 +188,7 @@ evaluate_top_level_expression <- function(exprs,
         )
       )
     )
-    handle_output(TRUE)
+    watcher$capture_plot_and_output()
     # if (!is.null(time))
     #   attr(output[[srcindex]]$src, 'timing') <- time
 
@@ -222,7 +205,7 @@ evaluate_top_level_expression <- function(exprs,
           handlers
         )
       )
-      handle_output(TRUE)
+      watcher$capture_plot_and_output()
       # If the return value is visible, save the value to the output
       if (pv$visible) output$push(pv$value)
     }

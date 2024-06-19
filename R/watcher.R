@@ -1,4 +1,4 @@
-watchout <- function(handler = new_output_handler(),
+watchout <- function(output = growable(),
                      new_device = TRUE,
                      debug = FALSE,
                      frame = parent.frame()) {
@@ -53,16 +53,19 @@ watchout <- function(handler = new_output_handler(),
     }
 
     last_plot <<- plot
-    handler$graphics(plot)
-    plot
+    output$push(plot)
+    invisible()
   }
 
   capture_output <- function() {
     out <- read_con(con)
-    if (!is.null(out)) {
-      handler$text(out)
-    }
-    out
+    output$push(out)
+    invisible()
+  }
+
+  capture_plot_and_output <- function() {
+    capture_plot()
+    capture_output()
   }
 
   check_devices <- function() {
@@ -75,9 +78,22 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
   
+  local_output_handler(function() capture_output(), frame = frame)
+
+  # Hooks to capture plot creation
+  hook_list <- list(
+    persp = capture_plot_and_output,
+    before.plot.new = capture_plot_and_output,
+    before.grid.newpage = capture_plot_and_output
+  )
+  set_hooks(hook_list)
+  defer(remove_hooks(hook_list), frame = frame)
+  
+
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
+    capture_plot_and_output = capture_plot_and_output,
     check_devices = check_devices
   )
 }
