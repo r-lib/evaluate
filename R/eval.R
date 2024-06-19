@@ -79,19 +79,28 @@ evaluate <- function(input,
     debug = debug
   )
 
+  # The user's condition handlers have priority over ours
+  user_handlers <- output_handler$calling_handlers
+  evaluate_handlers <- evaluate_handlers(
+    watcher,
+    keep_warning = keep_warning,
+    keep_message = keep_message,
+    log_warning = log_warning
+  )
+  handlers <- c(user_handlers, evaluate_handlers)
+
   for (i in seq_len(nrow(parsed))) {
     if (log_echo || debug) {
       cat_line(parsed$src[[i]], file = stderr())
     }
+    watcher$add_source(parsed$src[[i]], parsed$expr[[i]][[1]])
+
     evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
-      src = parsed$src[[i]],
       watcher = watcher,
       envir = envir,
       use_try = stop_on_error != 2L,
-      keep_warning = keep_warning,
-      keep_message = keep_message,
-      log_warning = log_warning,
+      handlers = handlers,
       output_handler = output_handler,
       include_timing = include_timing
     )
@@ -109,8 +118,8 @@ evaluate <- function(input,
 }
 
 evaluate_top_level_expression <- function(exprs,
-                                          src,
                                           watcher,
+                                          handlers,
                                           envir = parent.frame(),
                                           use_try = FALSE,
                                           keep_warning = TRUE,
@@ -119,38 +128,6 @@ evaluate_top_level_expression <- function(exprs,
                                           output_handler = new_output_handler(),
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
-
-  watcher$add_source(src, exprs[[1]])
-
-  # Handlers for warnings, errors and messages
-  wHandler <- function(cnd) {
-    if (log_warning) {
-      cat(format_condition(cnd), "\n", sep = "", file = stderr())
-    }
-    if (is.na(keep_warning)) return()
-
-    # do not handle the warning as it will be raised as error after
-    if (getOption("warn") >= 2) return()
-
-    watcher$capture_plot_and_output()
-    if (keep_warning && getOption("warn") >= 0) {
-      watcher$add_output(cnd)
-    }
-    invokeRestart("muffleWarning")
-  }
-  eHandler <- function(cnd) {
-    watcher$capture_plot_and_output()
-    watcher$add_output(cnd)
-  }
-  mHandler <- function(cnd) {
-    watcher$capture_plot_and_output()
-    if (isTRUE(keep_message)) {
-      watcher$add_output(cnd)
-      invokeRestart("muffleMessage")
-    } else if (isFALSE(keep_message)) {
-      invokeRestart("muffleMessage")
-    }
-  }
 
   if (use_try) {
     handle <- function(code) {
@@ -166,11 +143,6 @@ evaluate_top_level_expression <- function(exprs,
   } else {
     timing_fn <- function(x) {x; NULL}
   }
-
-  user_handlers <- output_handler$calling_handlers
-  evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
-  # The user's condition handlers have priority over ours
-  handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
     # srcindex <- length(output)
@@ -215,4 +187,41 @@ with_handlers <- function(code, handlers) {
 
   call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
   eval(call)
+}
+
+evaluate_handlers <- function(watcher,
+                              keep_warning = TRUE,
+                              keep_message = TRUE,
+                              log_warning = FALSE) {
+  
+  list(
+    message = function(cnd) {
+      watcher$capture_plot_and_output()
+      if (isTRUE(keep_message)) {
+        watcher$add_output(cnd)
+        invokeRestart("muffleMessage")
+      } else if (isFALSE(keep_message)) {
+        invokeRestart("muffleMessage")
+      }
+    },
+    warning = function(cnd) {
+      if (log_warning) {
+        cat(format_condition(cnd), "\n", sep = "", file = stderr())
+      }
+      if (is.na(keep_warning)) return()
+
+      # do not handle the warning as it will be raised as error after
+      if (getOption("warn") >= 2) return()
+
+      watcher$capture_plot_and_output()
+      if (keep_warning && getOption("warn") >= 0) {
+        watcher$add_output(cnd)
+      }
+      invokeRestart("muffleWarning")
+    },
+    error = function(cnd) {
+      watcher$capture_plot_and_output()
+      watcher$add_output(cnd)
+    }
+  )
 }
