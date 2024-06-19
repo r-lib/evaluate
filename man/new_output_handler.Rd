@@ -42,7 +42,10 @@ drop the source from the output.}
 \item If it has one argument, it called on visible values.
 \item If it has two arguments, it handles all values, with the second
 argument indicating whether or not the value is visible.
-}}
+}
+
+The return value of the handler is ignored; it's job is to print
+output to the screen.}
 
 \item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.
 These handlers have precedence over the exiting handler installed

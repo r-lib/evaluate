@@ -86,27 +86,24 @@ test_that("output and plots interleaved correctly", {
   expect_output_types(ev, c("source", "plot", "text", "plot", "text"))
 })
 
-test_that("return value of value handler inserted directly in output list", {
-  skip_if_not_installed("ggplot2")
-
-  ev <- evaluate_('
-    rnorm(10)
-    x <- list("I\'m a list!")
-    suppressPackageStartupMessages(library(ggplot2))
-    ggplot(mtcars, aes(mpg, wt)) + geom_point()
-  ', output_handler = new_output_handler(value = identity)
-  )
-  expect_output_types(ev, c("source", "numeric", "source", "source", "source", "gg"))
+test_that("return value of value handler is ignored", {
+  handler <- new_output_handler(value = identity)
+  ev <- evaluate_(output_handler = handler, '
+    1
+    invisible(1)
+  ')
+  expect_output_types(ev, c("source", "source"))
 })
 
 test_that("invisible values can also be saved if value handler has two arguments", {
-  handler <- new_output_handler(value = function(x, visible) {
-    x  # always returns a visible value
-  })
+  handler <- new_output_handler(value = function(x, visible) cat(x))
   expect_true(show_value(handler, FALSE))
 
-  ev <- evaluate("x<-1:10", output_handler = handler)
-  expect_output_types(ev, c("source", "integer"))
+  ev <- evaluate_(output_handler = handler, '
+    1
+    invisible(1)
+  ')
+  expect_output_types(ev, c("source", "text", "source", "text"))
 })
 
 test_that("multiple expressions on one line can get printed as expected", {

@@ -97,6 +97,9 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #'   * If it has one argument, it called on visible values.
 #'   * If it has two arguments, it handles all values, with the second
 #'     argument indicating whether or not the value is visible.
+#' 
+#'   The return value of the handler is ignored; it's job is to print
+#'   output to the screen.
 #' @param calling_handlers List of [calling handlers][withCallingHandlers].
 #'   These handlers have precedence over the exiting handler installed
 #'   by [evaluate()] when `stop_on_error` is set to 0.

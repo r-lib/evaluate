@@ -243,8 +243,6 @@ evaluate_top_level_expression <- function(exprs,
         handle_value(output_handler, ev$value, ev$visible)
       ), warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)
-      # If the return value is visible, save the value to the output
-      if (pv$visible) output <- c(output, list(pv$value))
     }
   }
   # Always capture last plot, even if incomplete
