@@ -1,15 +1,23 @@
-#' Watch for changes in output, text and graphics
-#'
-#' @param debug activate debug mode where output will be both printed to
-#'   screen and captured.
-#' @param handler An ouptut handler object.
-#' @param frame When this frame terminates, the watcher will automatically close.` 
-#' @return list containing four functions: `get_new`, `pause`,
-#'  `unpause`, `close`.
-#' @keywords internal
 watchout <- function(handler = new_output_handler(),
+                     new_device = TRUE,
                      debug = FALSE,
                      frame = parent.frame()) {
+  last_plot <- NULL
+
+  if (new_device) {
+    # Ensure we have a graphics device available for recording, but choose
+    # one that's available on all platforms and doesn't write to disk
+    pdf(file = NULL)
+    dev.control(displaylist = "enable")
+    dev <- dev.cur()
+    defer(dev.off(dev), frame)
+  }
+
+  # record current devices
+  devs <- dev.list()
+  devn <- length(devs)
+  dev <- dev.cur()
+
   con <- file("", "w+b")
   defer(frame = frame, {
     if (!test_con(con, isOpen)) {
@@ -24,20 +32,54 @@ watchout <- function(handler = new_output_handler(),
   old <- options(try.outFile = con)
   defer(options(old), frame = frame)
 
-  function(plot = TRUE, incomplete_plots = FALSE) {
-    out <- list(
-      if (plot) plot_snapshot(incomplete_plots),
-      read_con(con)
-    )
-    if (!is.null(out[[1]])) {
-      handler$graphics(out[[1]])
+  capture_plot <- function(incomplete = FALSE) {
+    # only record plots for our graphics device
+    if (!identical(dev.cur(), dev)) {
+      return()
     }
-    if (!is.null(out[[2]])) {
-      handler$text(out[[2]])
+
+    # current page is incomplete
+    if (!par("page") && !incomplete) {
+      return()
     }
-    
-    compact(out)
+
+    plot <- recordPlot()
+    if (!makes_visual_change(plot[[1]])) {
+      return()
+    }
+  
+    if (!looks_different(last_plot[[1]], plot[[1]])) {
+      return()
+    }
+
+    last_plot <<- plot
+    handler$graphics(plot)
+    plot
   }
+
+  capture_output <- function() {
+    out <- read_con(con)
+    if (!is.null(out)) {
+      handler$text(out)
+    }
+    out
+  }
+
+  check_devices <- function() {
+    # if dev.off() was called, make sure to restore device to the one opened 
+    # when watchout() was called
+    if (length(dev.list()) < devn) {
+      dev.set(dev)
+    }
+    devn <<- length(dev.list())
+    invisible()
+  }
+  
+  list(
+    capture_plot = capture_plot,
+    capture_output = capture_output,
+    check_devices = check_devices
+  )
 }
 
 read_con <- function(con, buffer = 32 * 1024) {

@@ -174,8 +174,10 @@ test_that("perspective plots are captured", {
 })
 
 # a bug report yihui/knitr#722
-test_that("repeatedly drawing the same plot does not omit plots randomly", {
-  expect_true(all(replicate(100, length(evaluate("plot(1:10)"))) == 2))
+test_that("plot state doesn't persist over evaluate calls", {
+  expect_output_types(evaluate("plot(1)"), c("source", "plot"))
+  expect_output_types(evaluate("plot(1)"), c("source", "plot"))
+  expect_output_types(evaluate("plot(1)"), c("source", "plot"))
 })
 
 test_that("evaluate() doesn't depend on device option", {
