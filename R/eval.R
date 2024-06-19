@@ -82,9 +82,6 @@ evaluate <- function(input,
   devn <- length(.env$dev_list <- dev.list())
   dev <- dev.cur()
 
-  # clean up the last_plot object after an evaluate() call (cf yihui/knitr#722)
-  on.exit(assign("last_plot", NULL, envir = environment(plot_snapshot)), add = TRUE)
-
   # if this env var is set to true, always bypass messages
   if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
     keep_message = keep_warning = NA

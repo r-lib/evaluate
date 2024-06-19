@@ -6,39 +6,6 @@
 #"
 #" @return \code{NULL} if plot is blank or unchanged, otherwise the output of
 #"   \code{\link{recordPlot}}.
-plot_snapshot <- local({
-  last_plot <- NULL
-
-  function(incomplete = FALSE) {
-    devs <- dev.list()
-    # No graphics devices 
-    if (is.null(devs)) {
-      return()
-    }
-
-    # Current graphics device changed since evaluate started
-    if (!identical(devs, .env$dev_list)) {
-      return()
-    }
-
-    # current page is incomplete
-    if (!par("page") && !incomplete) {
-      return()
-    }
-
-    plot <- recordPlot()
-    if (!makes_visual_change(plot[[1]])) {
-      return()
-    }
-
-    if (!looks_different(last_plot[[1]], plot[[1]])) {
-      return()
-    }
-
-    last_plot <<- plot
-    plot
-  }
-})
 
 looks_different <- function(old_dl, new_dl) {
   if (identical(old_dl, new_dl)) {

@@ -10,6 +10,7 @@ watchout <- function(handler = new_output_handler(),
                      debug = FALSE,
                      frame = parent.frame()) {
   dev <- dev.cur()
+  last_plot <- NULL
 
   con <- file("", "w+b")
   defer(frame = frame, {
@@ -31,11 +32,12 @@ watchout <- function(handler = new_output_handler(),
       return()
     }
 
-    out <- plot_snapshot(incomplete)
-    if (!is.null(out)) {
-      handler$graphics(out)
+    new_plot <- plot_snapshot(last_plot, incomplete)
+    if (!is.null(new_plot)) {
+      last_plot <<- new_plot
+      handler$graphics(new_plot)
     }
-    out
+    new_plot
   }
 
   capture_output <- function() {
@@ -73,3 +75,31 @@ test_con = function(con, test) {
 con_error = function(x) stop(
   x, '... Please make sure not to call closeAllConnections().', call. = FALSE
 )
+
+plot_snapshot <- function(last_plot, incomplete = FALSE) {
+  devs <- dev.list()
+  # No graphics devices 
+  if (is.null(devs)) {
+    return()
+  }
+
+  # Current graphics device changed since evaluate started
+  if (!identical(devs, .env$dev_list)) {
+    return()
+  }
+
+  # current page is incomplete
+  if (!par("page") && !incomplete) {
+    return()
+  }
+
+  plot <- recordPlot()
+  if (!makes_visual_change(plot[[1]])) {
+    return()
+  }
+
+  if (!looks_different(last_plot[[1]], plot[[1]])) {
+    return()
+  }
+  plot
+}
