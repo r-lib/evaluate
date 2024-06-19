@@ -15,7 +15,7 @@ evaluate(
   log_echo = FALSE,
   log_warning = FALSE,
   new_device = TRUE,
-  output_handler = default_output_handler,
+  output_handler = new_output_handler(),
   filename = NULL,
   include_timing = FALSE
 )

@@ -1,9 +1,11 @@
-test_that("open plot windows maintained", {
-  n <- length(dev.list())
-  evaluate("plot(1)")
-  expect_length(dev.list(), n)
+test_that("calling handlers are checked", {
+  expect_snapshot(error = TRUE, {
+    check_handlers(list(condition = 1))
+    check_handlers(list(function(...) NULL))
+    check_handlers(stats::setNames(list(function(...) NULL), NA))
+    check_handlers(stats::setNames(list(function(...) NULL), ""))
+  })
 })
-
 
 # new_source -------------------------------------------------------------------
 
