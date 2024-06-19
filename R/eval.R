@@ -91,9 +91,9 @@ evaluate <- function(input,
 
   # Capture output
   watcher <- watchout(output_handler, debug = debug)
+  output <- growable()
 
-  out <- vector("list", nrow(parsed))
-  for (i in seq_along(out)) {
+  for (i in seq_len(nrow(parsed))) {
     if (debug) {
       message(parsed$src[[i]])
     }
@@ -103,12 +103,13 @@ evaluate <- function(input,
     if (length(dev.list()) < devn) dev.set(dev)
     devn <- length(dev.list())
 
-    out[[i]] <- evaluate_top_level_expression(
+    evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
       src = parsed$src[[i]],
+      output = output,
       watcher = watcher,
       envir = envir,
-      last = i == length(out),
+      last = i == nrow(parsed),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning,
       keep_message = keep_message,
@@ -118,24 +119,18 @@ evaluate <- function(input,
       include_timing = include_timing
     )
 
-    if (stop_on_error > 0L) {
-      errs <- vapply(out[[i]], is.error, logical(1))
-
-      if (!any(errs)) next
-      if (stop_on_error == 1L) break
+    if (stop_on_error == 1L && output$has_errored()) {
+      break
     }
   }
 
-  is_empty <- vapply(out, identical, list(NULL), FUN.VALUE = logical(1))
-  out <- out[!is_empty]
-
-  out <- unlist(out, recursive = FALSE, use.names = FALSE)
-  new_evaluation(out)
+  new_evaluation(output$get())
 }
 
 evaluate_top_level_expression <- function(exprs,
                                           src,
                                           watcher,
+                                          output,
                                           envir = parent.frame(),
                                           last = FALSE,
                                           use_try = FALSE,
@@ -152,14 +147,14 @@ evaluate_top_level_expression <- function(exprs,
   }
 
   source <- new_source(src, exprs[[1]], output_handler$source)
-  output <- list(source)
+  output$push(source)
 
   dev <- dev.cur()
   handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
     # if dev.cur() has changed, we should not record plots any more
     plot <- plot && identical(dev, dev.cur())
-    out <- watcher(plot, incomplete_plots)
-    output <<- c(output, out)
+    outs <- watcher(plot, incomplete_plots)
+    for (out in outs) output$push(out)
   }
 
   local_output_handler(function() handle_output(FALSE))
@@ -174,34 +169,33 @@ evaluate_top_level_expression <- function(exprs,
   on.exit(remove_hooks(hook_list), add = TRUE)
 
   # Handlers for warnings, errors and messages
-  wHandler <- function(wn) {
+  wHandler <- function(cnd) {
     if (log_warning) {
-      cat(format_condition(wn), "\n", sep = "", file = stderr())
+      cat(format_condition(cnd), "\n", sep = "", file = stderr())
     }
     if (is.na(keep_warning)) return()
 
     # do not handle the warning as it will be raised as error after
     if (getOption("warn") >= 2) return()
 
+    handle_output()
     if (keep_warning && getOption("warn") >= 0) {
-      handle_output()
-      output <<- c(output, list(wn))
-      output_handler$warning(wn)
+      output$push(cnd)
+      output_handler$warning(cnd)
     }
     invokeRestart("muffleWarning")
   }
-  eHandler <- function(e) {
+  eHandler <- function(cnd) {
     handle_output()
-    if (use_try) {
-      output <<- c(output, list(e))
-      output_handler$error(e)
-    }
+    output$push(cnd)
+    output$errored()
+    output_handler$error(cnd)
   }
-  mHandler <- function(m) {
+  mHandler <- function(cnd) {
     handle_output()
     if (isTRUE(keep_message)) {
-      output <<- c(output, list(m))
-      output_handler$message(m)
+      output$push(cnd)
+      output_handler$message(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
       invokeRestart("muffleMessage")
@@ -229,7 +223,7 @@ evaluate_top_level_expression <- function(exprs,
   handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
-    srcindex <- length(output)
+    # srcindex <- length(output)
     time <- timing_fn(
       ev <- handle(
         with_handlers(
@@ -239,8 +233,8 @@ evaluate_top_level_expression <- function(exprs,
       )
     )
     handle_output(TRUE)
-    if (!is.null(time))
-      attr(output[[srcindex]]$src, 'timing') <- time
+    # if (!is.null(time))
+    #   attr(output[[srcindex]]$src, 'timing') <- time
 
     if (show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
@@ -257,7 +251,7 @@ evaluate_top_level_expression <- function(exprs,
       )
       handle_output(TRUE)
       # If the return value is visible, save the value to the output
-      if (pv$visible) output <- c(output, list(pv$value))
+      if (pv$visible) output$push(pv$value)
     }
   }
   # Always capture last plot, even if incomplete
@@ -265,7 +259,7 @@ evaluate_top_level_expression <- function(exprs,
     handle_output(TRUE, TRUE)
   }
 
-  output
+  invisible()
 }
 
 with_handlers <- function(code, handlers) {

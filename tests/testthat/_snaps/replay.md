@@ -4,7 +4,6 @@
       replay(ret)
     Output
       > structure(1, class = "FOO_BAR")
-      NULL
 
 # format_condition handles different types of warning
 
