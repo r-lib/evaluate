@@ -1,10 +1,10 @@
-evaluate_ <- function(text, ...) {
+evaluate_ <- function(text, ..., envir = parent.frame()) {
   # Trim off leading/trailing new lines and dedent
   text <- gsub("^\n {4}", "", text)
   text <- gsub("\n {4}", "\n", text)
   text <- gsub("\n +$", "", text)
   
-  evaluate(text, ...)
+  evaluate(text, ..., envir = envir)
 }
 
 output_type <- function(x) {
