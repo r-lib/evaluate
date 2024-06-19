@@ -55,6 +55,9 @@ evaluate <- function(input,
                      include_timing = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
+  # if this env var is set to true, always bypass messages
+  if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
+    keep_message = keep_warning = NA
 
   parsed <- parse_all(input, filename, stop_on_error != 2L)
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
@@ -68,10 +71,6 @@ evaluate <- function(input,
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
   local_inject_funs(envir)
-
-  # if this env var is set to true, always bypass messages
-  if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
-    keep_message = keep_warning = NA
 
   # Capture output
   output <- growable(output_handler)
