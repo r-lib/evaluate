@@ -6,10 +6,17 @@ growable <- function(handler) {
   has_error <- FALSE
 
   list(
-    errored = function() {
-      has_error <<- TRUE
+    add_source = function(src, call) {
+      src <- new_source(src, call, handler$source)
+      if (is.null(src)) {
+        return()
+      }
+      out[[i]] <<- src
+      i <<- i + 1
+      invisible()
     },
-    push = function(value) {
+
+    add_output = function(value) {
       if (is.null(value)) {
         return(invisible())
       }
@@ -17,12 +24,12 @@ growable <- function(handler) {
       out[[i]] <<- value
       i <<- i + 1
       switch(output_type(value),
-        error = handler$error(value),
+        error = {has_error <<- TRUE; handler$error(value)},
         warning = handler$warning(value),
         message = handler$message(value),
         plot = handler$graphics(value),
         text = handler$text(value)
-      )      
+      ) 
       invisible
     },
     get = function() {

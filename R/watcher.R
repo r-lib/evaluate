@@ -53,13 +53,13 @@ watchout <- function(output = growable(),
     }
 
     last_plot <<- plot
-    output$push(plot)
+    output$add_output(plot)
     invisible()
   }
 
   capture_output <- function() {
     out <- read_con(con)
-    output$push(out)
+    output$add_output(out)
     invisible()
   }
 
@@ -77,7 +77,7 @@ watchout <- function(output = growable(),
     devn <<- length(dev.list())
     invisible()
   }
-  
+
   local_output_handler(function() capture_output(), frame = frame)
 
   # Hooks to capture plot creation
@@ -89,12 +89,16 @@ watchout <- function(output = growable(),
   set_hooks(hook_list)
   defer(remove_hooks(hook_list), frame = frame)
   
-
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
     capture_plot_and_output = capture_plot_and_output,
-    check_devices = check_devices
+    check_devices = check_devices,
+
+    add_source = output$add_source,
+    add_output = output$add_output,
+    has_errored = output$has_errored,
+    get = output$get
   )
 }
 

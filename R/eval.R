@@ -73,9 +73,8 @@ evaluate <- function(input,
   local_inject_funs(envir)
 
   # Capture output
-  output <- growable(output_handler)
   watcher <- watchout(
-    output = output,
+    output = growable(output_handler),
     new_device = new_device,
     debug = debug
   )
@@ -87,7 +86,6 @@ evaluate <- function(input,
     evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
       src = parsed$src[[i]],
-      output = output,
       watcher = watcher,
       envir = envir,
       use_try = stop_on_error != 2L,
@@ -99,7 +97,7 @@ evaluate <- function(input,
     )
     watcher$check_devices()
 
-    if (stop_on_error == 1L && output$has_errored()) {
+    if (stop_on_error == 1L && watcher$has_errored()) {
       break
     }
   }
@@ -107,13 +105,12 @@ evaluate <- function(input,
   # Always capture last plot, even if incomplete
   watcher$capture_plot(incomplete = TRUE)
 
-  output$get()
+  watcher$get()
 }
 
 evaluate_top_level_expression <- function(exprs,
                                           src,
                                           watcher,
-                                          output,
                                           envir = parent.frame(),
                                           use_try = FALSE,
                                           keep_warning = TRUE,
@@ -123,8 +120,7 @@ evaluate_top_level_expression <- function(exprs,
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
 
-  source <- new_source(src, exprs[[1]], output_handler$source)
-  output$push(source)
+  watcher$add_source(src, exprs[[1]])
 
   # Handlers for warnings, errors and messages
   wHandler <- function(cnd) {
@@ -138,19 +134,18 @@ evaluate_top_level_expression <- function(exprs,
 
     watcher$capture_plot_and_output()
     if (keep_warning && getOption("warn") >= 0) {
-      output$push(cnd)
+      watcher$add_output(cnd)
     }
     invokeRestart("muffleWarning")
   }
   eHandler <- function(cnd) {
     watcher$capture_plot_and_output()
-    output$push(cnd)
-    output$errored()
+    watcher$add_output(cnd)
   }
   mHandler <- function(cnd) {
     watcher$capture_plot_and_output()
     if (isTRUE(keep_message)) {
-      output$push(cnd)
+      watcher$add_output(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
       invokeRestart("muffleMessage")
@@ -206,7 +201,7 @@ evaluate_top_level_expression <- function(exprs,
       )
       watcher$capture_plot_and_output()
       # If the return value is visible, save the value to the output
-      if (pv$visible) output$push(pv$value)
+      if (pv$visible) watcher$add_output(pv$value)
     }
   }
   
