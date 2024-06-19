@@ -208,15 +208,14 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
 
-  if (use_try) {
-    handle <- function(code) {
-      tryCatch(code, error = function(err) {
-        list(value = NULL, visible = FALSE)
-      })
+  handle_error <- function(code) {
+    if (use_try) {
+      tryCatch(code, error = function(err) NULL)
+    } else {
+      code
     }
-  } else {
-    handle <- force
   }
+
   if (include_timing) {
     timing_fn <- function(x) system.time(x)[1:3]
   } else {
@@ -231,7 +230,7 @@ evaluate_top_level_expression <- function(exprs,
   for (expr in exprs) {
     srcindex <- length(output)
     time <- timing_fn(
-      ev <- handle(
+      ev <- handle_error(
         with_handlers(
           withVisible(eval(expr, envir)),
           handlers
@@ -242,12 +241,12 @@ evaluate_top_level_expression <- function(exprs,
     if (!is.null(time))
       attr(output[[srcindex]]$src, 'timing') <- time
 
-    if (show_value(output_handler, ev$visible)) {
+    if (!is.null(ev) && show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
       # any methods registered in that environment. That, however, is 
       # challenging and only makes a few tests a little simpler so we don't
       # bother.
-      handle(
+      handle_error(
         with_handlers(
           handle_value(output_handler, ev$value, ev$visible),
           handlers
