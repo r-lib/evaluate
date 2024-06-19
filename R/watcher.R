@@ -31,6 +31,15 @@ watchout <- function(handler = new_output_handler(),
     if (!identical(dev, dev.cur())) {
       return()
     }
+    devs <- dev.list()
+    # No graphics devices 
+    if (is.null(devs)) {
+      return()
+    }
+    # Current graphics device changed since evaluate started
+    if (!identical(devs, .env$dev_list)) {
+      return()
+    }  
 
     new_plot <- plot_snapshot(last_plot, incomplete)
     if (!is.null(new_plot)) {
@@ -77,17 +86,6 @@ con_error = function(x) stop(
 )
 
 plot_snapshot <- function(last_plot, incomplete = FALSE) {
-  devs <- dev.list()
-  # No graphics devices 
-  if (is.null(devs)) {
-    return()
-  }
-
-  # Current graphics device changed since evaluate started
-  if (!identical(devs, .env$dev_list)) {
-    return()
-  }
-
   # current page is incomplete
   if (!par("page") && !incomplete) {
     return()
