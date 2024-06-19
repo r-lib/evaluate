@@ -225,7 +225,6 @@ evaluate_top_level_expression <- function(exprs,
 
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
-
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
 
@@ -269,16 +268,12 @@ evaluate_top_level_expression <- function(exprs,
   output
 }
 
-with_handlers <- function(code, calling_handlers) {
-  if (!is.list(calling_handlers)) {
-    stop("`calling_handlers` must be a list", call. = FALSE)
+with_handlers <- function(code, handlers) {
+  if (!is.list(handlers)) {
+    stop("`handlers` must be a list", call. = FALSE)
   }
 
-  call <- as.call(c(
-    quote(withCallingHandlers),
-    quote(code),
-    calling_handlers
-  ))
+  call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
   eval(call)
 }
 
