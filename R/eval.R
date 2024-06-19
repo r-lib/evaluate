@@ -148,6 +148,7 @@ evaluate_top_level_expression <- function(exprs,
 
   # Handlers for warnings, errors and messages
   wHandler <- function(wn) {
+    wn <- reset_call(wn)
     if (log_warning) {
       cat(format_condition(wn), "\n", sep = "", file = stderr())
     }
@@ -164,6 +165,7 @@ evaluate_top_level_expression <- function(exprs,
     invokeRestart("muffleWarning")
   }
   eHandler <- function(e) {
+    e <- reset_call(e)
     handle_output()
     if (use_try) {
       output <<- c(output, list(e))
@@ -248,6 +250,13 @@ with_handlers <- function(code, handlers) {
 
   call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
   eval(call)
+}
+
+reset_call <- function(cnd) {
+  if (identical(cnd$call, quote(eval(expr, envir)))) {
+    cnd$call <- NULL
+  }
+  cnd
 }
 
 new_evaluation <- function(x) {

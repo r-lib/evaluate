@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
 * `watchout()` is no longer exported; it's really an implementation detail that should never have been leaked to the public interface.
 * `evaluate()` gains an output class (`evaluate_evaluation`/`list`) and a basic print method.
 * `evaluate()` now correctly captures plots created before messages/warnings/errors (#28).
