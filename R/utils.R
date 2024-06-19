@@ -1,5 +1,5 @@
-cat_line <- function(...) {
-  cat(paste0(..., "\n", collapse = ""))
+cat_line <- function(..., file = stdout()) {
+  cat(paste0(..., "\n", collapse = ""), file = file)
 }
 
 indent <- function(x, by = "  ", drop_trailing_nl = TRUE) {

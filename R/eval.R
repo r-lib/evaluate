@@ -69,40 +69,18 @@ evaluate <- function(input,
   }
   local_inject_funs(envir)
 
-  if (new_device) {
-    # Ensure we have a graphics device available for recording, but choose
-    # one that's available on all platforms and doesn't write to disk
-    pdf(file = NULL)
-    dev.control(displaylist = "enable")
-    dev <- dev.cur()
-    on.exit(dev.off(dev))
-  }
-  # record the list of current devices
-  devs <- .env$dev_list; on.exit(.env$dev_list <- devs, add = TRUE)
-  devn <- length(.env$dev_list <- dev.list())
-  dev <- dev.cur()
-
-  # clean up the last_plot object after an evaluate() call (cf yihui/knitr#722)
-  on.exit(assign("last_plot", NULL, envir = environment(plot_snapshot)), add = TRUE)
-
   # if this env var is set to true, always bypass messages
   if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
     keep_message = keep_warning = NA
 
   # Capture output
-  watcher <- watchout(output_handler, debug = debug)
+  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
-    if (debug) {
-      message(parsed$src[[i]])
+    if (log_echo || debug) {
+      cat_line(parsed$src[[i]], file = stderr())
     }
-
-    # if dev.off() was called, make sure to restore device to the one opened by
-    # evaluate() or existed before evaluate()
-    if (length(dev.list()) < devn) dev.set(dev)
-    devn <- length(dev.list())
-
     out[[i]] <- evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
       src = parsed$src[[i]],
@@ -112,11 +90,11 @@ evaluate <- function(input,
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning,
       keep_message = keep_message,
-      log_echo = log_echo,
       log_warning = log_warning,
       output_handler = output_handler,
       include_timing = include_timing
     )
+    watcher$check_devices()
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))
@@ -141,25 +119,20 @@ evaluate_top_level_expression <- function(exprs,
                                           use_try = FALSE,
                                           keep_warning = TRUE,
                                           keep_message = TRUE,
-                                          log_echo = FALSE,
                                           log_warning = FALSE,
                                           output_handler = new_output_handler(),
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
 
-  if (log_echo && !is.null(src)) {
-    cat(src, "\n", sep = "", file = stderr())
-  }
-
   source <- new_source(src, exprs[[1]], output_handler$source)
   output <- list(source)
 
-  dev <- dev.cur()
   handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
-    # if dev.cur() has changed, we should not record plots any more
-    plot <- plot && identical(dev, dev.cur())
-    out <- watcher(plot, incomplete_plots)
-    output <<- c(output, out)
+    out <- list(
+      if (plot) watcher$capture_plot(incomplete_plots),
+      watcher$capture_output()
+    )
+    output <<- c(output, compact(out))
   }
 
   local_output_handler(function() handle_output(FALSE))

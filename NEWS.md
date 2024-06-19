@@ -1,6 +1,7 @@
 # evaluate (development version)
 
 * `evaluate()` no longer incorrectly prints the return value of print methods.
+* `watchout()` is no longer exported; it's really an implementation detail that should never have been leaked to the public interface.
 * `evaluate()` gains an output class (`evaluate_evaluation`/`list`) and a basic print method.
 * `evaluate()` now correctly captures plots created before messages/warnings/errors (#28).
 
