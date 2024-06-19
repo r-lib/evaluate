@@ -242,6 +242,10 @@ evaluate_top_level_expression <- function(exprs,
       attr(output[[srcindex]]$src, 'timing') <- time
 
     if (show_value(output_handler, ev$visible)) {
+      # Ideally we'd evaluate the print() generic in envir in order to find
+      # any methods registered in that environment. That, however, is 
+      # challenging and only makes a few tests a little simpler so we don't
+      # bother.
       pv <- handle(
         with_handlers(
           withVisible(
