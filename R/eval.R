@@ -208,10 +208,12 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
 
-  ev <- list(value = NULL, visible = FALSE)
-
   if (use_try) {
-    handle <- function(f) try(f, silent = TRUE)
+    handle <- function(code) {
+      tryCatch(code, error = function(err) {
+        list(value = NULL, visible = FALSE)
+      })
+    }
   } else {
     handle <- force
   }
@@ -222,25 +224,34 @@ evaluate_top_level_expression <- function(exprs,
   }
 
   user_handlers <- output_handler$calling_handlers
+  evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
+  # The user's condition handlers have priority over ours
+  handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
     srcindex <- length(output)
-    time <- timing_fn(handle(
-      ev <- withCallingHandlers(
-        withVisible(eval_with_user_handlers(expr, envir, user_handlers)),
-        warning = wHandler,
-        error = eHandler,
-        message = mHandler
+    time <- timing_fn(
+      ev <- handle(
+        with_handlers(
+          withVisible(eval(expr, envir)),
+          handlers
+        )
       )
-    ))
+    )
     handle_output(TRUE)
     if (!is.null(time))
       attr(output[[srcindex]]$src, 'timing') <- time
 
     if (show_value(output_handler, ev$visible)) {
-      handle(withCallingHandlers(
-        handle_value(output_handler, ev$value, ev$visible), 
-        warning = wHandler, error = eHandler, message = mHandler)
+      # Ideally we'd evaluate the print() generic in envir in order to find
+      # any methods registered in that environment. That, however, is 
+      # challenging and only makes a few tests a little simpler so we don't
+      # bother.
+      handle(
+        with_handlers(
+          handle_value(output_handler, ev$value, ev$visible),
+          handlers
+        )
       )
       handle_output(TRUE)
     }
@@ -253,21 +264,12 @@ evaluate_top_level_expression <- function(exprs,
   output
 }
 
-eval_with_user_handlers <- function(expr, envir, calling_handlers) {
-  if (!length(calling_handlers)) {
-    return(eval(expr, envir))
+with_handlers <- function(code, handlers) {
+  if (!is.list(handlers)) {
+    stop("`handlers` must be a list", call. = FALSE)
   }
 
-  if (!is.list(calling_handlers)) {
-    stop("`calling_handlers` must be a list", call. = FALSE)
-  }
-
-  call <- as.call(c(
-    quote(withCallingHandlers),
-    quote(eval(expr, envir)),
-    calling_handlers
-  ))
-
+  call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
   eval(call)
 }
 
