@@ -108,7 +108,7 @@ evaluate <- function(input,
   # Always capture last plot, even if incomplete
   watcher$capture_plot(incomplete = TRUE)
 
-  new_evaluation(output$get())
+  output$get()
 }
 
 evaluate_top_level_expression <- function(exprs,
@@ -221,42 +221,4 @@ with_handlers <- function(code, handlers) {
 
   call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
   eval(call)
-}
-
-new_evaluation <- function(x) {
-  # Needs explicit list for backwards compatibility
-  structure(x, class = c("evaluate_evaluation", "list"))
-}
-
-#' @export
-print.evaluate_evaluation <- function(x, ...) {
-  cat_line("<evaluation>")
-  for (component in x) {
-    if (inherits(component, "source")) {
-      cat_line("Source code: ")
-      cat_line(indent(component$src))
-    } else if (is.character(component)) {
-      cat_line("Text output: ")
-      cat_line(indent(component))
-    } else if (inherits(component, "condition")) {
-      cat_line("Condition: ")
-      cat_line(indent(format_condition(component)))
-    } else if (inherits(component, "recordedplot")) {
-      dl <- component[[1]]
-      cat_line("Plot [", length(dl), "]:")
-      for (call in dl) {
-        fun_call <- call[[2]][[1]]
-        if (hasName(fun_call, "name")) {
-          cat_line("  <base> ", fun_call$name, "()")
-        } else {
-          cat_line("  <grid> ", deparse(fun_call))
-        }
-      }
-    } else {
-      cat_line("Other: ")
-      cat(" "); str(component, indent.str = "  ")
-    }
-  }
-
-  invisible(x)
 }

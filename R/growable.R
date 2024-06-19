@@ -26,7 +26,7 @@ growable <- function(handler) {
       invisible
     },
     get = function() {
-      out
+      new_evaluation(out)
     },
     has_errored = function() {
       has_error
@@ -50,4 +50,43 @@ output_type <- function(x) {
   } else {
     class(x)[[1]]
   }
+}
+
+
+new_evaluation <- function(x) {
+  # Needs explicit list for backwards compatibility
+  structure(x, class = c("evaluate_evaluation", "list"))
+}
+
+#' @export
+print.evaluate_evaluation <- function(x, ...) {
+  cat_line("<evaluation>")
+  for (component in x) {
+    if (inherits(component, "source")) {
+      cat_line("Source code: ")
+      cat_line(indent(component$src))
+    } else if (is.character(component)) {
+      cat_line("Text output: ")
+      cat_line(indent(component))
+    } else if (inherits(component, "condition")) {
+      cat_line("Condition: ")
+      cat_line(indent(format_condition(component)))
+    } else if (inherits(component, "recordedplot")) {
+      dl <- component[[1]]
+      cat_line("Plot [", length(dl), "]:")
+      for (call in dl) {
+        fun_call <- call[[2]][[1]]
+        if (hasName(fun_call, "name")) {
+          cat_line("  <base> ", fun_call$name, "()")
+        } else {
+          cat_line("  <grid> ", deparse(fun_call))
+        }
+      }
+    } else {
+      cat_line("Other: ")
+      cat(" "); str(component, indent.str = "  ")
+    }
+  }
+
+  invisible(x)
 }
