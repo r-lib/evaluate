@@ -87,7 +87,6 @@ evaluate <- function(input,
       output = output,
       watcher = watcher,
       envir = envir,
-      last = i == nrow(parsed),
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning,
       keep_message = keep_message,
@@ -102,6 +101,9 @@ evaluate <- function(input,
     }
   }
 
+  # Always capture last plot, even if incomplete
+  output$push(watcher$capture_plot(incomplete = TRUE))
+
   new_evaluation(output$get())
 }
 
@@ -110,7 +112,6 @@ evaluate_top_level_expression <- function(exprs,
                                           watcher,
                                           output,
                                           envir = parent.frame(),
-                                          last = FALSE,
                                           use_try = FALSE,
                                           keep_warning = TRUE,
                                           keep_message = TRUE,
@@ -122,9 +123,9 @@ evaluate_top_level_expression <- function(exprs,
   source <- new_source(src, exprs[[1]], output_handler$source)
   output$push(source)
 
-  handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
+  handle_output <- function(plot = TRUE) {
     if (plot) {
-      output$push(watcher$capture_plot(incomplete_plots))
+      output$push(watcher$capture_plot())
     }
     output$push(watcher$capture_output())
   }
@@ -226,11 +227,7 @@ evaluate_top_level_expression <- function(exprs,
       if (pv$visible) output$push(pv$value)
     }
   }
-  # Always capture last plot, even if incomplete
-  if (last) {
-    handle_output(TRUE, TRUE)
-  }
-
+  
   invisible()
 }
 
