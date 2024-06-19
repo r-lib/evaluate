@@ -94,8 +94,8 @@ evaluate <- function(input,
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {
-    if (debug) {
-      message(parsed$src[[i]])
+    if (log_echo || debug) {
+      cat_line(parsed$src[[i]], file = stderr())
     }
 
     # if dev.off() was called, make sure to restore device to the one opened by
@@ -112,7 +112,6 @@ evaluate <- function(input,
       use_try = stop_on_error != 2L,
       keep_warning = keep_warning,
       keep_message = keep_message,
-      log_echo = log_echo,
       log_warning = log_warning,
       output_handler = output_handler,
       include_timing = include_timing
@@ -141,15 +140,10 @@ evaluate_top_level_expression <- function(exprs,
                                           use_try = FALSE,
                                           keep_warning = TRUE,
                                           keep_message = TRUE,
-                                          log_echo = FALSE,
                                           log_warning = FALSE,
                                           output_handler = new_output_handler(),
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
-
-  if (log_echo && !is.null(src)) {
-    cat(src, "\n", sep = "", file = stderr())
-  }
 
   source <- new_source(src, exprs[[1]], output_handler$source)
   output <- list(source)
