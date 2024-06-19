@@ -1,11 +1,3 @@
-#' Watch for changes in output, text and graphics
-#'
-#' @param handler An ouptut handler object.
-#' @param frame When this frame terminates, the watcher will automatically close.` 
-#' @return list containing four functions: `get_new`, `pause`,
-#'  `unpause`, `close`.
-#' @inheritParams evaluate
-#' @keywords internal
 watchout <- function(handler = new_output_handler(),
                      debug = FALSE,
                      frame = parent.frame()) {
@@ -31,26 +23,37 @@ watchout <- function(handler = new_output_handler(),
   defer(options(old), frame = frame)
 
   capture_plot <- function(incomplete = FALSE) {
-    # if dev.cur() has changed, we should not record plots any more
-    if (!identical(dev, dev.cur())) {
+    # only record plots for our graphics device
+    if (!identical(dev.cur(), dev)) {
       return()
     }
-    cur_devs <- dev.list()
-    # No graphics devices 
-    if (is.null(cur_devs)) {
-      return()
-    }
-    # Current graphics device changed since evaluate started
-    if (!identical(cur_devs, devs)) {
+    # cur_devs <- dev.list()
+    # # No graphics devices 
+    # if (is.null(cur_devs)) {
+    #   return()
+    # }
+    # # Current graphics device changed since evaluate started
+    # if (!identical(cur_devs, devs)) {
+    #   return()
+    # }
+
+    # current page is incomplete
+    if (!par("page") && !incomplete) {
       return()
     }
 
-    new_plot <- plot_snapshot(last_plot, incomplete)
-    if (!is.null(new_plot)) {
-      last_plot <<- new_plot
-      handler$graphics(new_plot)
+    plot <- recordPlot()
+    if (!makes_visual_change(plot[[1]])) {
+      return()
     }
-    new_plot
+  
+    if (!looks_different(last_plot[[1]], plot[[1]])) {
+      return()
+    }
+
+    last_plot <<- plot
+    handler$graphics(plot)
+    plot
   }
 
   capture_output <- function() {
@@ -62,8 +65,8 @@ watchout <- function(handler = new_output_handler(),
   }
 
   check_devices <- function() {
-    # if dev.off() was called, make sure to restore device to the one opened by
-    # evaluate() or existed before evaluate()
+    # if dev.off() was called, make sure to restore device to the one opened 
+    # when watchout() was called
     if (length(dev.list()) < devn) {
       dev.set(dev)
     }
@@ -99,20 +102,3 @@ test_con = function(con, test) {
 con_error = function(x) stop(
   x, '... Please make sure not to call closeAllConnections().', call. = FALSE
 )
-
-plot_snapshot <- function(last_plot, incomplete = FALSE) {
-  # current page is incomplete
-  if (!par("page") && !incomplete) {
-    return()
-  }
-
-  plot <- recordPlot()
-  if (!makes_visual_change(plot[[1]])) {
-    return()
-  }
-
-  if (!looks_different(last_plot[[1]], plot[[1]])) {
-    return()
-  }
-  plot
-}
