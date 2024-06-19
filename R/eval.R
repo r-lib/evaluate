@@ -238,10 +238,10 @@ evaluate_top_level_expression <- function(exprs,
       attr(output[[srcindex]]$src, 'timing') <- time
 
     if (show_value(output_handler, ev$visible)) {
-      pv <- list(value = NULL, visible = FALSE)
-      handle(pv <- withCallingHandlers(withVisible(
-        handle_value(output_handler, ev$value, ev$visible)
-      ), warning = wHandler, error = eHandler, message = mHandler))
+      handle(withCallingHandlers(
+        handle_value(output_handler, ev$value, ev$visible), 
+        warning = wHandler, error = eHandler, message = mHandler)
+      )
       handle_output(TRUE)
     }
   }
