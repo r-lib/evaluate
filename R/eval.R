@@ -225,6 +225,8 @@ evaluate_top_level_expression <- function(exprs,
 
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
+
+  # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
