@@ -69,21 +69,12 @@ evaluate <- function(input,
   }
   local_inject_funs(envir)
 
-  if (new_device) {
-    # Ensure we have a graphics device available for recording, but choose
-    # one that's available on all platforms and doesn't write to disk
-    pdf(file = NULL)
-    dev.control(displaylist = "enable")
-    dev <- dev.cur()
-    on.exit(dev.off(dev))
-  }
-
   # if this env var is set to true, always bypass messages
   if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
     keep_message = keep_warning = NA
 
   # Capture output
-  watcher <- watchout(output_handler, debug = debug)
+  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
   out <- vector("list", nrow(parsed))
   for (i in seq_along(out)) {

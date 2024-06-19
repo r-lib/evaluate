@@ -1,7 +1,17 @@
 watchout <- function(handler = new_output_handler(),
+                     new_device = TRUE,
                      debug = FALSE,
                      frame = parent.frame()) {
   last_plot <- NULL
+
+  if (new_device) {
+    # Ensure we have a graphics device available for recording, but choose
+    # one that's available on all platforms and doesn't write to disk
+    pdf(file = NULL)
+    dev.control(displaylist = "enable")
+    dev <- dev.cur()
+    defer(dev.off(dev), frame)
+  }
 
   # record current devices
   devs <- dev.list()
