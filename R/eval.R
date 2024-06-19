@@ -122,9 +122,6 @@ evaluate_top_level_expression <- function(exprs,
                                           handlers,
                                           envir = parent.frame(),
                                           use_try = FALSE,
-                                          keep_warning = TRUE,
-                                          keep_message = TRUE,
-                                          log_warning = FALSE,
                                           output_handler = new_output_handler(),
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
