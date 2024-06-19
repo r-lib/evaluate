@@ -155,8 +155,11 @@ evaluate_top_level_expression <- function(exprs,
   output <- list(source)
 
   handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
-    out <- watcher(plot, incomplete_plots)
-    output <<- c(output, out)
+    out <- list(
+      if (plot) watcher$capture_plot(incomplete_plots),
+      watcher$capture_output()
+    )
+    output <<- c(output, compact(out))
   }
 
   local_output_handler(function() handle_output(FALSE))
