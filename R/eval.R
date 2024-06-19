@@ -77,10 +77,6 @@ evaluate <- function(input,
     dev <- dev.cur()
     on.exit(dev.off(dev))
   }
-  # record the list of current devices
-  devs <- .env$dev_list; on.exit(.env$dev_list <- devs, add = TRUE)
-  devn <- length(.env$dev_list <- dev.list())
-  dev <- dev.cur()
 
   # if this env var is set to true, always bypass messages
   if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
@@ -94,12 +90,6 @@ evaluate <- function(input,
     if (debug) {
       message(parsed$src[[i]])
     }
-
-    # if dev.off() was called, make sure to restore device to the one opened by
-    # evaluate() or existed before evaluate()
-    if (length(dev.list()) < devn) dev.set(dev)
-    devn <- length(dev.list())
-
     out[[i]] <- evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
       src = parsed$src[[i]],
@@ -114,6 +104,7 @@ evaluate <- function(input,
       output_handler = output_handler,
       include_timing = include_timing
     )
+    watcher$check_devices()
 
     if (stop_on_error > 0L) {
       errs <- vapply(out[[i]], is.error, logical(1))

@@ -9,8 +9,12 @@
 watchout <- function(handler = new_output_handler(),
                      debug = FALSE,
                      frame = parent.frame()) {
-  dev <- dev.cur()
   last_plot <- NULL
+
+  # record current devices
+  devs <- dev.list()
+  devn <- length(devs)
+  dev <- dev.cur()
 
   con <- file("", "w+b")
   defer(frame = frame, {
@@ -31,15 +35,15 @@ watchout <- function(handler = new_output_handler(),
     if (!identical(dev, dev.cur())) {
       return()
     }
-    devs <- dev.list()
+    cur_devs <- dev.list()
     # No graphics devices 
-    if (is.null(devs)) {
+    if (is.null(cur_devs)) {
       return()
     }
     # Current graphics device changed since evaluate started
-    if (!identical(devs, .env$dev_list)) {
+    if (!identical(cur_devs, devs)) {
       return()
-    }  
+    }
 
     new_plot <- plot_snapshot(last_plot, incomplete)
     if (!is.null(new_plot)) {
@@ -56,10 +60,21 @@ watchout <- function(handler = new_output_handler(),
     }
     out
   }
+
+  check_devices <- function() {
+    # if dev.off() was called, make sure to restore device to the one opened by
+    # evaluate() or existed before evaluate()
+    if (length(dev.list()) < devn) {
+      dev.set(dev)
+    }
+    devn <<- length(dev.list())
+    invisible()
+  }
   
   list(
     capture_plot = capture_plot,
-    capture_output = capture_output
+    capture_output = capture_output,
+    check_devices = check_devices
   )
 }
 
