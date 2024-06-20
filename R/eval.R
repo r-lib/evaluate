@@ -91,15 +91,18 @@ evaluate <- function(input,
   handlers <- c(user_handlers, evaluate_handlers)
 
   for (i in seq_len(nrow(parsed))) {
+    src <- parsed$src[[i]]
+    tle <- parsed$expr[[i]]
+
     if (log_echo || debug) {
-      cat_line(parsed$src[[i]], file = stderr())
+      cat_line(src, file = stderr())
     }
-    watcher$add_source(parsed$src[[i]], parsed$expr[[i]][[1]])
+    watcher$add_source(src, tle[[1]])
 
     continue <- with_handlers(
       withRestarts(
         {
-          for (expr in parsed$expr[[i]]) {
+          for (expr in tle) {
             ev <- withVisible(eval(expr, envir))
             watcher$capture_plot_and_output()
             
@@ -130,30 +133,6 @@ evaluate <- function(input,
   watcher$capture_plot(incomplete = TRUE)
 
   watcher$get()
-}
-
-evaluate_top_level_expression <- function(exprs,
-                                          watcher,
-                                          envir,
-                                          value_handler,
-                                          include_timing = FALSE) {
-  stopifnot(is.expression(exprs))
-
-  for (expr in exprs) {
-    ev <- withVisible(eval(expr, envir))
-    watcher$capture_plot_and_output()
-    
-    if (show_value(value_handler, ev$visible)) {
-      # Ideally we'd evaluate the print() generic in envir in order to find
-      # any methods registered in that environment. That, however, is 
-      # challenging and only makes a few tests a little simpler so we don't
-      # bother.
-      handle_value(value_handler, ev$value, ev$visible)
-      watcher$capture_plot_and_output()
-    }
-  }
-  
-  TRUE
 }
 
 evaluate_handlers <- function(watcher,
