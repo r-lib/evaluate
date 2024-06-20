@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-06-19T13:51Z
+last_built: 2024-06-20T12:17Z
 urls:
   reference: evaluate.r-lib.org/reference
   article: evaluate.r-lib.org/articles
