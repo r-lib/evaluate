@@ -1,5 +1,5 @@
 test_that("all condition handlers first capture output", {
-  test <- function(){
+  test <- function() {
     plot(1, main = "one")
     message("this is an message!")
     plot(2, main = "two")
