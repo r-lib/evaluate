@@ -44,7 +44,7 @@ drop the source from the output.}
 argument indicating whether or not the value is visible.
 }
 
-The return value of the handler is ignored; it's job is to print
+The return value of the handler is ignored; its job is to print
 output to the screen.}
 
 \item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.
