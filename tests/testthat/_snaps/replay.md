@@ -1,10 +1,3 @@
-# replay() should work when print() returns visible NULLs
-
-    Code
-      replay(ret)
-    Output
-      > structure(1, class = "FOO_BAR")
-
 # format_condition handles different types of warning
 
     Code

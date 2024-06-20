@@ -120,6 +120,15 @@ test_that("source handled called correctly when src is unparseable", {
   expect_equal(call, expression())
 })
 
+test_that("visible print() values are not printed", {
+  # need to put S3 method in global namespace otherwise it isn't found
+  assign("print.FOO_BAR", function(x, ...) NULL, envir = globalenv())
+  defer(rm(print.FOO_BAR, envir = globalenv()))
+
+  ev <- evaluate('structure(1, class = "FOO_BAR")')
+  expect_output_types(ev, "source")
+})
+
 test_that("has a reasonable print method", {
   f <- function() {
     print("1")
