@@ -31,7 +31,7 @@
       Warning:
       3
       Error in f():
-      4
+      v Hi!
 
 # format_condition handles different types of warning
 
