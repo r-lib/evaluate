@@ -130,29 +130,18 @@ evaluate_top_level_expression <- function(exprs,
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
 
-  if (include_timing) {
-    timing_fn <- function(x) system.time(x)[1:3]
-  } else {
-    timing_fn <- function(x) {x; NULL}
-  }
-
   for (expr in exprs) {
     # srcindex <- length(output)
-    time <- timing_fn(
-      ev <- withVisible(eval(expr, envir))
-    )
+    ev <- withVisible(eval(expr, envir))
     watcher$capture_plot_and_output()
     
-    # if (!is.null(time))
-    #   attr(output[[srcindex]]$src, 'timing') <- time
-
-    if (!is.null(ev) && show_value(output_handler, ev$visible)) {
+    if (show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
       # any methods registered in that environment. That, however, is 
       # challenging and only makes a few tests a little simpler so we don't
       # bother.
       pv <- withVisible(
-          handle_value(output_handler, ev$value, ev$visible)
+        handle_value(output_handler, ev$value, ev$visible)
       )
       
       watcher$capture_plot_and_output()
