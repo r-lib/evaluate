@@ -15,7 +15,7 @@
 #'   the parent environment to `envir`.
 #' @param debug if `TRUE`, displays information useful for debugging,
 #'   including all output that evaluate captures.
-#' @param stop_on_error if `2`, evaluation will halt on first error and you
+#' @param stop_on_error  if `2`, evaluation will halt on first error and you
 #'   will get no results back. If `1`, evaluation will stop on first error
 #'   without signaling the error, and you will get back all results up to that
 #'   point. If `0` will continue running all code, just as if you'd pasted
@@ -85,7 +85,8 @@ evaluate <- function(input,
     watcher,
     keep_warning = keep_warning,
     keep_message = keep_message,
-    log_warning = log_warning
+    log_warning = log_warning, 
+    stop_on_error = stop_on_error
   )
   handlers <- c(user_handlers, evaluate_handlers)
 
@@ -95,18 +96,21 @@ evaluate <- function(input,
     }
     watcher$add_source(parsed$src[[i]], parsed$expr[[i]][[1]])
 
-    evaluate_top_level_expression(
-      exprs = parsed$expr[[i]],
-      watcher = watcher,
-      envir = envir,
-      use_try = stop_on_error != 2L,
-      handlers = handlers,
-      output_handler = output_handler,
-      include_timing = include_timing
+    continue <- withRestarts(
+      evaluate_top_level_expression(
+        exprs = parsed$expr[[i]],
+        watcher = watcher,
+        envir = envir,
+        handlers = handlers,
+        output_handler = output_handler,
+        include_timing = include_timing
+      ),
+      eval_continue = function() TRUE,
+      eval_stop = function() FALSE
     )
     watcher$check_devices()
 
-    if (stop_on_error == 1L && watcher$has_errored()) {
+    if (!continue) {
       break
     }
   }
@@ -121,7 +125,6 @@ evaluate_top_level_expression <- function(exprs,
                                           watcher,
                                           handlers,
                                           envir = parent.frame(),
-                                          use_try = FALSE,
                                           output_handler = new_output_handler(),
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
@@ -137,8 +140,7 @@ evaluate_top_level_expression <- function(exprs,
     time <- timing_fn(
       ev <- with_handlers(
         withVisible(eval(expr, envir)),
-        handlers,
-        use_try = use_try
+        handlers
       )
     )
     watcher$capture_plot_and_output()
@@ -155,8 +157,7 @@ evaluate_top_level_expression <- function(exprs,
         withVisible(
           handle_value(output_handler, ev$value, ev$visible)
         ),
-        handlers,
-        use_try = use_try
+        handlers
       )
       
       watcher$capture_plot_and_output()
@@ -165,7 +166,7 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
   
-  invisible()
+  TRUE
 }
 
 with_handlers <- function(code, handlers, use_try = FALSE) {
@@ -185,7 +186,8 @@ with_handlers <- function(code, handlers, use_try = FALSE) {
 evaluate_handlers <- function(watcher,
                               keep_warning = TRUE,
                               keep_message = TRUE,
-                              log_warning = FALSE) {
+                              log_warning = FALSE,
+                              stop_on_error = 0L) {
   
   list(
     message = function(cnd) {
@@ -215,6 +217,12 @@ evaluate_handlers <- function(watcher,
     error = function(cnd) {
       watcher$capture_plot_and_output()
       watcher$add_output(cnd)
+
+      if (stop_on_error == 0L) {
+        invokeRestart("eval_continue")
+      } else if (stop_on_error == 1L) {
+        invokeRestart("eval_stop")
+      }
     }
   )
 }

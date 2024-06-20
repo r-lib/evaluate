@@ -9,7 +9,7 @@ test_that("code aborts on error if stop_on_error == 1L", {
 })
 
 test_that("code errors if stop_on_error == 2L", {
-  expect_snapshot(evaluate('stop("1")', stop_on_error = 2L), error = TRUE)
+  expect_snapshot(x <- evaluate('stop("1")', stop_on_error = 2L), error = TRUE)
 })
 
 test_that("traceback useful if stop_on_error == 2L", {
