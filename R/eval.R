@@ -97,13 +97,15 @@ evaluate <- function(input,
     watcher$add_source(parsed$src[[i]], parsed$expr[[i]][[1]])
 
     continue <- withRestarts(
-      evaluate_top_level_expression(
-        exprs = parsed$expr[[i]],
-        watcher = watcher,
-        envir = envir,
-        handlers = handlers,
-        output_handler = output_handler,
-        include_timing = include_timing
+      with_handlers(
+        evaluate_top_level_expression(
+          exprs = parsed$expr[[i]],
+          watcher = watcher,
+          envir = envir,
+          output_handler = output_handler,
+          include_timing = include_timing
+        ),
+        handlers
       ),
       eval_continue = function() TRUE,
       eval_stop = function() FALSE
@@ -123,7 +125,6 @@ evaluate <- function(input,
 
 evaluate_top_level_expression <- function(exprs,
                                           watcher,
-                                          handlers,
                                           envir = parent.frame(),
                                           output_handler = new_output_handler(),
                                           include_timing = FALSE) {
@@ -138,10 +139,7 @@ evaluate_top_level_expression <- function(exprs,
   for (expr in exprs) {
     # srcindex <- length(output)
     time <- timing_fn(
-      ev <- with_handlers(
-        withVisible(eval(expr, envir)),
-        handlers
-      )
+      ev <- withVisible(eval(expr, envir))
     )
     watcher$capture_plot_and_output()
     
@@ -153,11 +151,8 @@ evaluate_top_level_expression <- function(exprs,
       # any methods registered in that environment. That, however, is 
       # challenging and only makes a few tests a little simpler so we don't
       # bother.
-      pv <- with_handlers(
-        withVisible(
+      pv <- withVisible(
           handle_value(output_handler, ev$value, ev$visible)
-        ),
-        handlers
       )
       
       watcher$capture_plot_and_output()
@@ -169,18 +164,13 @@ evaluate_top_level_expression <- function(exprs,
   TRUE
 }
 
-with_handlers <- function(code, handlers, use_try = FALSE) {
+with_handlers <- function(code, handlers) {
   if (!is.list(handlers)) {
     stop("`handlers` must be a list", call. = FALSE)
   }
 
   call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
-
-  if (use_try) {
-    tryCatch(eval(call), error = function(err) NULL)
-  } else {
-    eval(call)
-  }
+  eval(call)
 }
 
 evaluate_handlers <- function(watcher,
