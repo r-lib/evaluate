@@ -107,9 +107,12 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #' @aliases output_handler
 #' @export
 new_output_handler <- function(source = identity,
-                               text = identity, graphics = identity,
-                               message = identity, warning = identity,
-                               error = identity, value = render,
+                               text = identity,
+                               graphics = identity,
+                               message = identity,
+                               warning = identity,
+                               error = identity,
+                               value = render,
                                calling_handlers = list()) {
   source <- match.fun(source)
   stopifnot(length(formals(source)) >= 1)
@@ -128,10 +131,19 @@ new_output_handler <- function(source = identity,
 
   check_handlers(calling_handlers)
 
-  structure(list(source = source, text = text, graphics = graphics,
-                 message = message, warning = warning, error = error,
-                 value = value, calling_handlers = calling_handlers),
-            class = "output_handler")
+  structure(
+    list(
+      source = source,
+      text = text,
+      graphics = graphics,
+      message = message,
+      warning = warning,
+      error = error,
+      value = value,
+      calling_handlers = calling_handlers
+    ),
+    class = "output_handler"
+  )
 }
 
 check_handlers <- function(x) {
@@ -160,5 +172,3 @@ stop_bad_handlers <- function() {
     call = call("new_output_handler")
   ))
 }
-
-default_output_handler <- new_output_handler()

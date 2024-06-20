@@ -32,11 +32,10 @@ test_that("traceback useful if stop_on_error == 2L", {
 })
 
 test_that("capture messages in try() (#88)", {
-  ev <- evaluate_('
-    g <- function() f("error")
-    f <- function(x) stop(paste0("Obscure ", x))
-    
-    try(g())
-  ')  
-  expect_match(ev[[length(ev)]], "Obscure error")
+  f <- function(x) stop(paste0("Obscure ", x))
+  g <- function() f("error")
+
+  ev <- evaluate_('try(g())')
+  expect_output_types(ev, c("source", "text"))
+  expect_match(ev[[2]], "Obscure error")
 })

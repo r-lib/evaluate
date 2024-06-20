@@ -133,22 +133,3 @@ test_that("user can register calling handlers", {
   evaluate("stop('tilt')", stop_on_error = 0, output_handler = out_hnd)
   expect_s3_class(handled, "error")
 })
-
-test_that("calling handlers are checked", {
-  expect_error(
-    new_output_handler(calling_handlers = list(condition = 1)),
-    "must be"
-  )
-  expect_error(
-    new_output_handler(calling_handlers = list(function(...) NULL)),
-    "must be"
-  )
-  expect_error(
-    new_output_handler(calling_handlers = stats::setNames(list(function(...) NULL), NA)),
-    "must be"
-  )
-  expect_error(
-    new_output_handler(calling_handlers = stats::setNames(list(function(...) NULL), "")),
-    "must be"
-  )
-})

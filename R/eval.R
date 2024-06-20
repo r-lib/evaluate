@@ -35,10 +35,7 @@
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
 #' @param filename string overrriding the [base::srcfile()] filename.
-#' @param include_timing if `TRUE`, evaluate will wrap each input
-#'   expression in `system.time()`, which will be accessed by following
-#'   `replay()` call to produce timing information for each evaluated
-#'   command.
+#' @param include_timing Deprecated. 
 #' @import graphics grDevices utils
 evaluate <- function(input,
                      envir = parent.frame(),
@@ -50,11 +47,15 @@ evaluate <- function(input,
                      log_echo = FALSE,
                      log_warning = FALSE,
                      new_device = TRUE,
-                     output_handler = default_output_handler,
+                     output_handler = new_output_handler(),
                      filename = NULL,
                      include_timing = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
+
+  if (isTRUE(include_timing)) {
+    warning("`evaluate(include_timing)` is deprecated")
+  }
 
   parsed <- parse_all(input, filename, stop_on_error != 2L)
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
@@ -91,8 +92,7 @@ evaluate <- function(input,
       keep_warning = keep_warning,
       keep_message = keep_message,
       log_warning = log_warning,
-      output_handler = output_handler,
-      include_timing = include_timing
+      output_handler = output_handler
     )
     watcher$check_devices()
 
@@ -120,8 +120,7 @@ evaluate_top_level_expression <- function(exprs,
                                           keep_warning = TRUE,
                                           keep_message = TRUE,
                                           log_warning = FALSE,
-                                          output_handler = new_output_handler(),
-                                          include_timing = FALSE) {
+                                          output_handler = new_output_handler()) {
   stopifnot(is.expression(exprs))
 
   source <- new_source(src, exprs[[1]], output_handler$source)
@@ -189,30 +188,20 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
 
-  if (include_timing) {
-    timing_fn <- function(x) system.time(x)[1:3]
-  } else {
-    timing_fn <- function(x) {x; NULL}
-  }
-
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
-    srcindex <- length(output)
-    time <- timing_fn(
-      ev <- handle_error(
-        with_handlers(
-          withVisible(eval(expr, envir)),
-          handlers
-        )
+    ev <- handle_error(
+      with_handlers(
+        withVisible(eval(expr, envir)),
+        handlers
       )
     )
+  
     handle_output(TRUE)
-    if (!is.null(time))
-      attr(output[[srcindex]]$src, 'timing') <- time
 
     if (!is.null(ev) && show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
