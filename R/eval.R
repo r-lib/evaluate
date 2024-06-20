@@ -207,6 +207,7 @@ evaluate_top_level_expression <- function(exprs,
         handlers
       )
     )
+    handle(with_handlers(watcher$check_connection(), handlers))
     handle_output(TRUE)
 
     if (show_value(output_handler, ev$visible)) {

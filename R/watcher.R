@@ -19,18 +19,15 @@ watchout <- function(handler = new_output_handler(),
   dev <- dev.cur()
 
   con <- file("", "w+b")
-  defer(frame = frame, {
-    if (!test_con(con, isOpen)) {
-      con_error('The connection has been closed')
-    }
-    sink()
-    close(con)
-  })
+  defer(try(close(con)), frame)
+
   sink(con, split = debug)
+  defer(suppressWarnings(sink()), frame)
+  sinkn <- sink.number()
 
   # try() defaults to using stderr() so we need to explicitly override(#88)
   old <- options(try.outFile = con)
-  defer(options(old), frame = frame)
+  defer(options(old), frame)
 
   capture_plot <- function(incomplete = FALSE) {
     # only record plots for our graphics device
@@ -72,17 +69,33 @@ watchout <- function(handler = new_output_handler(),
       dev.set(dev)
     }
     devn <<- length(dev.list())
+
+    invisible()
+  }
+
+  check_connection <- function() {
+    if (!is_open(con)) {
+      stop("Evaluate connection has been closed; can't continue")
+    }
+    if (sink.number() < sinkn) {
+      stop("sink() has been closed; can't continue")
+    }
     invisible()
   }
   
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
-    check_devices = check_devices
+    check_devices = check_devices,
+    check_connection = check_connection
   )
 }
 
 read_con <- function(con, buffer = 32 * 1024) {
+  if (!is_open(con)) {
+    return(NULL)
+  }
+
   bytes <- raw()
   repeat {
     new <- readBin(con, "raw", n = buffer)
@@ -96,10 +109,6 @@ read_con <- function(con, buffer = 32 * 1024) {
   }
 }
 
-test_con = function(con, test) {
-  tryCatch(test(con), error = function(e) con_error(e$message))
+is_open <- function(con) {
+  tryCatch(isOpen(con = con), error = function(e) FALSE)
 }
-
-con_error = function(x) stop(
-  x, '... Please make sure not to call closeAllConnections().', call. = FALSE
-)
