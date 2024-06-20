@@ -96,8 +96,8 @@ evaluate <- function(input,
     }
     watcher$add_source(parsed$src[[i]], parsed$expr[[i]][[1]])
 
-    continue <- withRestarts(
-      with_handlers(
+    continue <- with_handlers(
+      withRestarts(
         evaluate_top_level_expression(
           exprs = parsed$expr[[i]],
           watcher = watcher,
@@ -105,10 +105,10 @@ evaluate <- function(input,
           output_handler = output_handler,
           include_timing = include_timing
         ),
-        handlers
+        eval_continue = function() TRUE,
+        eval_stop = function() FALSE
       ),
-      eval_continue = function() TRUE,
-      eval_stop = function() FALSE
+      handlers
     )
     watcher$check_devices()
 
