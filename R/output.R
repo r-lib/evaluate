@@ -45,16 +45,16 @@ new_source <- function(src, call, handler = NULL) {
 
 # If the output handler has two arguments, then the user has opted into
 # handling the value regardless of whether it's not visible.
-show_value <- function(handler, visible) {
-  visible || length(formals(handler$value)) > 1
+show_value <- function(value_handler, visible) {
+  visible || length(formals(value_handler)) > 1
 }
 
-handle_value <- function(handler, value, visible) {
-  n_args <- length(formals(handler$value))
+handle_value <- function(value_handler, value, visible) {
+  n_args <- length(formals(value_handler))
   if (n_args == 1) {
-    handler$value(value)
+    value_handler(value)
   } else if (n_args == 2) {
-    handler$value(value, visible)
+    value_handler(value, visible)
   } else {
     stop("Value output handler must have one or two arguments")
   }

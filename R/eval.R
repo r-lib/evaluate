@@ -102,7 +102,7 @@ evaluate <- function(input,
           exprs = parsed$expr[[i]],
           watcher = watcher,
           envir = envir,
-          output_handler = output_handler,
+          value_handler = output_handler$value,
           include_timing = include_timing
         ),
         eval_continue = function() TRUE,
@@ -125,8 +125,8 @@ evaluate <- function(input,
 
 evaluate_top_level_expression <- function(exprs,
                                           watcher,
-                                          envir = parent.frame(),
-                                          output_handler = new_output_handler(),
+                                          envir,
+                                          value_handler,
                                           include_timing = FALSE) {
   stopifnot(is.expression(exprs))
 
@@ -135,13 +135,13 @@ evaluate_top_level_expression <- function(exprs,
     ev <- withVisible(eval(expr, envir))
     watcher$capture_plot_and_output()
     
-    if (show_value(output_handler, ev$visible)) {
+    if (show_value(value_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
       # any methods registered in that environment. That, however, is 
       # challenging and only makes a few tests a little simpler so we don't
       # bother.
       pv <- withVisible(
-        handle_value(output_handler, ev$value, ev$visible)
+        handle_value(value_handler, ev$value, ev$visible)
       )
       
       watcher$capture_plot_and_output()

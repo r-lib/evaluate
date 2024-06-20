@@ -103,7 +103,7 @@ test_that("invisible values can also be saved if value handler has two arguments
   handler <- new_output_handler(value = function(x, visible) {
     x  # always returns a visible value
   })
-  expect_true(show_value(handler, FALSE))
+  expect_true(show_value(handler$value, FALSE))
 
   ev <- evaluate("x<-1:10", output_handler = handler)
   expect_output_types(ev, c("source", "integer"))
