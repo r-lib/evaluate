@@ -70,12 +70,14 @@ replay.recordedplot <- function(x) {
 }
 
 format_condition <- function(x) {
+  if (inherits(x, "message")) {
+    return(gsub("\n$", "", conditionMessage(x)))
+  }
+
   if (inherits(x, "error")) {
     type <- "Error"
   } else if (inherits(x, "warning")) {
     type <- "Warning"
-  } else {
-    type <- "Message"
   }
 
   call <- conditionCall(x)
@@ -87,7 +89,7 @@ format_condition <- function(x) {
 
   body <- conditionMessage(x)
   if (inherits(x, "message")) {
-    body <- gsub("\n$", "", body)
+    
   }
 
   paste0(header, "\n", body)

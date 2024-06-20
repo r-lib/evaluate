@@ -13,7 +13,6 @@
     Output
       > f()
       [1] "1"
-      Message in message("2"):
       2
       Warning in f():
       3
@@ -26,7 +25,6 @@
       replay(ev)
     Output
       > f()
-      Message:
       2
       Warning:
       3
