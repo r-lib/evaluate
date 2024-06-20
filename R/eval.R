@@ -153,15 +153,6 @@ evaluate_top_level_expression <- function(exprs,
   TRUE
 }
 
-with_handlers <- function(code, handlers) {
-  if (!is.list(handlers)) {
-    stop("`handlers` must be a list", call. = FALSE)
-  }
-
-  call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
-  eval(call)
-}
-
 evaluate_handlers <- function(watcher,
                               keep_warning = TRUE,
                               keep_message = TRUE,
