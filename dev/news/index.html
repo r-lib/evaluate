@@ -47,6 +47,8 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="evaluate-development-version">evaluate (development version)<a class="anchor" aria-label="anchor" href="#evaluate-development-version"></a></h2>
 <ul><li>
+<code><a href="../reference/evaluate.html">evaluate()</a></code> automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they’re wrapped inside <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code>) (<a href="https://github.com/r-lib/evaluate/issues/150" class="external-link">#150</a>).</li>
+<li>
 <code>evalute(include_timing)</code> has been deprecated. I can’t find any use of it on GitHub, and it adds substantial code complexity for little gain.</li>
 <li>
 <code>watchout()</code> is no longer exported; it’s really an implementation detail that should never have been leaked to the public interface.</li>
