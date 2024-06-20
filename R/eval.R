@@ -146,37 +146,40 @@ evaluate_top_level_expression <- function(exprs,
   on.exit(remove_hooks(hook_list), add = TRUE)
 
   # Handlers for warnings, errors and messages
-  wHandler <- function(wn) {
-    if (log_warning) {
-      cat(format_condition(wn), "\n", sep = "", file = stderr())
-    }
-    if (is.na(keep_warning)) return()
-
-    # do not handle the warning as it will be raised as error after
-    if (getOption("warn") >= 2) return()
-
-    if (keep_warning && getOption("warn") >= 0) {
-      handle_output()
-      output <<- c(output, list(wn))
-      output_handler$warning(wn)
-    }
-    invokeRestart("muffleWarning")
-  }
-  eHandler <- function(e) {
-    handle_output()
-    if (use_try) {
-      output <<- c(output, list(e))
-      output_handler$error(e)
-    }
-  }
-  mHandler <- function(m) {
+  mHandler <- function(cnd) {
     handle_output()
     if (isTRUE(keep_message)) {
-      output <<- c(output, list(m))
-      output_handler$message(m)
+      output <<- c(output, list(cnd))
+      output_handler$message(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
       invokeRestart("muffleMessage")
+    }
+  }
+  wHandler <- function(cnd) {
+    # do not handle warnings that shortly become errors
+    if (getOption("warn") >= 2) return()
+    # do not handle warnings that have been completely silenced
+    if (getOption("warn") < 0) return()
+
+    if (log_warning) {
+      cat_line(format_condition(cnd), file = stderr())
+    }
+
+    handle_output()
+    if (isTRUE(keep_warning)) {
+      output <<- c(output, list(cnd))
+      output_handler$warning(cnd)
+      invokeRestart("muffleWarning")
+    } else if (isFALSE(keep_warning)) {
+      invokeRestart("muffleWarning")
+    }
+  }
+  eHandler <- function(cnd) {
+    handle_output()
+    if (use_try) {
+      output <<- c(output, list(cnd))
+      output_handler$error(cnd)
     }
   }
 
