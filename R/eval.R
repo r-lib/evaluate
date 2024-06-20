@@ -47,11 +47,13 @@ evaluate <- function(input,
                      log_echo = FALSE,
                      log_warning = FALSE,
                      new_device = TRUE,
-                     output_handler = new_output_handler(),
+                     output_handler = NULL,
                      filename = NULL,
                      include_timing = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
+
+  output_handler <- output_handler %||% default_output_handler
 
   if (isTRUE(include_timing)) {
     warning("`evaluate(include_timing)` is deprecated")
