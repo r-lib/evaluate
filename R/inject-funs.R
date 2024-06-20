@@ -27,14 +27,14 @@
 inject_funs <- function(...) {
   funs <- list(...)
   funs <- funs[names(funs) != '']
-  old <- .env$inject_funs
-  .env$inject_funs <- Filter(is.function, funs)
+  old <- the$inject_funs
+  the$inject_funs <- Filter(is.function, funs)
 
   invisible(old)
 }
 
 local_inject_funs <- function(envir, frame = parent.frame()) {
-  funs <- .env$inject_funs
+  funs <- the$inject_funs
   if (length(funs) == 0) {
     return()
   }

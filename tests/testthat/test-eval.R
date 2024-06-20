@@ -142,3 +142,8 @@ test_that("has a reasonable print method", {
     evaluate("plot(1:3)")
   })  
 })
+
+test_that("conditions get calls stripped", {
+  expect_equal(evaluate("warning('x')")[[2]]$call, NULL)
+  expect_equal(evaluate("stop('x')")[[2]]$call, NULL)
+})

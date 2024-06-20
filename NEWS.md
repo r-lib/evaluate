@@ -1,6 +1,7 @@
 # evaluate (development version)
 
 * `evaluate()` no longer incorrectly prints the return value of print methods.
+* `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
 * `evalute(include_timing)` has been deprecated. I can't find any use of it on GitHub, and it adds substantial code complexity for little gain.
 * `watchout()` is no longer exported; it's really an implementation detail that should never have been leaked to the public interface.
 * `evaluate()` gains an output class (`evaluate_evaluation`/`list`) and a basic print method.
