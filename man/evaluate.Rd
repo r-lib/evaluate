@@ -15,7 +15,7 @@ evaluate(
   log_echo = FALSE,
   log_warning = FALSE,
   new_device = TRUE,
-  output_handler = default_output_handler,
+  output_handler = NULL,
   filename = NULL,
   include_timing = FALSE
 )
@@ -58,10 +58,7 @@ visible return values.}
 
 \item{filename}{string overrriding the \code{\link[base:srcfile]{base::srcfile()}} filename.}
 
-\item{include_timing}{if \code{TRUE}, evaluate will wrap each input
-expression in \code{system.time()}, which will be accessed by following
-\code{replay()} call to produce timing information for each evaluated
-command.}
+\item{include_timing}{Deprecated.}
 }
 \description{
 Compare to \code{\link[=eval]{eval()}}, \code{evaluate} captures all of the

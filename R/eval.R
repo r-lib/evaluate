@@ -35,10 +35,7 @@
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
 #' @param filename string overrriding the [base::srcfile()] filename.
-#' @param include_timing if `TRUE`, evaluate will wrap each input
-#'   expression in `system.time()`, which will be accessed by following
-#'   `replay()` call to produce timing information for each evaluated
-#'   command.
+#' @param include_timing Deprecated. 
 #' @import graphics grDevices utils
 evaluate <- function(input,
                      envir = parent.frame(),
@@ -50,11 +47,17 @@ evaluate <- function(input,
                      log_echo = FALSE,
                      log_warning = FALSE,
                      new_device = TRUE,
-                     output_handler = default_output_handler,
+                     output_handler = NULL,
                      filename = NULL,
                      include_timing = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
+
+  output_handler <- output_handler %||% default_output_handler
+
+  if (isTRUE(include_timing)) {
+    warning("`evaluate(include_timing)` is deprecated")
+  }
 
   parsed <- parse_all(input, filename, stop_on_error != 2L)
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
@@ -91,8 +94,7 @@ evaluate <- function(input,
       keep_warning = keep_warning,
       keep_message = keep_message,
       log_warning = log_warning,
-      output_handler = output_handler,
-      include_timing = include_timing
+      output_handler = output_handler
     )
     watcher$check_devices()
 
@@ -120,8 +122,7 @@ evaluate_top_level_expression <- function(exprs,
                                           keep_warning = TRUE,
                                           keep_message = TRUE,
                                           log_warning = FALSE,
-                                          output_handler = new_output_handler(),
-                                          include_timing = FALSE) {
+                                          output_handler = new_output_handler()) {
   stopifnot(is.expression(exprs))
 
   source <- new_source(src, exprs[[1]], output_handler$source)
@@ -147,37 +148,42 @@ evaluate_top_level_expression <- function(exprs,
   on.exit(remove_hooks(hook_list), add = TRUE)
 
   # Handlers for warnings, errors and messages
-  wHandler <- function(wn) {
-    if (log_warning) {
-      cat(format_condition(wn), "\n", sep = "", file = stderr())
-    }
-    if (is.na(keep_warning)) return()
-
-    # do not handle the warning as it will be raised as error after
-    if (getOption("warn") >= 2) return()
-
-    if (keep_warning && getOption("warn") >= 0) {
-      handle_output()
-      output <<- c(output, list(wn))
-      output_handler$warning(wn)
-    }
-    invokeRestart("muffleWarning")
-  }
-  eHandler <- function(e) {
-    handle_output()
-    if (use_try) {
-      output <<- c(output, list(e))
-      output_handler$error(e)
-    }
-  }
-  mHandler <- function(m) {
+  mHandler <- function(cnd) {
     handle_output()
     if (isTRUE(keep_message)) {
-      output <<- c(output, list(m))
-      output_handler$message(m)
+      output <<- c(output, list(cnd))
+      output_handler$message(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
       invokeRestart("muffleMessage")
+    }
+  }
+  wHandler <- function(cnd) {
+    # do not handle warnings that shortly become errors
+    if (getOption("warn") >= 2) return()
+    # do not handle warnings that have been completely silenced
+    if (getOption("warn") < 0) return()
+
+    if (log_warning) {
+      cat_line(format_condition(cnd), file = stderr())
+    }
+
+    handle_output()
+    if (isTRUE(keep_warning)) {
+      cnd <- reset_call(cnd)
+      output <<- c(output, list(cnd))
+      output_handler$warning(cnd)
+      invokeRestart("muffleWarning")
+    } else if (isFALSE(keep_warning)) {
+      invokeRestart("muffleWarning")
+    }
+  }
+  eHandler <- function(cnd) {
+    handle_output()
+    if (use_try) {
+      cnd <- reset_call(cnd)
+      output <<- c(output, list(cnd))
+      output_handler$error(cnd)
     }
   }
 
@@ -190,11 +196,6 @@ evaluate_top_level_expression <- function(exprs,
   } else {
     handle <- force
   }
-  if (include_timing) {
-    timing_fn <- function(x) system.time(x)[1:3]
-  } else {
-    timing_fn <- function(x) {x; NULL}
-  }
 
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
@@ -202,18 +203,13 @@ evaluate_top_level_expression <- function(exprs,
   handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
-    srcindex <- length(output)
-    time <- timing_fn(
-      ev <- handle(
-        with_handlers(
-          withVisible(eval(expr, envir)),
-          handlers
-        )
+    ev <- handle(
+      with_handlers(
+        withVisible(eval(expr, envir)),
+        handlers
       )
     )
     handle_output(TRUE)
-    if (!is.null(time))
-      attr(output[[srcindex]]$src, 'timing') <- time
 
     if (show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
@@ -248,6 +244,13 @@ with_handlers <- function(code, handlers) {
 
   call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
   eval(call)
+}
+
+reset_call <- function(cnd) {
+  if (identical(cnd$call, quote(eval(expr, envir)))) {
+    cnd$call <- NULL
+  }
+  cnd
 }
 
 new_evaluation <- function(x) {

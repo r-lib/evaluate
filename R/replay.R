@@ -41,8 +41,7 @@ replay.character <- function(x) {
 
 #' @export
 replay.source <- function(x) {
-  s <- if (is.null(attr(x$src,'timing'))) '' else render_timing(attr(x$src, 'timing'))
-  cat(paste0(s, line_prompt(x$src)))
+  cat(line_prompt(x$src))
 }
 
 #' @export
@@ -69,38 +68,6 @@ replay.value <- function(x) {
 replay.recordedplot <- function(x) {
   print(x)
 }
-
-render_timing <- function(t) {
-  if (max(t) < 0.5) '' else paste0(
-    '[', render_sec(t[[1]] + t[[2]]), # User time + Kernel time
-    ',', render_sec(t[[3]]), # Wall time
-    ']'
-  )
-}
-
-render_sec <- function(s) {
-  if (s < 0.005) return('<5ms')
-  if (s < 1) return(paste0(round(s,2), 's'))
-  if (s < 10) return(paste0(round(s,1), 's'))
-  sec <- round(s,0)
-  if (sec < 120) return(paste0(sec, 's'))
-  min <- floor(sec/60)
-  sec <- sec - min*60
-  if (min < 10) return(paste0(
-    min, 'm', formatC(sec, digits = 0, width = 2, format = "f", flag = "0"), 's'
-  ))
-  min <- min + round(sec/60, 0)
-  if (min < 120) return(paste0(min, 'm'))
-  h <- floor(min/60)
-  min <- min - h * 60
-  if (h < 48) return(paste0(
-    h, 'h', formatC(min, digits = 0, width = 2, format = "f", flag = "0"), 'm'
-  ))
-  d <- floor(h/24)
-  h <- h - d*24
-  return(paste0(d, 'd', h, 'h'))
-}
-
 
 format_condition <- function(x) {
   if (inherits(x, "rlang_warning") || inherits(x, "rlang_error")) {
