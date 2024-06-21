@@ -47,11 +47,13 @@ evaluate <- function(input,
                      log_echo = FALSE,
                      log_warning = FALSE,
                      new_device = TRUE,
-                     output_handler = new_output_handler(),
+                     output_handler = NULL,
                      filename = NULL,
                      include_timing = FALSE) {
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
+
+  output_handler <- output_handler %||% default_output_handler
 
   if (isTRUE(include_timing)) {
     warning("`evaluate(include_timing)` is deprecated")
@@ -146,37 +148,42 @@ evaluate_top_level_expression <- function(exprs,
   on.exit(remove_hooks(hook_list), add = TRUE)
 
   # Handlers for warnings, errors and messages
-  wHandler <- function(wn) {
-    if (log_warning) {
-      cat(format_condition(wn), "\n", sep = "", file = stderr())
-    }
-    if (is.na(keep_warning)) return()
-
-    # do not handle the warning as it will be raised as error after
-    if (getOption("warn") >= 2) return()
-
-    if (keep_warning && getOption("warn") >= 0) {
-      handle_output()
-      output <<- c(output, list(wn))
-      output_handler$warning(wn)
-    }
-    invokeRestart("muffleWarning")
-  }
-  eHandler <- function(e) {
-    handle_output()
-    if (use_try) {
-      output <<- c(output, list(e))
-      output_handler$error(e)
-    }
-  }
-  mHandler <- function(m) {
+  mHandler <- function(cnd) {
     handle_output()
     if (isTRUE(keep_message)) {
-      output <<- c(output, list(m))
-      output_handler$message(m)
+      output <<- c(output, list(cnd))
+      output_handler$message(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
       invokeRestart("muffleMessage")
+    }
+  }
+  wHandler <- function(cnd) {
+    # do not handle warnings that shortly become errors
+    if (getOption("warn") >= 2) return()
+    # do not handle warnings that have been completely silenced
+    if (getOption("warn") < 0) return()
+
+    if (log_warning) {
+      cat_line(format_condition(cnd), file = stderr())
+    }
+
+    handle_output()
+    if (isTRUE(keep_warning)) {
+      cnd <- reset_call(cnd)
+      output <<- c(output, list(cnd))
+      output_handler$warning(cnd)
+      invokeRestart("muffleWarning")
+    } else if (isFALSE(keep_warning)) {
+      invokeRestart("muffleWarning")
+    }
+  }
+  eHandler <- function(cnd) {
+    handle_output()
+    if (use_try) {
+      cnd <- reset_call(cnd)
+      output <<- c(output, list(cnd))
+      output_handler$error(cnd)
     }
   }
 
@@ -239,40 +246,9 @@ with_handlers <- function(code, handlers) {
   eval(call)
 }
 
-new_evaluation <- function(x) {
-  # Needs explicit list for backwards compatibility
-  structure(x, class = c("evaluate_evaluation", "list"))
-}
-
-#' @export
-print.evaluate_evaluation <- function(x, ...) {
-  cat_line("<evaluation>")
-  for (component in x) {
-    if (inherits(component, "source")) {
-      cat_line("Source code: ")
-      cat_line(indent(component$src))
-    } else if (is.character(component)) {
-      cat_line("Text output: ")
-      cat_line(indent(component))
-    } else if (inherits(component, "condition")) {
-      cat_line("Condition: ")
-      cat_line(indent(format_condition(component)))
-    } else if (inherits(component, "recordedplot")) {
-      dl <- component[[1]]
-      cat_line("Plot [", length(dl), "]:")
-      for (call in dl) {
-        fun_call <- call[[2]][[1]]
-        if (hasName(fun_call, "name")) {
-          cat_line("  <base> ", fun_call$name, "()")
-        } else {
-          cat_line("  <grid> ", deparse(fun_call))
-        }
-      }
-    } else {
-      cat_line("Other: ")
-      cat(" "); str(component, indent.str = "  ")
-    }
+reset_call <- function(cnd) {
+  if (identical(cnd$call, quote(eval(expr, envir)))) {
+    cnd$call <- NULL
   }
-
-  invisible(x)
+  cnd
 }

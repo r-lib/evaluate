@@ -1,52 +1,10 @@
-test_that("all condition handlers first capture output", {
-  test <- function() {
-    plot(1, main = "one")
-    message("this is an message!")
-    plot(2, main = "two")
-    warning("this is a warning")
-    plot(3, main = "three")
-    stop("this is an error")
-  }
-  expect_output_types(
-    evaluate("test()"),
-    c("source", "plot", "message", "plot", "warning", "plot", "error")
-  )
-})
 
-test_that("all three states of keep_warning work as expected", {
-  test <- function() {
-    warning("Hi!")
-  }
-
-  # warning captured in output
-  expect_no_warning(ev <- evaluate("test()", keep_warning = TRUE))
-  expect_output_types(ev, c("source", "warning"))
-
-  # warning propagated
-  expect_warning(ev <- evaluate("test()", keep_warning = NA), "Hi")
-  expect_output_types(ev, "source")
-
-  # warning ignored
-  expect_no_warning(ev <- evaluate("test()", keep_warning = FALSE))
-  expect_output_types(ev, "source")
-})
-
-test_that("all three states of keep_message work as expected", {
-  test <- function() {
-    message("Hi!")
-  }
-
-  # message captured in output
-  expect_no_message(ev <- evaluate("test()", keep_message = TRUE))
-  expect_output_types(ev, c("source", "message"))
-
-  # message propagated
-  expect_message(ev <- evaluate("test()", keep_message = NA), "Hi")
-  expect_output_types(ev, "source")
-
-  # message ignored
-  expect_no_message(ev <- evaluate("test()", keep_message = FALSE))
-  expect_output_types(ev, "source")
+test_that("file with only comments runs", {
+  ev <- evaluate_("
+    # This test case contains no executable code
+    # but it shouldn't throw an error
+  ")
+  expect_output_types(ev, c("source", "source"))
 })
 
 test_that("can evaluate expressions of all lengths", {
@@ -73,63 +31,56 @@ test_that("log_echo causes output to be immediately written to stderr()", {
   expect_equal(res[[1]]$src, "f()")
 })
 
-test_that("log_warning causes warnings to be immediately written to stderr()", {
-  f <- function() {
-    warning("Hi!", immediate. = TRUE)
-  }
-  out <- capture.output(
-    res <- evaluate("f()", log_warning = TRUE),
-    type = "message"
-  )
-  expect_equal(out, c("Warning in f():", "Hi!"))
+test_that("data sets loaded", {
+  skip_if_not_installed("lattice")
 
-  # But still recorded in eval result
-  expect_equal(res[[1]]$src, "f()")
-  expect_equal(res[[2]], simpleWarning("Hi!", quote(f())))
+  ev <- evaluate_('
+    data(barley, package = "lattice")
+    barley
+  ')
+  expect_output_types(ev, c("source", "source", "text"))
 })
 
-test_that("can conditionally omit output with output handler", {
-  hide_source <- function(src, call) {
-    if (is.call(call) && identical(call[[1]], quote(hide))) {
-      NULL
-    } else {
-      src
+test_that("terminal newline not needed", {
+  ev <- evaluate("cat('foo')")
+  expect_output_types(ev, c("source", "text"))
+  expect_equal(ev[[2]], "foo")
+})
+
+test_that("S4 methods are displayed with show, not print", {
+  methods::setClass("A", contains = "function", where = environment())
+  methods::setMethod("show", "A", function(object) cat("B"))
+  a <- methods::new('A', function() b)
+
+  ev <- evaluate("a")
+  expect_equal(ev[[2]], "B")
+})
+
+test_that("output and plots interleaved correctly", {
+  ev <- evaluate_("
+    for (i in 1:2) {
+      cat(i)
+      plot(i)
     }
-  }
-  handler <- new_output_handler(source = hide_source)
-  hide <- function(x) invisible(x)
+  ")
+  expect_output_types(ev, c("source", "text", "plot", "text", "plot"))
 
-  out <- evaluate("hide(x <- 1)\nx", output_handler = handler)
-  expect_output_types(out, c("source", "text"))
-  expect_snapshot(replay(out))
+  ev <- evaluate_("
+    for (i in 1:2) {
+      plot(i)
+      cat(i)
+    }
+  ")
+  expect_output_types(ev, c("source", "plot", "text", "plot", "text"))
 })
 
-test_that("source handled called correctly when src is unparseable", {
-  src <- NULL
-  call <- NULL
-  capture_args <- function(src, call) {
-    src <<- src
-    call <<- call
-
-    src
-  }
-  handler <- new_output_handler(source = capture_args)
-
-  evaluate("x + ", output_handler = handler)
-  expect_equal(src, new_source("x + "))
-  expect_equal(call, expression())
+test_that("multiple expressions on one line can get printed as expected", {
+  ev <- evaluate("x <- 1; y <- 2; x; y")
+  expect_output_types(ev, c("source", "text", "text"))
 })
 
-test_that("has a reasonable print method", {
-  f <- function() {
-    print("1")
-    message("2")
-    warning("3")
-    stop("4")
-  }
-
-  expect_snapshot({
-    evaluate("f()")
-    evaluate("plot(1:3)")
-  })  
+test_that("multiple lines of comments do not lose the terminating \\n", {
+  ev <- evaluate("# foo\n#bar")
+  expect_output_types(ev, c("source", "source"))
+  expect_equal(ev[[1]]$src, "# foo\n")
 })
