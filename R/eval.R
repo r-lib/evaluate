@@ -102,7 +102,8 @@ evaluate <- function(input,
         output_handler = output_handler
       ),
       eval_continue = function() TRUE,
-      eval_stop = function() FALSE
+      eval_stop = function() FALSE,
+      eval_error = function(cnd) stop(cnd)
     )
     watcher$check_devices()
 
@@ -181,6 +182,8 @@ evaluate_top_level_expression <- function(exprs,
       invokeRestart("eval_continue")
     } else if (on_error == "stop") {
       invokeRestart("eval_stop")
+    } else {
+      invokeRestart("eval_error", cnd)
     }
   }
 
