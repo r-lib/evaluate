@@ -1,25 +1,3 @@
-#' Object class tests
-#'
-#' @keywords internal
-#' @rdname is.message
-#' @export
-is.message <- function(x) inherits(x, "message")
-#' @rdname is.message
-#' @export
-is.warning <- function(x) inherits(x, "warning")
-#' @rdname is.message
-#' @export
-is.error <- function(x) inherits(x, "error")
-#' @rdname is.message
-#' @export
-is.value <- function(x) inherits(x, "value")
-#' @rdname is.message
-#' @export
-is.source <- function(x) inherits(x, "source")
-#' @rdname is.message
-#' @export
-is.recordedplot <- function(x) inherits(x, "recordedplot")
-
 new_source <- function(src, call, handler = NULL) {
   src <- structure(list(src = src), class = "source")
   if (is.null(handler)) {
