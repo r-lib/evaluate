@@ -105,11 +105,14 @@ including all output that evaluate captures.</p></dd>
 
 
 <dt>stop_on_error</dt>
-<dd><p>if <code>2</code>, evaluation will halt on first error and you
-will get no results back. If <code>1</code>, evaluation will stop on first error
-without signaling the error, and you will get back all results up to that
-point. If <code>0</code> will continue running all code, just as if you'd pasted
-the code into the command line.</p></dd>
+<dd><p>A number between 0 and 2 that controls what happens
+when the code errors:</p><ul><li><p>If <code>0</code>, the default, will continue running all code, just as if you'd
+pasted the code into the command line.</p></li>
+<li><p>If <code>1</code>, evaluation will stop on first error without signaling the error,
+and you will get back all results up to that point.</p></li>
+<li><p>If <code>2</code>, evaluation will halt on first error and you will get back no
+results back.</p></li>
+</ul></dd>
 
 
 <dt>keep_warning, keep_message</dt>
