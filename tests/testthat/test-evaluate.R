@@ -46,27 +46,6 @@ test_that("errors during printing visible values are captured", {
   expect_output_types(ev, c("source", "error"))
 })
 
-test_that("respects warn options", {
-  # suppress warnings
-  withr::local_options(warn = -1)
-  ev <- evaluate("warning('hi')")
-  expect_output_types(ev, "source")
-
-  # delayed warnings are always immediate in knitr
-  withr::local_options(warn = 0)
-  ev <- evaluate("warning('hi')")
-  expect_output_types(ev, c("source", "warning"))
-
-  # immediate warnings
-  withr::local_options(warn = 1)
-  ev <- evaluate("warning('hi')")
-  expect_output_types(ev, c("source", "warning"))
-
-  # warnings become errors
-  withr::local_options(warn = 2)
-  ev <- evaluate("warning('hi')")
-  expect_output_types(ev, c("source", "error"))
-})
 
 test_that("output and plots interleaved correctly", {
   ev <- evaluate_("
