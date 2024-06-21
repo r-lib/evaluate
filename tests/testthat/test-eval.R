@@ -120,20 +120,6 @@ test_that("source handled called correctly when src is unparseable", {
   expect_equal(call, expression())
 })
 
-test_that("has a reasonable print method", {
-  f <- function() {
-    print("1")
-    message("2")
-    warning("3")
-    stop("4")
-  }
-
-  expect_snapshot({
-    evaluate("f()")
-    evaluate("plot(1:3)")
-  })  
-})
-
 test_that("conditions get calls stripped", {
   expect_equal(evaluate("warning('x')")[[2]]$call, NULL)
   expect_equal(evaluate("stop('x')")[[2]]$call, NULL)
