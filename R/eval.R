@@ -15,11 +15,15 @@
 #'   the parent environment to `envir`.
 #' @param debug if `TRUE`, displays information useful for debugging,
 #'   including all output that evaluate captures.
-#' @param stop_on_error if `2`, evaluation will halt on first error and you
-#'   will get no results back. If `1`, evaluation will stop on first error
-#'   without signaling the error, and you will get back all results up to that
-#'   point. If `0` will continue running all code, just as if you'd pasted
-#'   the code into the command line.
+#' @param stop_on_error A number between 0 and 2 that controls what happens
+#'   when the code errors:
+#' 
+#'   * If `0`, the default, will continue running all code, just as if you'd
+#'     pasted the code into the command line.
+#'   * If `1`, evaluation will stop on first error without signaling the error, 
+#'     and you will get back all results up to that point. 
+#'   * If `2`, evaluation will halt on first error and you will get back no 
+#'     results.
 #' @param keep_warning,keep_message whether to record warnings and messages; if
 #'   `FALSE`, messages will be suppressed; if `NA`, they will not be captured
 #'   (normally they will be sent to the console). Note that if the environment
@@ -50,8 +54,8 @@ evaluate <- function(input,
                      output_handler = NULL,
                      filename = NULL,
                      include_timing = FALSE) {
-  stop_on_error <- as.integer(stop_on_error)
-  stopifnot(length(stop_on_error) == 1)
+  
+  on_error <- check_stop_on_error(stop_on_error)
 
   # if this env var is set to true, always bypass messages
   if (env_var_is_true('R_EVALUATE_BYPASS_MESSAGES')) {
@@ -65,7 +69,7 @@ evaluate <- function(input,
     warning("`evaluate(include_timing)` is deprecated")
   }
 
-  parsed <- parse_all(input, filename, stop_on_error != 2L)
+  parsed <- parse_all(input, filename, on_error != "error")
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
     source <- new_source(parsed$src, expression(), output_handler$source)
     output_handler$error(err)
@@ -90,7 +94,7 @@ evaluate <- function(input,
       src = parsed$src[[i]],
       watcher = watcher,
       envir = envir,
-      use_try = stop_on_error != 2L,
+      use_try = on_error != "error",
       keep_warning = keep_warning,
       keep_message = keep_message,
       log_warning = log_warning,
@@ -98,7 +102,7 @@ evaluate <- function(input,
     )
     watcher$check_devices()
 
-    if (stop_on_error > 0L && watcher$has_errored()) {
+    if (on_error == "stop" && watcher$has_errored()) {
       break
     }
   }
@@ -235,4 +239,17 @@ reset_call <- function(cnd) {
     cnd$call <- NULL
   }
   cnd
+}
+
+check_stop_on_error <- function(x) {
+  if (is.numeric(x) && length(x) == 1 && !is.na(x)) {
+    if (x == 0L) {
+      return("continue")
+    } else if (x == 1L) {
+      return("stop")
+    } else if (x == 2L) {
+      return("error")
+    }
+  }
+  stop("`stop_on_error` must be 0, 1, or 2 ", call. = FALSE)
 }

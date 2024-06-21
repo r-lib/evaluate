@@ -32,11 +32,16 @@ the parent environment to \code{envir}.}
 \item{debug}{if \code{TRUE}, displays information useful for debugging,
 including all output that evaluate captures.}
 
-\item{stop_on_error}{if \code{2}, evaluation will halt on first error and you
-will get no results back. If \code{1}, evaluation will stop on first error
-without signaling the error, and you will get back all results up to that
-point. If \code{0} will continue running all code, just as if you'd pasted
-the code into the command line.}
+\item{stop_on_error}{A number between 0 and 2 that controls what happens
+when the code errors:
+\itemize{
+\item If \code{0}, the default, will continue running all code, just as if you'd
+pasted the code into the command line.
+\item If \code{1}, evaluation will stop on first error without signaling the error,
+and you will get back all results up to that point.
+\item If \code{2}, evaluation will halt on first error and you will get back no
+results back.
+}}
 
 \item{keep_warning, keep_message}{whether to record warnings and messages; if
 \code{FALSE}, messages will be suppressed; if \code{NA}, they will not be captured
