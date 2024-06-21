@@ -1,3 +1,14 @@
+local_plot_hooks <- function(f, frame = parent.frame()) {
+  hook_list <- list(
+    persp = f,
+    before.plot.new = f,
+    before.grid.newpage = f
+  )
+  set_hooks(hook_list)
+  defer(remove_hooks(hook_list), frame)
+  invisible()
+}
+
 looks_different <- function(old_dl, new_dl) {
   if (identical(old_dl, new_dl)) {
     return(FALSE)

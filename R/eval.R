@@ -57,6 +57,12 @@ evaluate <- function(input,
   
   on_error <- check_stop_on_error(stop_on_error)
 
+  # if this env var is set to true, always bypass messages
+  if (env_var_is_true('R_EVALUATE_BYPASS_MESSAGES')) {
+    keep_message <- NA 
+    keep_warning <- NA
+  }
+
   output_handler <- output_handler %||% default_output_handler
 
   if (isTRUE(include_timing)) {
@@ -76,24 +82,18 @@ evaluate <- function(input,
   }
   local_inject_funs(envir)
 
-  # if this env var is set to true, always bypass messages
-  if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
-    keep_message = keep_warning = NA
-
   # Capture output
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
-  out <- vector("list", nrow(parsed))
-  for (i in seq_along(out)) {
+  for (i in seq_len(nrow(parsed))) {
     if (log_echo || debug) {
       cat_line(parsed$src[[i]], file = stderr())
     }
-    out[[i]] <- evaluate_top_level_expression(
+    evaluate_top_level_expression(
       exprs = parsed$expr[[i]],
       src = parsed$src[[i]],
       watcher = watcher,
       envir = envir,
-      last = i == length(out),
       use_try = on_error != "error",
       keep_warning = keep_warning,
       keep_message = keep_message,
@@ -102,26 +102,21 @@ evaluate <- function(input,
     )
     watcher$check_devices()
 
-    if (on_error == "stop") {
-      errs <- vapply(out[[i]], is.error, logical(1))
-      if (any(errs)) {
-        break
-      } 
+    if (on_error == "stop" && watcher$has_errored()) {
+      break
     }
   }
 
-  is_empty <- vapply(out, identical, list(NULL), FUN.VALUE = logical(1))
-  out <- out[!is_empty]
+  # Always capture last plot, even if incomplete
+  watcher$capture_plot(TRUE)
 
-  out <- unlist(out, recursive = FALSE, use.names = FALSE)
-  new_evaluation(out)
+  watcher$get()
 }
 
 evaluate_top_level_expression <- function(exprs,
                                           src,
                                           watcher,
                                           envir = parent.frame(),
-                                          last = FALSE,
                                           use_try = FALSE,
                                           keep_warning = TRUE,
                                           keep_message = TRUE,
@@ -130,32 +125,22 @@ evaluate_top_level_expression <- function(exprs,
   stopifnot(is.expression(exprs))
 
   source <- new_source(src, exprs[[1]], output_handler$source)
-  output <- list(source)
+  if (!is.null(source))
+    watcher$push(source)
 
-  handle_output <- function(plot = TRUE, incomplete_plots = FALSE) {
-    out <- list(
-      if (plot) watcher$capture_plot(incomplete_plots),
-      watcher$capture_output()
-    )
-    output <<- c(output, compact(out))
+  handle_output <- function(plot = TRUE) {
+    if (plot) watcher$capture_plot()
+    watcher$capture_output()
   }
 
   local_output_handler(function() handle_output(FALSE))
-
-  # Hooks to capture plot creation
-  hook_list <- list(
-    persp = handle_output,
-    before.plot.new = handle_output,
-    before.grid.newpage = handle_output
-  )
-  set_hooks(hook_list)
-  on.exit(remove_hooks(hook_list), add = TRUE)
+  local_plot_hooks(handle_output)
 
   # Handlers for warnings, errors and messages
   mHandler <- function(cnd) {
     handle_output()
     if (isTRUE(keep_message)) {
-      output <<- c(output, list(cnd))
+      watcher$push(cnd)
       output_handler$message(cnd)
       invokeRestart("muffleMessage")
     } else if (isFALSE(keep_message)) {
@@ -175,7 +160,7 @@ evaluate_top_level_expression <- function(exprs,
     handle_output()
     if (isTRUE(keep_warning)) {
       cnd <- reset_call(cnd)
-      output <<- c(output, list(cnd))
+      watcher$push(cnd)
       output_handler$warning(cnd)
       invokeRestart("muffleWarning")
     } else if (isFALSE(keep_warning)) {
@@ -186,7 +171,8 @@ evaluate_top_level_expression <- function(exprs,
     handle_output()
     if (use_try) {
       cnd <- reset_call(cnd)
-      output <<- c(output, list(cnd))
+      watcher$errored()
+      watcher$push(cnd)
       output_handler$error(cnd)
     }
   }
@@ -230,15 +216,13 @@ evaluate_top_level_expression <- function(exprs,
       )
       handle_output(TRUE)
       # If the return value is visible, save the value to the output
-      if (pv$visible) output <- c(output, list(pv$value))
+      if (pv$visible) {
+        watcher$push(pv$value)
+      }
     }
   }
-  # Always capture last plot, even if incomplete
-  if (last) {
-    handle_output(TRUE, TRUE)
-  }
 
-  output
+  invisible()
 }
 
 with_handlers <- function(code, handlers) {

@@ -2,8 +2,6 @@ watchout <- function(handler = new_output_handler(),
                      new_device = TRUE,
                      debug = FALSE,
                      frame = parent.frame()) {
-  last_plot <- NULL
-
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
     # one that's available on all platforms and doesn't write to disk
@@ -12,10 +10,24 @@ watchout <- function(handler = new_output_handler(),
     dev <- dev.cur()
     defer(dev.off(dev), frame)
   }
+      
+  # Maintain a list of outputs that we'll grow over time
+  output <- list()
+  i <- 1
+  push <- function(value) {
+    output[i] <<- list(value)
+    i <<- i + 1
+    invisible()
+  }
 
-  # record current devices
-  devs <- dev.list()
-  devn <- length(devs)
+  # record whether or not we've seen an error
+  has_error <- FALSE
+  errored <- function() has_error <<- TRUE
+  has_errored <- function() has_error
+
+  # record current devices for plot handling
+  last_plot <- NULL
+  devn <- length(dev.list())
   dev <- dev.cur()
 
   con <- file("", "w+b")
@@ -54,15 +66,17 @@ watchout <- function(handler = new_output_handler(),
 
     last_plot <<- plot
     handler$graphics(plot)
-    plot
+    push(plot)
+    invisible()
   }
 
   capture_output <- function() {
     out <- read_con(con)
     if (!is.null(out)) {
+      push(out)
       handler$text(out)
     }
-    out
+    invisible()
   }
 
   check_devices <- function() {
@@ -74,11 +88,15 @@ watchout <- function(handler = new_output_handler(),
     devn <<- length(dev.list())
     invisible()
   }
-  
+
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
-    check_devices = check_devices
+    check_devices = check_devices,
+    push = push,
+    get = function() new_evaluation(output),
+    errored = errored,
+    has_errored = has_errored
   )
 }
 

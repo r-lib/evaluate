@@ -9,7 +9,6 @@
       Text output: 
         [1] "1"
       Condition: 
-        Error in message("2"):
         2
       Condition: 
         Warning in f():

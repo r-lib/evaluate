@@ -10,6 +10,29 @@ test_that("replay() should work when print() returns visible NULLs", {
   expect_snapshot(replay(ret))
 })
 
+test_that("replay handles various output types", {
+  f <- function() {
+    print("1")
+    message("2")
+    warning("3")
+    stop("4")
+  }
+
+  ev <- evaluate("f()")
+  expect_snapshot(replay(ev))
+})
+
+test_that("replay handles rlang conditions", {
+  f <- function() {
+    rlang::inform("2")
+    rlang::warn("3")
+    rlang::abort("4")
+  }
+
+  ev <- evaluate("f()")
+  expect_snapshot(replay(ev))
+})
+
 test_that("format_condition handles different types of warning", {
   expect_snapshot({
     w1 <- simpleWarning("This is a warning")

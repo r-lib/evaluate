@@ -6,6 +6,31 @@
       > structure(1, class = "FOO_BAR")
       NULL
 
+# replay handles various output types
+
+    Code
+      replay(ev)
+    Output
+      > f()
+      [1] "1"
+      2
+      Warning in f():
+      3
+      Error in f():
+      4
+
+# replay handles rlang conditions
+
+    Code
+      replay(ev)
+    Output
+      > f()
+      2
+      Warning:
+      3
+      Error in f():
+      4
+
 # format_condition handles different types of warning
 
     Code
@@ -24,14 +49,12 @@
       w3 <- rlang::warning_cnd(message = "This is a warning")
       cat(format_condition(w3))
     Output
-      <warning/rlang_warning>
       Warning:
       This is a warning
     Code
       w4 <- rlang::warning_cnd(message = "This is a warning")
       cat(format_condition(w4))
     Output
-      <warning/rlang_warning>
       Warning:
       This is a warning
 

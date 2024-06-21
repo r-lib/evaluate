@@ -18,6 +18,16 @@ test_that("conditions get calls stripped", {
   expect_equal(evaluate("stop('x')")[[2]]$call, NULL)
 })
 
+test_that("envvar overrides keep_* arguments", {
+  withr::local_envvar(R_EVALUATE_BYPASS_MESSAGES = "true")
+  
+  expect_message(ev <- evaluate("message('Hi!')", keep_message = FALSE), "Hi")
+  expect_output_types(ev, "source")
+
+  expect_warning(ev <- evaluate("warning('Hi!')", keep_warning = FALSE), "Hi")
+  expect_output_types(ev, "source")
+})
+
 # messages --------------------------------------------------------------------
 
 test_that("all three states of keep_message work as expected", {

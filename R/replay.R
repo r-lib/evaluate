@@ -46,17 +46,17 @@ replay.source <- function(x) {
 
 #' @export
 replay.warning <- function(x) {
-  message(format_condition(x))
+  cat_line(format_condition(x))
 }
 
 #' @export
 replay.message <- function(x) {
-  message(sub("\n$", "", x$message))
+  cat_line(format_condition(x))
 }
 
 #' @export
 replay.error <- function(x) {
-  message(format_condition(x))
+  cat_line(format_condition(x))
 }
 
 #' @export
@@ -70,18 +70,29 @@ replay.recordedplot <- function(x) {
 }
 
 format_condition <- function(x) {
-  if (inherits(x, "rlang_warning") || inherits(x, "rlang_error")) {
-    format(x)
-  } else {
-    msg <- if (inherits(x, "warning")) "Warning" else "Error"
-
-    call <- conditionCall(x)
-    if (!is.null(conditionCall(x))) {
-      msg <- paste0(msg, " in ", deparse1(call))
-    }
-    msg <- paste0(msg, ":\n", conditionMessage(x))
-    msg
+  if (inherits(x, "message")) {
+    return(gsub("\n$", "", conditionMessage(x)))
   }
+
+  if (inherits(x, "error")) {
+    type <- "Error"
+  } else if (inherits(x, "warning")) {
+    type <- "Warning"
+  }
+
+  call <- conditionCall(x)
+  if (is.null(call)) {
+    header <- paste0(type, ":")
+  } else {
+    header <- paste0(type, " in ", deparse1(call), ":")
+  }
+
+  body <- conditionMessage(x)
+  if (inherits(x, "message")) {
+    
+  }
+
+  paste0(header, "\n", body)
 }
 
 
