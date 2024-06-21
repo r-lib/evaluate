@@ -20,10 +20,6 @@ is.source <- function(x) inherits(x, "source")
 #' @export
 is.recordedplot <- function(x) inherits(x, "recordedplot")
 
-new_value <- function(value, visible = TRUE) {
-  structure(list(value = value, visible = visible), class = "value")
-}
-
 new_source <- function(src, call, handler = NULL) {
   src <- structure(list(src = src), class = "source")
   if (is.null(handler)) {
