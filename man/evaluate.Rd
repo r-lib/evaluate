@@ -40,7 +40,7 @@ pasted the code into the command line.
 \item If \code{1}, evaluation will stop on first error without signaling the error,
 and you will get back all results up to that point.
 \item If \code{2}, evaluation will halt on first error and you will get back no
-results back.
+results.
 }}
 
 \item{keep_warning, keep_message}{whether to record warnings and messages; if
