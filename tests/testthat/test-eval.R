@@ -84,3 +84,11 @@ test_that("multiple lines of comments do not lose the terminating \\n", {
   expect_output_types(ev, c("source", "source"))
   expect_equal(ev[[1]]$src, "# foo\n")
 })
+
+test_that("check_stop_on_error converts integer to enum", {
+  expect_equal(check_stop_on_error(0), "continue")
+  expect_equal(check_stop_on_error(1), "stop")
+  expect_equal(check_stop_on_error(2), "error")
+
+  expect_snapshot(check_stop_on_error(4), error = TRUE)
+})
