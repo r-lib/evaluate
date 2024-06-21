@@ -19,3 +19,7 @@ defer <- function(expr, frame = parent.frame(), after = FALSE) {
 compact <- function(x) {
   x[!vapply(x, is.null, logical(1))]
 }
+
+env_var_is_true <- function(x) {
+  isTRUE(as.logical(Sys.getenv(x, "false")))
+}

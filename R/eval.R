@@ -53,6 +53,12 @@ evaluate <- function(input,
   stop_on_error <- as.integer(stop_on_error)
   stopifnot(length(stop_on_error) == 1)
 
+  # if this env var is set to true, always bypass messages
+  if (env_var_is_true('R_EVALUATE_BYPASS_MESSAGES')) {
+    keep_message <- NA 
+    keep_warning <- NA
+  }
+
   output_handler <- output_handler %||% default_output_handler
 
   if (isTRUE(include_timing)) {
@@ -71,10 +77,6 @@ evaluate <- function(input,
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
   local_inject_funs(envir)
-
-  # if this env var is set to true, always bypass messages
-  if (tolower(Sys.getenv('R_EVALUATE_BYPASS_MESSAGES')) == 'true')
-    keep_message = keep_warning = NA
 
   # Capture output
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
