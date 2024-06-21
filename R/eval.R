@@ -137,15 +137,7 @@ evaluate_top_level_expression <- function(exprs,
   }
 
   local_output_handler(function() handle_output(FALSE))
-
-  # Hooks to capture plot creation
-  hook_list <- list(
-    persp = handle_output,
-    before.plot.new = handle_output,
-    before.grid.newpage = handle_output
-  )
-  set_hooks(hook_list)
-  on.exit(remove_hooks(hook_list), add = TRUE)
+  local_plot_hooks(handle_output)
 
   # Handlers for warnings, errors and messages
   mHandler <- function(cnd) {
