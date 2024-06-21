@@ -115,7 +115,7 @@ test_that("all three starts of stop_on_error work as expected", {
   ev <- evaluate('stop("1")\n2', stop_on_error = 1L)
   expect_output_types(ev, c("source", "error"))
 
-  expect_snapshot(evaluate('stop("1")\n2', stop_on_error = 2L), error = TRUE)
+  expect_snapshot(. <- evaluate('stop("1")\n2', stop_on_error = 2L), error = TRUE)
 })
 
 test_that("errors during printing are captured", {

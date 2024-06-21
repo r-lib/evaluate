@@ -20,11 +20,6 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
 
-  # record whether or not we've seen an error
-  has_error <- FALSE
-  errored <- function() has_error <<- TRUE
-  has_errored <- function() has_error
-
   # record current devices for plot handling
   last_plot <- NULL
   devn <- length(dev.list())
@@ -94,9 +89,7 @@ watchout <- function(handler = new_output_handler(),
     capture_output = capture_output,
     check_devices = check_devices,
     push = push,
-    get = function() new_evaluation(output),
-    errored = errored,
-    has_errored = has_errored
+    get = function() new_evaluation(output)
   )
 }
 
