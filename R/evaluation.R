@@ -40,17 +40,39 @@ print.evaluate_evaluation <- function(x, ...) {
 output_type <- function(x) {
   if (is.character(x)) {
     "text"
-  } else if (inherits(x, "error")) {
+  } else if (is.error(x)) {
     "error"
-  } else if (inherits(x, "warning")) {
+  } else if (is.warning(x)) {
     "warning"
-  } else if (inherits(x, "message")) {
+  } else if (is.message(x)) {
     "message"
-  } else if (inherits(x, "recordedplot")) {
+  } else if (is.recordedplot(x)) {
     "plot"
-  } else if (inherits(x, "source")) {
+  } else if (is.source(x)) {
     "source"
   } else {
     class(x)[[1]]
   }
 }
+
+#' Object class tests
+#'
+#' @keywords internal
+#' @rdname is.message
+#' @export
+is.message <- function(x) inherits(x, "message")
+#' @rdname is.message
+#' @export
+is.warning <- function(x) inherits(x, "warning")
+#' @rdname is.message
+#' @export
+is.error <- function(x) inherits(x, "error")
+#' @rdname is.message
+#' @export
+is.value <- function(x) inherits(x, "value")
+#' @rdname is.message
+#' @export
+is.source <- function(x) inherits(x, "source")
+#' @rdname is.message
+#' @export
+is.recordedplot <- function(x) inherits(x, "recordedplot")
