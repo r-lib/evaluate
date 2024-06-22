@@ -156,7 +156,7 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
   wHandler <- function(cnd) {
-    # don't warnings that shortly become errors or have been silenced
+    # don't handle warnings that are errors or have been silenced
     warn <- getOption("warn")
     if (warn >= 2 || warn < 0) return()
 
