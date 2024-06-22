@@ -181,13 +181,11 @@ evaluate_top_level_expression <- function(exprs,
     cnd <- reset_call(cnd)
     watcher$push(cnd)
     
-    if (on_error == "continue") {
-      invokeRestart("eval_continue")
-    } else if (on_error == "stop") {
-      invokeRestart("eval_stop")
-    } else {
-      invokeRestart("eval_error", cnd)
-    }
+    switch(on_error,
+      continue = invokeRestart("eval_continue"),
+      stop = invokeRestart("eval_stop"),
+      error = invokeRestart("eval_error", cnd)
+    )
   }
 
   user_handlers <- output_handler$calling_handlers
