@@ -90,17 +90,20 @@ evaluate <- function(input,
       cat_line(parsed$src[[i]], file = stderr())
     }
     continue <- withRestarts(
-      evaluate_top_level_expression(
-        exprs = parsed$expr[[i]],
-        src = parsed$src[[i]],
-        watcher = watcher,
-        envir = envir,
-        on_error = on_error,
-        keep_warning = keep_warning,
-        keep_message = keep_message,
-        log_warning = log_warning,
-        output_handler = output_handler
-      ),
+      {
+        evaluate_top_level_expression(
+          exprs = parsed$expr[[i]],
+          src = parsed$src[[i]],
+          watcher = watcher,
+          envir = envir,
+          on_error = on_error,
+          keep_warning = keep_warning,
+          keep_message = keep_message,
+          log_warning = log_warning,
+          output_handler = output_handler
+        )
+        TRUE
+      },
       eval_continue = function() TRUE,
       eval_stop = function() FALSE,
       eval_error = function(cnd) stop(cnd)
@@ -218,7 +221,7 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
 
-  TRUE
+  invisible()
 }
 
 with_handlers <- function(code, handlers) {
