@@ -30,19 +30,7 @@ watchout <- function(handler = new_output_handler(),
   devn <- length(dev.list())
   dev <- dev.cur()
 
-  con <- file("", "w+b")
-  defer(frame = frame, {
-    if (!test_con(con, isOpen)) {
-      con_error('The connection has been closed')
-    }
-    sink()
-    close(con)
-  })
-  sink(con, split = debug)
-
-  # try() defaults to using stderr() so we need to explicitly override(#88)
-  old <- options(try.outFile = con)
-  defer(options(old), frame = frame)
+  sink_con <- local_persistent_sink_connection(debug, frame)
 
   capture_plot <- function(incomplete = FALSE) {
     # only record plots for our graphics device
@@ -71,7 +59,7 @@ watchout <- function(handler = new_output_handler(),
   }
 
   capture_output <- function() {
-    out <- read_con(con)
+    out <- sink_con()
     if (!is.null(out)) {
       push(out)
       handler$text(out)
@@ -100,6 +88,36 @@ watchout <- function(handler = new_output_handler(),
   )
 }
 
+# Persistent way to capture output ---------------------------------------------
+
+local_persistent_sink_connection <- function(debug = FALSE,
+                                             frame = parent.frame()) {
+  con <- file("", "w+b")
+  defer(if (isValid(con)) close(con), frame)
+
+  # try() defaults to using stderr() so we need to explicitly override(#88)
+  old <- options(try.outFile = con)
+  defer(options(old), frame)
+  
+  sink(con, split = debug)
+  sinkn <- sink.number()
+  defer(if (sink.number() >= sinkn) sink(), frame)
+
+  function() {
+    if (!isValid(con)) {
+      con <<- file("", "w+b")
+      options(try.outFile = con)
+    }
+
+    if (sink.number() < sinkn) {
+      sink(con)
+      sinkn <<- sink.number()
+    }
+
+    read_con(con)
+  }
+}
+
 read_con <- function(con, buffer = 32 * 1024) {
   bytes <- raw()
   repeat {
@@ -114,10 +132,16 @@ read_con <- function(con, buffer = 32 * 1024) {
   }
 }
 
-test_con = function(con, test) {
-  tryCatch(test(con), error = function(e) con_error(e$message))
+# isOpen doesn't work for two reasons:
+# 1. It errors if con has been closed, rather than returning FALSE
+# 2. If returns TRUE if con has been closed and a new connection opened
+# 
+# So instead we retrieve the connection from its number and compare to the
+# original connection. This works because connections have an undocumented
+# external pointer.
+isValid <- function(con) {
+  tryCatch(
+    identical(getConnection(con), con),
+    error = function(cnd) FALSE
+  )
 }
-
-con_error = function(x) stop(
-  x, '... Please make sure not to call closeAllConnections().', call. = FALSE
-)
