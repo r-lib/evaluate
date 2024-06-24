@@ -83,9 +83,9 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   res <- lapply(split(pos, spl), function(p) {
     n <- nrow(p)
     data.frame(
-      src = paste(x[p$start[1]:p$end[n]], collapse = "\n", recycle0 = TRUE),
-      expr = I(list(exprs[p[, 3]])),
-      line = p[1, 1]
+      src = paste(x[p$start[1]:p$end[n]], collapse = "\n"),
+      expr = I(list(exprs[p$i])),
+      line = p$start[1]
     )
   })
 
