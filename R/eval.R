@@ -76,6 +76,8 @@ evaluate <- function(input,
     err$call <- NULL  # the call is unlikely to be useful
     return(new_evaluation(list(source, err)))
   }
+  # "Transpose" parsed so we get a list that's easier to iterate over
+  tles <- Map(function(src, expr) list(src = src, expr = expr), parsed$src, parsed$expr)
 
   if (is.list(envir)) {
     envir <- list2env(envir, parent = enclos %||% parent.frame())
@@ -85,13 +87,16 @@ evaluate <- function(input,
   # Capture output
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
-  for (i in seq_len(nrow(parsed))) {
+  for (tle in tles) {
+    source <- new_source(tle$src, tle$expr[[1]], output_handler$source)
+    if (!is.null(source))
+      watcher$push(source)
     if (log_echo || debug) {
-      cat_line(parsed$src[[i]], file = stderr())
+      cat_line(tle$src, file = stderr())
     }
-    evaluate_top_level_expression(
-      exprs = parsed$expr[[i]],
-      src = parsed$src[[i]],
+
+    evaluate_tle(
+      exprs = tle$expr,
       watcher = watcher,
       envir = envir,
       use_try = on_error != "error",
@@ -113,20 +118,15 @@ evaluate <- function(input,
   watcher$get()
 }
 
-evaluate_top_level_expression <- function(exprs,
-                                          src,
-                                          watcher,
-                                          envir = parent.frame(),
-                                          use_try = FALSE,
-                                          keep_warning = TRUE,
-                                          keep_message = TRUE,
-                                          log_warning = FALSE,
-                                          output_handler = new_output_handler()) {
+evaluate_tle <- function(exprs,
+                         watcher,
+                         envir = parent.frame(),
+                         use_try = FALSE,
+                         keep_warning = TRUE,
+                         keep_message = TRUE,
+                         log_warning = FALSE,
+                         output_handler = new_output_handler()) {
   stopifnot(is.expression(exprs))
-
-  source <- new_source(src, exprs[[1]], output_handler$source)
-  if (!is.null(source))
-    watcher$push(source)
 
   handle_output <- function(plot = TRUE) {
     if (plot) watcher$capture_plot()
