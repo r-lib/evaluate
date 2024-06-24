@@ -79,6 +79,11 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
 
+  capture_plot_and_output <- function() {
+    capture_plot()
+    capture_output()
+  }
+
   check_devices <- function() {
     # if dev.off() was called, make sure to restore device to the one opened 
     # when watchout() was called
@@ -92,6 +97,7 @@ watchout <- function(handler = new_output_handler(),
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
+    capture_plot_and_output = capture_plot_and_output,
     check_devices = check_devices,
     push = push,
     get = function() new_evaluation(output),
