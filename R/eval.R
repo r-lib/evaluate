@@ -69,12 +69,22 @@ evaluate <- function(input,
     warning("`evaluate(include_timing)` is deprecated")
   }
 
-  parsed <- parse_all(input, filename, on_error != "error")
-  if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
-    source <- new_source(parsed$src, expression(), output_handler$source)
-    output_handler$error(err)
-    err$call <- NULL  # the call is unlikely to be useful
-    return(new_evaluation(list(source, err)))
+  if (on_error != "error") {
+    error <- NULL
+    tryCatch(
+      parsed <- parse_all(input, filename),
+      error = function(cnd) {
+        error <<- cnd
+      }
+    )
+    if (!is.null(error)) {
+      source <- new_source(input, expression(), output_handler$source)
+      output_handler$error(error)
+      # error$call <- NULL  # the call is unlikely to be useful
+      return(new_evaluation(list(source, error)))
+    }
+  } else {
+    parsed <- parse_all(input, filename)
   }
 
   if (is.list(envir)) {
