@@ -70,7 +70,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
 
   srcref <- attr(exprs, "srcref", exact = TRUE)
 
-  # Start/Ene line numbers of expressions
+  # Start/end line numbers of expressions
   pos <- do.call(rbind, lapply(srcref, unclass))[, c(7, 8), drop = FALSE]
   l1 <- pos[, 1]
   l2 <- pos[, 2]
