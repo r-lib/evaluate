@@ -1,3 +1,21 @@
+test_that("every TLE has an implicit nl", {
+  expect_equal(parse_all("x")$src, "x")
+  expect_equal(parse_all("x\n")$src, "x")
+  expect_equal(parse_all("")$src, "")
+  expect_equal(parse_all("\n")$src, "")
+
+  expect_equal(parse_all("{\n1\n}")$src, "{\n1\n}")
+  expect_equal(parse_all("{\n1\n}\n")$src, "{\n1\n}")
+
+  # even empty lines
+  expect_equal(parse_all("a\n\nb")$src, c("a", "", "b"))
+  expect_equal(parse_all("\n\n")$src, c("", ""))
+})
+
+test_that("a character vector is equivalent to a multi-line string", {
+  expect_equal(parse_all(c("a", "b")), parse_all(c("a\nb")))
+})
+
 test_that("expr is always an expression", {
   expect_equal(parse_all("#")$expr[[1]], expression())
   expect_equal(parse_all("1")$expr[[1]], expression(1), ignore_attr = "srcref")
@@ -34,7 +52,7 @@ if (isTRUE(l10n_info()[['UTF-8']])) {
 
   test_that("multibyte characters are parsed correct", {
     code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
-    expect_identical(parse_all(code)$src, append_break(code))
+    expect_identical(parse_all(code)$src, code)
   })
 }
 

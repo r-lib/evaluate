@@ -11,12 +11,15 @@
 #' A data frame with columns `src`, a character vector of source code, and 
 #' `expr`, a list-column of parsed expressions. There will be one row for each 
 #' top-level expression in `x`. A top-level expression is a complete expression 
-#' which would trigger execution if typed at the console. The `expression`
-#' object in `expr` can be of any length: it will be 0 if the top-level 
-#' expression contains only whitespace and/or comments; 1 if the top-level 
-#' expression is a single scalar (like `TRUE`, `1`, or `"x"`), name, or call; 
-#' or 2 if the top-level expression uses `;` to put multiple expressions on 
-#' one line.
+#' which would trigger execution if typed at the console. 
+#' 
+#' The trailing `\n` at the end of each `src` is implicit.`
+#' 
+#' The `expression` object in `expr` can be of any length: it will be 0 if 
+#' the top-level expression contains only whitespace and/or comments; 1 if 
+#' the top-level expression is a single scalar (like `TRUE`, `1`, or `"x"`), 
+#' name, or call; or 2 if the top-level expression uses `;` to put multiple 
+#' expressions on one line.
 #' 
 #' If there are syntax errors in `x` and `allow_error = TRUE`, the data 
 #' frame will have an attribute `PARSE_ERROR` that stores the error object.
@@ -35,23 +38,26 @@ parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_
 
 #' @export
 parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
-  if (length(grep("\n", x))) {
-    # strsplit('a\n', '\n') needs to return c('a', '') instead of c('a')
-    x <- gsub("\n$", "\n\n", x)
-    x[x == ""] <- "\n"
+  if (any(grepl("\n", x))) {
+    # Standardise to character vector with one line per element:
+    # this is the input that parse() is documented to accept
     x <- unlist(strsplit(x, "\n"), recursive = FALSE, use.names = FALSE)
   }
   n <- length(x)
 
-  if (is.null(filename))
-    filename <- "<text>"
+  filename <- filename %||% "<text>"
   src <- srcfilecopy(filename, x)
   if (allow_error) {
     exprs <- tryCatch(parse(text = x, srcfile = src), error = identity)
-    if (inherits(exprs, 'error')) return(structure(
-      data.frame(src = paste(x, collapse = '\n'), expr = I(list(expression()))),
-      PARSE_ERROR = exprs
-    ))
+    if (inherits(exprs, 'error')) {
+      return(structure(
+        data.frame(
+          src = paste(x, collapse = '\n'),
+          expr = I(list(expression()))
+        ),
+        PARSE_ERROR = exprs
+      ))
+    }
   } else {
     exprs <- parse(text = x, srcfile = src)
   }
@@ -59,12 +65,12 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   # No code, only comments and/or empty lines
   ne <- length(exprs)
   if (ne == 0) {
-    return(data.frame(src = append_break(x), expr = I(rep(list(expression()), n))))
+    return(data.frame(src = x, expr = I(rep(list(expression()), n))))
   }
 
   srcref <- attr(exprs, "srcref", exact = TRUE)
 
-  # Stard/End line numbers of expressions
+  # Start/Ene line numbers of expressions
   pos <- do.call(rbind, lapply(srcref, unclass))[, c(7, 8), drop = FALSE]
   l1 <- pos[, 1]
   l2 <- pos[, 2]
@@ -102,30 +108,11 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
     )
   }))
 
-  # Bind everything into a data frame, order it by line numbers, append \n to
-  # all src lines except the last one, and remove the line numbers
   res <- do.call(rbind, res)
   res <- res[order(res$line), ]
-  res$src <- append_break(res$src)
   res$line <- NULL
-
-  # For compatibility with evaluate (<= 0.5.7): remove the last empty line (YX:
-  # I think this is a bug)
-  n <- nrow(res)
-  if (res$src[n] == "") res <- res[-n, ]
-
   rownames(res) <- NULL
   res
-}
-
-# YX: It seems evaluate (<= 0.5.7) had difficulties with preserving line breaks,
-# so it ended up with adding \n to the first n-1 lines, which does not seem to
-# be necessary to me, and is actually buggy. I'm not sure if it is worth shaking
-# the earth and work with authors of reverse dependencies to sort this out. Also
-# see #42.
-append_break <- function(x) {
-  n <- length(x)
-  if (n <= 1) x else paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
 }
 
 #' @export

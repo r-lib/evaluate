@@ -79,12 +79,6 @@ test_that("multiple expressions on one line can get printed as expected", {
   expect_output_types(ev, c("source", "text", "text"))
 })
 
-test_that("multiple lines of comments do not lose the terminating \\n", {
-  ev <- evaluate("# foo\n#bar")
-  expect_output_types(ev, c("source", "source"))
-  expect_equal(ev[[1]]$src, "# foo\n")
-})
-
 test_that("check_stop_on_error converts integer to enum", {
   expect_equal(check_stop_on_error(0), "continue")
   expect_equal(check_stop_on_error(1), "stop")

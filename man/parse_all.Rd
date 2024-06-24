@@ -18,12 +18,15 @@ If a connection, will be opened and closed only if it was closed initially.}
 A data frame with columns \code{src}, a character vector of source code, and
 \code{expr}, a list-column of parsed expressions. There will be one row for each
 top-level expression in \code{x}. A top-level expression is a complete expression
-which would trigger execution if typed at the console. The \code{expression}
-object in \code{expr} can be of any length: it will be 0 if the top-level
-expression contains only whitespace and/or comments; 1 if the top-level
-expression is a single scalar (like \code{TRUE}, \code{1}, or \code{"x"}), name, or call;
-or 2 if the top-level expression uses \verb{;} to put multiple expressions on
-one line.
+which would trigger execution if typed at the console.
+
+The trailing \verb{\\n} at the end of each \code{src} is implicit.`
+
+The \code{expression} object in \code{expr} can be of any length: it will be 0 if
+the top-level expression contains only whitespace and/or comments; 1 if
+the top-level expression is a single scalar (like \code{TRUE}, \code{1}, or \code{"x"}),
+name, or call; or 2 if the top-level expression uses \verb{;} to put multiple
+expressions on one line.
 
 If there are syntax errors in \code{x} and \code{allow_error = TRUE}, the data
 frame will have an attribute \code{PARSE_ERROR} that stores the error object.
