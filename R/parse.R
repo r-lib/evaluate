@@ -69,24 +69,21 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   }
 
   srcref <- attr(exprs, "srcref", exact = TRUE)
-
-  # Start/end line numbers of expressions
-  pos <- do.call(rbind, lapply(srcref, unclass))[, c(7, 8), drop = FALSE]
-  l1 <- pos[, 1]
-  l2 <- pos[, 2]
-  # Add a third column i to store the indices of expressions
-  pos <- cbind(pos, i = seq_len(nrow(pos)))
-  pos <- as.data.frame(pos)  # split() does not work on matrices
+  pos <- data.frame(
+    start = vapply(srcref, `[[`, 7, FUN.VALUE = integer(1)),
+    end = vapply(srcref, `[`, 8, FUN.VALUE = integer(1)),
+    i = seq_along(srcref)
+  )
 
   # Split line number pairs into groups: if the next start line is the same as
   # the last end line, the two expressions must belong to the same group
-  spl <- cumsum(c(TRUE, l1[-1] != l2[-ne]))
+  spl <- cumsum(c(TRUE, pos$start[-1] != pos$end[-ne]))
   # Extract src lines and expressions for each group; also record the start line
   # number of this group so we can re-order src/expr later
   res <- lapply(split(pos, spl), function(p) {
     n <- nrow(p)
     data.frame(
-      src = paste(x[p[1, 1]:p[n, 2]], collapse = "\n"),
+      src = paste(x[p$start[1]:p$end[n]], collapse = "\n", recycle0 = TRUE),
       expr = I(list(exprs[p[, 3]])),
       line = p[1, 1]
     )
@@ -94,7 +91,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
 
   # Now process empty expressions (comments/blank lines); see if there is a
   # "gap" between the last end number + 1 and the next start number - 1
-  pos <- cbind(c(1, l2 + 1), c(l1 - 1, n))
+  pos <- cbind(c(1, pos$end + 1), c(pos$start - 1, n))
   pos <- pos[pos[, 1] <= pos[, 2], , drop = FALSE]
 
   # Extract src lines from the gaps, and assign empty expressions to them
