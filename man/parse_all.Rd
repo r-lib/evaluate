@@ -20,7 +20,7 @@ A data frame with columns \code{src}, a character vector of source code, and
 top-level expression in \code{x}. A top-level expression is a complete expression
 which would trigger execution if typed at the console.
 
-The trailing \verb{\\n} at the end of each \code{src} is implicit.`
+The trailing \verb{\\n} at the end of each \code{src} is implicit.
 
 The \code{expression} object in \code{expr} can be of any length: it will be 0 if
 the top-level expression contains only whitespace and/or comments; 1 if

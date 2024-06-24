@@ -13,7 +13,7 @@
 #' top-level expression in `x`. A top-level expression is a complete expression 
 #' which would trigger execution if typed at the console. 
 #' 
-#' The trailing `\n` at the end of each `src` is implicit.`
+#' The trailing `\n` at the end of each `src` is implicit.
 #' 
 #' The `expression` object in `expr` can be of any length: it will be 0 if 
 #' the top-level expression contains only whitespace and/or comments; 1 if 
