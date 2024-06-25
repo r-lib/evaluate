@@ -71,7 +71,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   srcref <- attr(exprs, "srcref", exact = TRUE)
   pos <- data.frame(
     start = vapply(srcref, `[[`, 7, FUN.VALUE = integer(1)),
-    end = vapply(srcref, `[`, 8, FUN.VALUE = integer(1)),
+    end = vapply(srcref, `[[`, 8, FUN.VALUE = integer(1)),
     i = seq_along(srcref)
   )
 
