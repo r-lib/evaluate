@@ -97,19 +97,27 @@ evaluate <- function(input,
     if (log_echo || debug) {
       cat_line(parsed$src[[i]], file = stderr())
     }
-    evaluate_top_level_expression(
-      exprs = parsed$expr[[i]],
-      src = parsed$src[[i]],
-      watcher = watcher,
-      envir = envir,
-      use_try = on_error != "error",
-      on_warning = on_warning,
-      on_message = on_message,
-      output_handler = output_handler
+    continue <- withRestarts(
+      {
+        evaluate_top_level_expression(
+          exprs = parsed$expr[[i]],
+          src = parsed$src[[i]],
+          watcher = watcher,
+          envir = envir,
+          on_error = on_error,
+          on_warning = on_warning,
+          on_message = on_message,
+              output_handler = output_handler
+        )
+        TRUE
+      },
+      eval_continue = function() TRUE,
+      eval_stop = function() FALSE,
+      eval_error = function(cnd) stop(cnd)
     )
     watcher$check_devices()
 
-    if (on_error == "stop" && watcher$has_errored()) {
+    if (!continue) {
       break
     }
   }
@@ -124,7 +132,7 @@ evaluate_top_level_expression <- function(exprs,
                                           src,
                                           watcher,
                                           envir = parent.frame(),
-                                          use_try = FALSE,
+                                          on_error = "continue",
                                           on_warning,
                                           on_message,
                                           log_warning = FALSE,
@@ -135,17 +143,12 @@ evaluate_top_level_expression <- function(exprs,
   if (!is.null(source))
     watcher$push(source)
 
-  handle_output <- function(plot = TRUE) {
-    if (plot) watcher$capture_plot()
-    watcher$capture_output()
-  }
-
-  local_output_handler(function() handle_output(FALSE))
-  local_plot_hooks(handle_output)
+  local_output_handler(watcher$capture_output)
+  local_plot_hooks(watcher$capture_plot_and_output)
 
   # Handlers for warnings, errors and messages
   mHandler <- function(cnd) {
-    handle_output()
+    watcher$capture_plot_and_output()
     
     if (on_message$capture) {
       watcher$push(cnd)
@@ -161,7 +164,7 @@ evaluate_top_level_expression <- function(exprs,
     # do not handle warnings that have been completely silenced
     if (getOption("warn") < 0) return()
 
-    handle_output()
+    watcher$capture_plot_and_output()
     if (on_warning$capture) {
       cnd <- reset_call(cnd)
       watcher$push(cnd)
@@ -172,23 +175,16 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
   eHandler <- function(cnd) {
-    handle_output()
-    if (use_try) {
-      cnd <- reset_call(cnd)
-      watcher$errored()
-      watcher$push(cnd)
-      output_handler$error(cnd)
-    }
-  }
-
-  if (use_try) {
-    handle <- function(code) {
-      tryCatch(code, error = function(err) {
-        list(value = NULL, visible = FALSE)
-      })
-    }
-  } else {
-    handle <- force
+    watcher$capture_plot_and_output()
+    
+    cnd <- reset_call(cnd)
+    watcher$push(cnd)
+    
+    switch(on_error,
+      continue = invokeRestart("eval_continue"),
+      stop = invokeRestart("eval_stop"),
+      error = invokeRestart("eval_error", cnd)
+    )
   }
 
   user_handlers <- output_handler$calling_handlers
@@ -197,28 +193,24 @@ evaluate_top_level_expression <- function(exprs,
   handlers <- c(user_handlers, evaluate_handlers)
 
   for (expr in exprs) {
-    ev <- handle(
-      with_handlers(
-        withVisible(eval(expr, envir)),
-        handlers
-      )
+    ev <- with_handlers(
+      withVisible(eval(expr, envir)),
+      handlers
     )
-    handle_output(TRUE)
+    watcher$capture_plot_and_output()
 
     if (show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
       # any methods registered in that environment. That, however, is 
       # challenging and only makes a few tests a little simpler so we don't
       # bother.
-      pv <- handle(
-        with_handlers(
-          withVisible(
-            handle_value(output_handler, ev$value, ev$visible)
-          ),
-          handlers
-        )
+      pv <- with_handlers(
+        withVisible(
+          handle_value(output_handler, ev$value, ev$visible)
+        ),
+        handlers
       )
-      handle_output(TRUE)
+      watcher$capture_plot_and_output()
       # If the return value is visible, save the value to the output
       if (pv$visible) {
         watcher$push(pv$value)

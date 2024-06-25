@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* The package now depends on R 4.0.0 in order to decrease our maintenance burden.
 * `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
 * `evalute(include_timing)` has been deprecated. I can't find any use of it on GitHub, and it adds substantial code complexity for little gain.
 * `watchout()` is no longer exported; it's really an implementation detail that should never have been leaked to the public interface.
