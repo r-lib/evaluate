@@ -107,7 +107,7 @@ evaluate <- function(input,
           on_error = on_error,
           on_warning = on_warning,
           on_message = on_message,
-              output_handler = output_handler
+          output_handler = output_handler
         )
         TRUE
       },
