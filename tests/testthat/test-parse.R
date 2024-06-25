@@ -1,3 +1,9 @@
+test_that("can parse even if no expressions", {
+  expect_equal(parse_all("")$src, "")
+  expect_equal(parse_all("#")$src, "#")
+  expect_equal(parse_all("#\n\n")$src, c("#", ""))
+})
+
 test_that("every TLE has an implicit nl", {
   expect_equal(parse_all("x")$src, "x")
   expect_equal(parse_all("x\n")$src, "x")
@@ -32,6 +38,11 @@ test_that("recombines multi-expression TLEs", {
     expression(1 + 2, 3 + 4, 5),
     ignore_attr = "srcref"
   )
+})
+
+test_that("re-integrates lines without expressions", {
+  expect_equal(parse_all("1\n\n2")$src, c("1", "", "2"))
+  expect_equal(parse_all("1\n#\n2")$src, c("1", "#", "2"))
 })
 
 test_that("expr is always an expression", {

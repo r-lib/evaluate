@@ -51,21 +51,12 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
     exprs <- tryCatch(parse(text = x, srcfile = src), error = identity)
     if (inherits(exprs, 'error')) {
       return(structure(
-        data.frame(
-          src = paste(x, collapse = '\n'),
-          expr = I(list(expression()))
-        ),
+        data.frame(src = paste(x, collapse = '\n'), expr = empty_expr()),
         PARSE_ERROR = exprs
       ))
     }
   } else {
     exprs <- parse(text = x, srcfile = src)
-  }
-
-  # No code, only comments and/or empty lines
-  ne <- length(exprs)
-  if (ne == 0) {
-    return(data.frame(src = x, expr = I(rep(list(expression()), n))))
   }
 
   srcref <- attr(exprs, "srcref", exact = TRUE)
@@ -75,10 +66,10 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   )
   pos$exprs <- exprs
 
-  # parse() splits TLEs that use ; into multiple expressions so join back 
-  # together if an expression overlaps on the same line.
-  spl <- cumsum(c(TRUE, pos$start[-1] != pos$end[-ne]))
-  tles <- lapply(split(pos, spl), function(p) {
+  # parse() splits TLEs that use ; into multiple expressions so we 
+  # join together expressions that overlaps on the same line(s)
+  line_group <- cumsum(is_new_line(pos$start, pos$end))
+  tles <- lapply(split(pos, line_group), function(p) {
     n <- nrow(p)
     data.frame(
       src = paste(x[p$start[1]:p$end[n]], collapse = "\n"),
@@ -86,23 +77,21 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
       line = p$start[1]
     )
   })
+  tles <- do.call(rbind, tles)
 
-  # parse() also drops comments and whitespace so we add them back in
-  pos <- cbind(c(1, pos$end + 1), c(pos$start - 1, n))
-  pos <- pos[pos[, 1] <= pos[, 2], , drop = FALSE]
-  comments <- lapply(seq_len(nrow(pos)), function(i) {
-    p <- pos[i, ]
-    r <- p[1]:p[2]
-    data.frame(
-      src = x[r],
-      expr = I(rep(list(expression()), p[2] - p[1] + 1)),
-      line = r - 1
-    )
-  })
-
-  res <- do.call(rbind, c(tles, comments))
-  res <- res[order(res$line), ]
-  res$line <- NULL
+  # parse() drops comments and whitespace so we add them back in
+  gaps <- data.frame(start = c(1, pos$end + 1), end = c(pos$start - 1, n))
+  gaps <- gaps[gaps$start <= gaps$end, ,]
+  # in sequence(), nvec is equivalent to length.out
+  lines <- sequence(from = gaps$start, nvec = gaps$end - gaps$start + 1)
+  comments <- data.frame(
+    src = x[lines],
+    expr = empty_expr(length(lines)),
+    line = lines
+  )
+  
+  res <- rbind(tles, comments)
+  res <- res[order(res$line), c("src", "expr")]
   rownames(res) <- NULL
   res
 }
@@ -163,4 +152,20 @@ parse_all.call <- function(x, filename = NULL, ...) {
   out <- parse_all.default(x, filename = filename, ...)
   out$expr <- list(as.expression(x))
   out
+}
+
+# Helpers ---------------------------------------------------------------------
+
+empty_expr <- function(n = 1) {
+  I(rep(list(expression()), n))
+}
+
+is_new_line <- function(start, end) {
+  if (length(start) == 0) {
+    logical()
+  } else if (length(start) == 1) {
+    TRUE
+  } else {
+    c(TRUE, start[-1] != end[-length(end)])
+  }
 }
