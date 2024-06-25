@@ -136,17 +136,12 @@ evaluate_top_level_expression <- function(exprs,
   if (!is.null(source))
     watcher$push(source)
 
-  handle_output <- function(plot = TRUE) {
-    if (plot) watcher$capture_plot()
-    watcher$capture_output()
-  }
-
-  local_output_handler(function() handle_output(FALSE))
-  local_plot_hooks(handle_output)
+  local_output_handler(watcher$capture_output)
+  local_plot_hooks(watcher$capture_plot_and_output)
 
   # Handlers for warnings, errors and messages
   mHandler <- function(cnd) {
-    handle_output()
+    watcher$capture_plot_and_output()
     if (isTRUE(keep_message)) {
       watcher$push(cnd)
       output_handler$message(cnd)
@@ -165,7 +160,7 @@ evaluate_top_level_expression <- function(exprs,
       cat_line(format_condition(cnd), file = stderr())
     }
 
-    handle_output()
+    watcher$capture_plot_and_output()
     if (isTRUE(keep_warning)) {
       cnd <- reset_call(cnd)
       watcher$push(cnd)
@@ -176,7 +171,7 @@ evaluate_top_level_expression <- function(exprs,
     }
   }
   eHandler <- function(cnd) {
-    handle_output()
+    watcher$capture_plot_and_output()
     
     cnd <- reset_call(cnd)
     watcher$push(cnd)
@@ -198,7 +193,7 @@ evaluate_top_level_expression <- function(exprs,
       withVisible(eval(expr, envir)),
       handlers
     )
-    handle_output(TRUE)
+    watcher$capture_plot_and_output()
 
     if (show_value(output_handler, ev$visible)) {
       # Ideally we'd evaluate the print() generic in envir in order to find
@@ -211,7 +206,7 @@ evaluate_top_level_expression <- function(exprs,
         ),
         handlers
       )
-      handle_output(TRUE)
+      watcher$capture_plot_and_output()
       # If the return value is visible, save the value to the output
       if (pv$visible) {
         watcher$push(pv$value)
