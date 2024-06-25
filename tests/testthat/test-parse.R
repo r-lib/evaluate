@@ -16,6 +16,24 @@ test_that("a character vector is equivalent to a multi-line string", {
   expect_equal(parse_all(c("a", "b")), parse_all(c("a\nb")))
 })
 
+test_that("recombines multi-expression TLEs", {
+  expect_equal(
+    parse_all("1;2;3")$expr[[1]],
+    expression(1, 2, 3),
+    ignore_attr = "srcref"
+  )
+  expect_equal(
+    parse_all("1+\n2;3")$expr[[1]],
+    expression(1 + 2, 3),
+    ignore_attr = "srcref"
+  )
+  expect_equal(
+    parse_all("1+\n2;3+\n4; 5")$expr[[1]],
+    expression(1 + 2, 3 + 4, 5),
+    ignore_attr = "srcref"
+  )
+})
+
 test_that("expr is always an expression", {
   expect_equal(parse_all("#")$expr[[1]], expression())
   expect_equal(parse_all("1")$expr[[1]], expression(1), ignore_attr = "srcref")

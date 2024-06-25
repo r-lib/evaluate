@@ -71,31 +71,26 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   srcref <- attr(exprs, "srcref", exact = TRUE)
   pos <- data.frame(
     start = vapply(srcref, `[[`, 7, FUN.VALUE = integer(1)),
-    end = vapply(srcref, `[[`, 8, FUN.VALUE = integer(1)),
-    i = seq_along(srcref)
+    end = vapply(srcref, `[[`, 8, FUN.VALUE = integer(1))
   )
+  pos$exprs <- exprs
 
-  # Split line number pairs into groups: if the next start line is the same as
-  # the last end line, the two expressions must belong to the same group
+  # parse() splits TLEs that use ; into multiple expressions so join back 
+  # together if an expression overlaps on the same line.
   spl <- cumsum(c(TRUE, pos$start[-1] != pos$end[-ne]))
-  # Extract src lines and expressions for each group; also record the start line
-  # number of this group so we can re-order src/expr later
-  res <- lapply(split(pos, spl), function(p) {
+  tles <- lapply(split(pos, spl), function(p) {
     n <- nrow(p)
     data.frame(
       src = paste(x[p$start[1]:p$end[n]], collapse = "\n"),
-      expr = I(list(exprs[p$i])),
+      expr = I(list(p$exprs)),
       line = p$start[1]
     )
   })
 
-  # Now process empty expressions (comments/blank lines); see if there is a
-  # "gap" between the last end number + 1 and the next start number - 1
+  # parse() also drops comments and whitespace so we add them back in
   pos <- cbind(c(1, pos$end + 1), c(pos$start - 1, n))
   pos <- pos[pos[, 1] <= pos[, 2], , drop = FALSE]
-
-  # Extract src lines from the gaps, and assign empty expressions to them
-  res <- c(res, lapply(seq_len(nrow(pos)), function(i) {
+  comments <- lapply(seq_len(nrow(pos)), function(i) {
     p <- pos[i, ]
     r <- p[1]:p[2]
     data.frame(
@@ -103,9 +98,9 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
       expr = I(rep(list(expression()), p[2] - p[1] + 1)),
       line = r - 1
     )
-  }))
+  })
 
-  res <- do.call(rbind, res)
+  res <- do.call(rbind, c(tles, comments))
   res <- res[order(res$line), ]
   res$line <- NULL
   rownames(res) <- NULL
