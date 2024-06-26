@@ -92,8 +92,6 @@ evaluate <- function(input,
 
   # Capture output
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
-  local_output_handler(watcher$capture_output)
-  local_plot_hooks(watcher$capture_plot_and_output)
 
   # Handlers for warnings, errors and messages
   user_handlers <- output_handler$calling_handlers

@@ -100,6 +100,9 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
 
+  local_output_handler(capture_output, frame = frame)
+  local_plot_hooks(capture_plot_and_output, frame = frame)
+
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
