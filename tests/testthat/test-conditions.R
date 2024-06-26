@@ -104,8 +104,12 @@ test_that("log_warning causes warnings to be emitted", {
 
 # errors ----------------------------------------------------------------------
 
-test_that("all three starts of stop_on_error work as expected", {
+test_that("an error terminates evaluation of top-level expression", {
+  ev <- evaluate("stop('1'); 2\n3")
+  expect_output_types(ev, c("source", "error", "source", "text"))
+})
 
+test_that("all three starts of stop_on_error work as expected", {
   ev <- evaluate_('stop("1")\n2', stop_on_error = 0L)
   expect_output_types(ev, c("source", "error", "source", "text"))
 
