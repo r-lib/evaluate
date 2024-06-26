@@ -92,3 +92,27 @@ test_that("check_stop_on_error converts integer to enum", {
 
   expect_snapshot(check_stop_on_error(4), error = TRUE)
 })
+
+test_that("check_keep converts to logical as expected", {
+  expect_true(check_keep(TRUE)$capture)
+  expect_false(check_keep(NA)$capture)
+  expect_false(check_keep(FALSE)$capture)
+  
+  expect_true(check_keep(TRUE)$silence)
+  expect_false(check_keep(NA)$silence)
+  expect_true(check_keep(FALSE)$silence)
+})
+
+test_that("check_keep can integrate log option", {
+  # logging means we never silence the ouptut
+  expect_false(check_keep(TRUE, log = TRUE)$silence)
+  expect_false(check_keep(NA, log = TRUE)$silence)
+  expect_false(check_keep(FALSE, log = TRUE)$silence)
+})
+
+test_that("check_keep errors with bad inputs", {
+  expect_snapshot(error = TRUE, {
+    check_keep(1, "keep_message")
+    check_keep(c(TRUE, FALSE), "keep_message")
+  })
+})

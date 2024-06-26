@@ -43,12 +43,19 @@ and you will get back all results up to that point.
 results.
 }}
 
-\item{keep_warning, keep_message}{whether to record warnings and messages; if
-\code{FALSE}, messages will be suppressed; if \code{NA}, they will not be captured
-(normally they will be sent to the console). Note that if the environment
-variable \code{R_EVALUATE_BYPASS_MESSAGES} is set to true, these arguments will
-always be set to \code{NA}, meaning that messages will not be captured by this
-function.}
+\item{keep_warning, keep_message}{A single logical value that controls what
+happens to warnings and messages.
+\itemize{
+\item If \code{TRUE}, the default, warnings and messages will be captured in the
+output.
+\item If \code{NA}, warnings and messages will not be captured and bubble up to
+the calling environment of \code{evaluate()}.
+\item If \code{FALSE}, warnings and messages will be completed supressed and
+not shown anywhere.
+}
+
+Note that setting the envvar \code{R_EVALUATE_BYPASS_MESSAGES} to \code{true} will
+force these arguments to be set to \code{NA}.}
 
 \item{log_echo, log_warning}{If \code{TRUE}, will immediately log code and
 warnings (respectively) to \code{stderr}.}

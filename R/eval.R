@@ -24,12 +24,18 @@
 #'     and you will get back all results up to that point. 
 #'   * If `2`, evaluation will halt on first error and you will get back no 
 #'     results.
-#' @param keep_warning,keep_message whether to record warnings and messages; if
-#'   `FALSE`, messages will be suppressed; if `NA`, they will not be captured
-#'   (normally they will be sent to the console). Note that if the environment
-#'   variable `R_EVALUATE_BYPASS_MESSAGES` is set to true, these arguments will
-#'   always be set to `NA`, meaning that messages will not be captured by this
-#'   function.
+#' @param keep_warning,keep_message A single logical value that controls what
+#'   happens to warnings and messages.
+#' 
+#'   * If `TRUE`, the default, warnings and messages will be captured in the
+#'     output.
+#'   * If `NA`, warnings and messages will not be captured and bubble up to
+#'     the calling environment of `evaluate()`.
+#'   * If `FALSE`, warnings and messages will be completed supressed and
+#'     not shown anywhere.
+#'     
+#'  Note that setting the envvar `R_EVALUATE_BYPASS_MESSAGES` to `true` will 
+#'  force these arguments to be set to `NA`.
 #' @param log_echo,log_warning If `TRUE`, will immediately log code and
 #'   warnings (respectively) to `stderr`.
 #' @param new_device if `TRUE`, will open a new graphics device and
@@ -62,6 +68,8 @@ evaluate <- function(input,
     keep_message <- NA 
     keep_warning <- NA
   }
+  on_message <- check_keep(keep_message, "keep_message")
+  on_warning <- check_keep(keep_warning, "keep_warning", log_warning)
 
   output_handler <- output_handler %||% default_output_handler
 
@@ -97,9 +105,8 @@ evaluate <- function(input,
           watcher = watcher,
           envir = envir,
           on_error = on_error,
-          keep_warning = keep_warning,
-          keep_message = keep_message,
-          log_warning = log_warning,
+          on_warning = on_warning,
+          on_message = on_message,
           output_handler = output_handler
         )
         TRUE
@@ -126,8 +133,8 @@ evaluate_top_level_expression <- function(exprs,
                                           watcher,
                                           envir = parent.frame(),
                                           on_error = "continue",
-                                          keep_warning = TRUE,
-                                          keep_message = TRUE,
+                                          on_warning,
+                                          on_message,
                                           log_warning = FALSE,
                                           output_handler = new_output_handler()) {
   stopifnot(is.expression(exprs))
@@ -142,11 +149,12 @@ evaluate_top_level_expression <- function(exprs,
   # Handlers for warnings, errors and messages
   mHandler <- function(cnd) {
     watcher$capture_plot_and_output()
-    if (isTRUE(keep_message)) {
+    
+    if (on_message$capture) {
       watcher$push(cnd)
       output_handler$message(cnd)
-      invokeRestart("muffleMessage")
-    } else if (isFALSE(keep_message)) {
+    }
+    if (on_message$silence) {
       invokeRestart("muffleMessage")
     }
   }
@@ -156,17 +164,13 @@ evaluate_top_level_expression <- function(exprs,
     # do not handle warnings that have been completely silenced
     if (getOption("warn") < 0) return()
 
-    if (log_warning) {
-      cat_line(format_condition(cnd), file = stderr())
-    }
-
     watcher$capture_plot_and_output()
-    if (isTRUE(keep_warning)) {
+    if (on_warning$capture) {
       cnd <- reset_call(cnd)
       watcher$push(cnd)
       output_handler$warning(cnd)
-      invokeRestart("muffleWarning")
-    } else if (isFALSE(keep_warning)) {
+    }
+    if (on_warning$silence) {
       invokeRestart("muffleWarning")
     }
   }
@@ -243,5 +247,16 @@ check_stop_on_error <- function(x) {
       return("error")
     }
   }
-  stop("`stop_on_error` must be 0, 1, or 2 ", call. = FALSE)
+  stop("`stop_on_error` must be 0, 1, or 2.", call. = FALSE)
+}
+
+check_keep <- function(x, arg, log = FALSE) {
+  if (!is.logical(x) || length(x) != 1) {
+    stop("`", arg, "` must be TRUE, FALSE, or NA.", call. = FALSE)
+  }
+
+  list(
+    capture = isTRUE(x),
+    silence = !is.na(x) && !log
+  )
 }

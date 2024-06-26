@@ -90,19 +90,16 @@ test_that("all three states of keep_warning work as expected", {
   expect_output_types(ev, "source")
 })
 
-test_that("log_warning causes warnings to be immediately written to stderr()", {
+test_that("log_warning causes warnings to be emitted", {
   f <- function() {
     warning("Hi!", immediate. = TRUE)
   }
-  out <- capture.output(
-    res <- evaluate("f()", log_warning = TRUE),
-    type = "message"
-  )
-  expect_equal(out, c("Warning in f():", "Hi!"))
+  expect_snapshot(ev <- evaluate("f()", log_warning = TRUE))
 
-  # But still recorded in eval result
-  expect_equal(res[[1]]$src, "f()")
-  expect_equal(res[[2]], simpleWarning("Hi!", quote(f())))
+  # And still recorded in eval result
+  expect_output_types(ev, c("source", "warning"))
+  expect_equal(ev[[1]]$src, "f()")
+  expect_equal(ev[[2]], simpleWarning("Hi!", quote(f())))
 })
 
 # errors ----------------------------------------------------------------------
