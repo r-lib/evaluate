@@ -31,6 +31,15 @@
       Error in f():
       4
 
+# replace nicely formats multiple lines
+
+    Code
+      replay(ev)
+    Output
+      > 1 + 
+      +  2
+      [1] 3
+
 # format_condition handles different types of warning
 
     Code

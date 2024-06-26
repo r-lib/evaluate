@@ -33,6 +33,22 @@ test_that("replay handles rlang conditions", {
   expect_snapshot(replay(ev))
 })
 
+test_that("replace nicely formats multiple lines", {
+  ev <- evaluate("1 + \n 2")
+  expect_snapshot(replay(ev))
+})
+
+test_that("can replay plots", {
+  ev <- evaluate("plot(1)")
+
+  path <- withr::local_tempfile()
+  pdf(path)
+  expect_output(replay(ev))
+  dev.off()
+
+  expect_true(file.exists(path))
+})
+
 test_that("format_condition handles different types of warning", {
   expect_snapshot({
     w1 <- simpleWarning("This is a warning")
