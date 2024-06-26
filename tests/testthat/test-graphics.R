@@ -4,21 +4,21 @@ test_that("single plot is captured", {
 })
 
 test_that("plot additions are captured", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     plot(1:10)
     lines(1:10)
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "source", "plot"))
 })
 
 test_that("blank plots created by plot.new() are preserved", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     plot.new()
     plot(1:10)
     plot.new()
     plot(1:10)
     plot.new()
-  ")
+  })
   expect_output_types(ev, rep(c("source", "plot"), 5))
 })
 
@@ -31,13 +31,13 @@ test_that("evaluate doesn't open plots or create files", {
 })
 
 test_that("base plots in a single expression are captured", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     {
       plot(rnorm(100))
       plot(rnorm(100))
       plot(rnorm(100))
     }
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "plot", "plot"))
 })
 
@@ -48,11 +48,11 @@ test_that("captures ggplots", {
   )
   expect_output_types(ev, c("source", "plot"))
 
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     for (j in 1:2) {
       print(ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) + ggplot2::geom_point())
     }
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "plot"))
 })
 
@@ -60,45 +60,47 @@ test_that("erroring ggplots should not be recorded", {
   skip_if_not_installed("ggplot2")
   
   # error in aesthetics
-  ev <- evaluate_("
-    ggplot2::ggplot(iris, ggplot2::aes(XXXXXXXXXX, Sepal.Length) + ggplot2::geom_boxplot()
-  ")
+  ev <- evaluate(function() {
+    ggplot2::ggplot(iris, ggplot2::aes(XXXXXXXXXX, Sepal.Length)) + 
+      ggplot2::geom_boxplot()
+  })
   expect_output_types(ev, c("source", "error"))
   
   # error in geom
-  ev <- evaluate_("
-    ggplot2::ggplot(iris, ggplot2::aes(Species, Sepal.Length)) + ggplot2::geom_bar()
-  ")
+  ev <- evaluate(function() {
+    ggplot2::ggplot(iris, ggplot2::aes(Species, Sepal.Length)) + 
+      ggplot2::geom_bar()
+  })
   expect_output_types(ev, c("source", "error"))
 })
 
 test_that("multirow graphics are captured only when complete", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     par(mfrow = c(1, 2))
     plot(1)
     plot(2)
-  ")
+  })
   expect_output_types(ev, c("source", "source", "source", "plot"))
 })
 
 test_that("multirow graphics are captured on close even if not complete", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     par(mfrow = c(1, 2))
     plot(1)
-  ")
+  })
   expect_output_types(ev, c("source", "source", "plot"))
 
   # Even if there's a comment at the end
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     par(mfrow = c(1, 2))
     plot(1)
     # comment
-  ")
+  })
   expect_output_types(ev, c("source", "source", "source", "plot"))
 })
 
 test_that("plots are captured in a non-rectangular layout", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     for (j in 1:3) {
       layout(matrix(c(1, 2, 1, 3, 4, 4), 3, 2, byrow = TRUE))
       plot(rnorm(10))
@@ -106,10 +108,10 @@ test_that("plots are captured in a non-rectangular layout", {
       plot(rnorm(10))
       plot(rnorm(10))
     }
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "plot", "plot"))
 
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     layout(matrix(c(1, 2, 1, 3, 4, 4), 3, 2, byrow = TRUE))
     # another expression before drawing the plots
     x <- 1 + 1
@@ -119,42 +121,42 @@ test_that("plots are captured in a non-rectangular layout", {
       plot(rnorm(10))
       plot(rnorm(10))
     }
-  ")
+  })
   expect_output_types(ev, rep(c("source", "plot"), c(4, 2)))
 })
 
 test_that("changes in parameters don't generate new plots", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     plot(1)
     par(mar = rep(0, 4))
     plot(2)
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "source", "source", "plot"))
 })
 
 test_that("multiple plots are captured even if calls in DL are the same", {
-  ev <- evaluate_('
+  ev <- evaluate(function() {
     barplot(1)
     barplot(2); barplot(3)
-  ')
+  })
   expect_output_types(ev, c("source", "plot", "source", "plot", "plot"))
 })
 
 test_that("strwidth()/strheight() should not produce new plots", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     x <- strwidth('foo', 'inches')
     y <- strheight('foo', 'inches')
     plot(1)
-  ")
+  })
   expect_output_types(ev, c("source", "source", "source", "plot"))
 })
 
 test_that("clip() does not produce new plots", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     plot(1)
     clip(-1, 1, -1, 1)
     points(1, col = 'red')
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "source", "source", "plot"))
 })
 
@@ -165,11 +167,11 @@ test_that("perspective plots are captured", {
   z <- outer(x, y, ff)
   z[is.na(z)] <- 1
 
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     for (i in 1:3) {
       persp(x, y, z, phi = 30 + i * 10, theta = 30)
     }
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "plot", "plot"))
 })
 
@@ -211,11 +213,11 @@ test_that("evaluate restores existing plot", {
 })
 
 test_that("evaluate ignores plots created in new device", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     pdf(NULL)
     plot(1)
     invisible(dev.off())
     plot(1)
-  ")
+  })
   expect_output_types(ev, c("source", "source", "source", "source", "plot"))
 })

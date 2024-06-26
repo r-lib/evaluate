@@ -142,33 +142,8 @@ parse_all.connection <- function(x, filename = NULL, ...) {
 
 #' @export
 parse_all.function <- function(x, filename = NULL, ...) {
-  src <- attr(x, "srcref", exact = TRUE)
-  if (is.null(src)) {
-    src <- deparse(body(x))
-    # Remove { and }
-    n <- length(src)
-    if (n >= 2) src <- src[-c(1, n)]
-    if (is.null(filename))
-      filename <- "<function>"
-    parse_all(src, filename, ...)
-  } else {
-    src2 <- attr(body(x), "srcref", exact = TRUE)
-    n <- length(src2)
-    if (n > 0) {
-      if (is.null(filename))
-        filename <- attr(src, 'srcfile')$filename
-      if (n >= 2) {
-        parse_all(unlist(lapply(src2[-1], as.character)), filename, ...)
-      } else  {
-        # f <- function(...) {}
-        parse_all(character(0), filename, ...)
-      }
-    } else {
-      if (is.null(filename))
-        filename <- "<function>"
-      parse_all(deparse(body(x)), filename, ...)
-    }
-  }
+  filename <- filename %||% "<filename>"
+  parse_all(find_function_body(x), filename = filename, ...)
 }
 
 #' @export
@@ -184,4 +159,24 @@ parse_all.call <- function(x, filename = NULL, ...) {
   out <- parse_all.default(x, filename = filename, ...)
   out$expr <- list(as.expression(x))
   out
+}
+
+find_function_body <- function(f) {
+  if (is_call(body(f), "{")) {
+    lines <- deparse(f, control = "useSource")
+    expr <- parse(text = lines, keep.source = TRUE)
+    
+    data <- getParseData(expr)
+    token_start <- which(data$token == "'{'")[[1]]
+    token_end <- last(which(data$token == "'}'"))
+
+    line_start <- data$line1[token_start] + 1
+    line_end <- data$line2[token_end] - 1
+    lines <- lines[seq2(line_start, line_end)]
+
+    dedent <- min(data$col1[seq2(token_start + 1, token_end - 1)], 1e3) 
+    substr(lines, dedent, nchar(lines))
+  } else {
+    deparse(body(f))
+  }
 }
