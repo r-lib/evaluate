@@ -116,12 +116,15 @@ results.</p></li>
 
 
 <dt>keep_warning, keep_message</dt>
-<dd><p>whether to record warnings and messages; if
-<code>FALSE</code>, messages will be suppressed; if <code>NA</code>, they will not be captured
-(normally they will be sent to the console). Note that if the environment
-variable <code>R_EVALUATE_BYPASS_MESSAGES</code> is set to true, these arguments will
-always be set to <code>NA</code>, meaning that messages will not be captured by this
-function.</p></dd>
+<dd><p>A single logical value that controls what
+happens to warnings and messages.</p><ul><li><p>If <code>TRUE</code>, the default, warnings and messages will be captured in the
+output.</p></li>
+<li><p>If <code>NA</code>, warnings and messages will not be captured and bubble up to
+the calling environment of <code>evaluate()</code>.</p></li>
+<li><p>If <code>FALSE</code>, warnings and messages will be completed supressed and
+not shown anywhere.</p></li>
+</ul><p>Note that setting the envvar <code>R_EVALUATE_BYPASS_MESSAGES</code> to <code>true</code> will
+force these arguments to be set to <code>NA</code>.</p></dd>
 
 
 <dt>log_echo, log_warning</dt>
