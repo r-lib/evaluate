@@ -92,57 +92,6 @@ evaluate <- function(input,
 
   # Capture output
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
-
-  for (i in seq_len(nrow(parsed))) {
-    if (log_echo || debug) {
-      cat_line(parsed$src[[i]], file = stderr())
-    }
-    continue <- withRestarts(
-      {
-        evaluate_top_level_expression(
-          exprs = parsed$expr[[i]],
-          src = parsed$src[[i]],
-          watcher = watcher,
-          envir = envir,
-          on_error = on_error,
-          on_warning = on_warning,
-          on_message = on_message,
-          output_handler = output_handler
-        )
-        TRUE
-      },
-      eval_continue = function() TRUE,
-      eval_stop = function() FALSE,
-      eval_error = function(cnd) stop(cnd)
-    )
-    watcher$check_devices()
-
-    if (!continue) {
-      break
-    }
-  }
-
-  # Always capture last plot, even if incomplete
-  watcher$capture_plot(TRUE)
-
-  watcher$get()
-}
-
-evaluate_top_level_expression <- function(exprs,
-                                          src,
-                                          watcher,
-                                          envir = parent.frame(),
-                                          on_error = "continue",
-                                          on_warning,
-                                          on_message,
-                                          log_warning = FALSE,
-                                          output_handler = new_output_handler()) {
-  stopifnot(is.expression(exprs))
-
-  source <- new_source(src, exprs[[1]], output_handler$source)
-  if (!is.null(source))
-    watcher$push(source)
-
   local_output_handler(watcher$capture_output)
   local_plot_hooks(watcher$capture_plot_and_output)
 
@@ -157,12 +106,50 @@ evaluate_top_level_expression <- function(exprs,
   )
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
+  
+  for (i in seq_len(nrow(parsed))) {
+    source <- new_source(parsed$src[[i]], parsed$expr[[i]][[1]], output_handler$source)
+    if (!is.null(source)) {
+      watcher$push(source)
+    }
+    if (debug || log_echo) {
+      cat_line(parsed$src[[i]], file = stderr())
+    }
+
+    continue <- withRestarts(
+      {
+        with_handlers(
+          evaluate_top_level_expression(
+            exprs = parsed$expr[[i]],
+            watcher = watcher,
+            output_handler = output_handler,
+            envir = envir
+          ),
+          handlers
+        )
+        TRUE
+      },
+      eval_continue = function() TRUE,
+      eval_stop = function() FALSE,
+      eval_error = function(cnd) stop(cnd)
+    )
+    watcher$check_devices()
+
+    if (!continue) {
+      break
+    }
+  }
+  # Always capture last plot, even if incomplete
+  watcher$capture_plot(TRUE)
+
+  watcher$get()
+}
+
+evaluate_top_level_expression <- function(exprs, watcher, envir, output_handler) {
+  stopifnot(is.expression(exprs))
 
   for (expr in exprs) {
-    ev <- with_handlers(
-      withVisible(eval(expr, envir)),
-      handlers
-    )
+    ev <- withVisible(eval(expr, envir))
     watcher$capture_plot_and_output()
 
     if (show_value(output_handler, ev$visible)) {
@@ -170,12 +157,7 @@ evaluate_top_level_expression <- function(exprs,
       # any methods registered in that environment. That, however, is 
       # challenging and only makes a few tests a little simpler so we don't
       # bother.
-      pv <- with_handlers(
-        withVisible(
-          handle_value(output_handler, ev$value, ev$visible)
-        ),
-        handlers
-      )
+      pv <- withVisible(handle_value(output_handler, ev$value, ev$visible))
       watcher$capture_plot_and_output()
       # If the return value is visible, save the value to the output
       if (pv$visible) {
