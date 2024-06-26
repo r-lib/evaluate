@@ -116,18 +116,17 @@ evaluate <- function(input,
     }
 
     continue <- withRestarts(
-      {
-        with_handlers(
-          evaluate_top_level_expression(
-            exprs = parsed$expr[[i]],
-            watcher = watcher,
-            output_handler = output_handler,
-            envir = envir
-          ),
-          handlers
-        )
-        TRUE
-      },
+      with_handlers(
+        {
+          for (expr in parsed$expr[[i]]) {
+            ev <- withVisible(eval(expr, envir))
+            watcher$capture_plot_and_output()
+            watcher$print_value(ev$value, ev$visible)
+          }
+          TRUE
+        },
+        handlers
+      ),
       eval_continue = function() TRUE,
       eval_stop = function() FALSE,
       eval_error = function(cnd) stop(cnd)
@@ -142,30 +141,6 @@ evaluate <- function(input,
   watcher$capture_plot(TRUE)
 
   watcher$get()
-}
-
-evaluate_top_level_expression <- function(exprs, watcher, envir, output_handler) {
-  stopifnot(is.expression(exprs))
-
-  for (expr in exprs) {
-    ev <- withVisible(eval(expr, envir))
-    watcher$capture_plot_and_output()
-
-    if (show_value(output_handler, ev$visible)) {
-      # Ideally we'd evaluate the print() generic in envir in order to find
-      # any methods registered in that environment. That, however, is 
-      # challenging and only makes a few tests a little simpler so we don't
-      # bother.
-      pv <- withVisible(handle_value(output_handler, ev$value, ev$visible))
-      watcher$capture_plot_and_output()
-      # If the return value is visible, save the value to the output
-      if (pv$visible) {
-        watcher$push(pv$value)
-      }
-    }
-  }
-
-  invisible()
 }
 
 check_stop_on_error <- function(x) {

@@ -74,6 +74,22 @@ watchout <- function(handler = new_output_handler(),
     capture_output()
   }
 
+  print_value <- function(value, visible) {
+    if (!show_value(handler, visible)) 
+      return()
+    
+    # Ideally we'd evaluate the print() generic in envir in order to find
+    # any methods registered in that environment. That, however, is 
+    # challenging and only makes a few tests a little simpler so we don't
+    # bother.
+    pv <- withVisible(handle_value(handler, value, visible))
+    capture_plot_and_output()
+    # If the return value is visible, save the value to the output
+    if (pv$visible) {
+      push(pv$value)
+    }
+  }
+
   check_devices <- function() {
     # if dev.off() was called, make sure to restore device to the one opened 
     # when watchout() was called
@@ -90,6 +106,7 @@ watchout <- function(handler = new_output_handler(),
     capture_plot_and_output = capture_plot_and_output,
     check_devices = check_devices,
     push = push,
+    print_value = print_value,
     get = function() new_evaluation(output)
   )
 }
