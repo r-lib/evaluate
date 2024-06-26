@@ -143,7 +143,7 @@ evaluate_top_level_expression <- function(exprs,
   if (!is.null(source))
     watcher$push(source)
 
-  local_output_handler(watcher$capture_output)
+  local_console_flusher(watcher$capture_output)
   local_plot_hooks(watcher$capture_plot_and_output)
 
   # Handlers for warnings, errors and messages
