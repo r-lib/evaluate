@@ -29,7 +29,7 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
   push_source <- function(src, tle) {
-    source <- new_source(src, tle[[1]], handler$source)
+    source <- new_source(src, tle, handler$source)
     if (!is.null(source)) {
       push(source)
     }

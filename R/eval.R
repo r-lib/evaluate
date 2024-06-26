@@ -77,12 +77,14 @@ evaluate <- function(input,
     warning("`evaluate(include_timing)` is deprecated")
   }
 
+  # Capture output
+  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
+
   parsed <- parse_all(input, filename, on_error != "error")
   if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
-    source <- new_source(parsed$src, expression(), output_handler$source)
-    output_handler$error(err)
-    err$call <- NULL  # the call is unlikely to be useful
-    return(new_evaluation(list(source, err)))
+    watcher$push_source(parsed$src, expression())
+    watcher$push(err)
+    return(watcher$get())
   }
 
   if (is.list(envir)) {
@@ -90,8 +92,6 @@ evaluate <- function(input,
   }
   local_inject_funs(envir)
 
-  # Capture output
-  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
   # Handlers for warnings, errors and messages
   user_handlers <- output_handler$calling_handlers

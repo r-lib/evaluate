@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* The `source` output handler is now parsed the entire top-level expression, not just the first component.
 * `evaluate()` will now terminate on the first error in a top-level expression. This matches R's own behaviour more closely.
 * The package now depends on R 4.0.0 in order to decrease our maintenance burden.
 * `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
