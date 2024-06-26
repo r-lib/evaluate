@@ -28,6 +28,12 @@ watchout <- function(handler = new_output_handler(),
 
     invisible()
   }
+  push_source <- function(src, tle) {
+    source <- new_source(src, tle[[1]], handler$source)
+    if (!is.null(source)) {
+      push(source)
+    }
+  }
 
   # record current devices for plot handling
   last_plot <- NULL
@@ -109,6 +115,7 @@ watchout <- function(handler = new_output_handler(),
     capture_plot_and_output = capture_plot_and_output,
     check_devices = check_devices,
     push = push,
+    push_source = push_source,
     print_value = print_value,
     get = function() new_evaluation(output)
   )

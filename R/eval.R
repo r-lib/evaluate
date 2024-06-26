@@ -105,10 +105,7 @@ evaluate <- function(input,
   handlers <- c(user_handlers, evaluate_handlers)
   
   for (i in seq_len(nrow(parsed))) {
-    source <- new_source(parsed$src[[i]], parsed$expr[[i]][[1]], output_handler$source)
-    if (!is.null(source)) {
-      watcher$push(source)
-    }
+    watcher$push_source(parsed$src[[i]], parsed$expr[[i]])
     if (debug || log_echo) {
       cat_line(parsed$src[[i]], file = stderr())
     }
