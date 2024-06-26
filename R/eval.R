@@ -99,7 +99,6 @@ evaluate <- function(input,
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- condition_handlers(
     watcher,
-    output_handler,
     on_error = on_error,
     on_warning = on_warning,
     on_message = on_message

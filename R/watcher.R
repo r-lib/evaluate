@@ -17,6 +17,15 @@ watchout <- function(handler = new_output_handler(),
   push <- function(value) {
     output[i] <<- list(value)
     i <<- i + 1
+
+    switch(output_type(value),
+      plot = handler$graphics(value),
+      text = handler$text(value),
+      message = handler$message(value),
+      warning = handler$warning(value),
+      error = handler$error(value)
+    )
+
     invisible()
   }
 
@@ -48,7 +57,6 @@ watchout <- function(handler = new_output_handler(),
     }
 
     last_plot <<- plot
-    handler$graphics(plot)
     push(plot)
     invisible()
   }
@@ -57,7 +65,6 @@ watchout <- function(handler = new_output_handler(),
     out <- sink_con()
     if (!is.null(out)) {
       push(out)
-      handler$text(out)
     }
     invisible()
   }

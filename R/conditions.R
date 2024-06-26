@@ -1,11 +1,10 @@
-condition_handlers <- function(watcher, output_handler, on_error, on_warning, on_message) {
+condition_handlers <- function(watcher, on_error, on_warning, on_message) {
   list(
     message = function(cnd) {
       watcher$capture_plot_and_output()
       
       if (on_message$capture) {
         watcher$push(cnd)
-        output_handler$message(cnd)
       }
       if (on_message$silence) {
         invokeRestart("muffleMessage")
@@ -21,7 +20,6 @@ condition_handlers <- function(watcher, output_handler, on_error, on_warning, on
       if (on_warning$capture) {
         cnd <- reset_call(cnd)
         watcher$push(cnd)
-        output_handler$warning(cnd)
       }
       if (on_warning$silence) {
         invokeRestart("muffleWarning")
