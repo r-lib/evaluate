@@ -21,6 +21,19 @@ test_that("preserves trailing nl", {
   expect_equal(parse_all("\n\n")$src, c("\n", "\n"))
 })
 
+test_that("empty lines are never silently dropped", {
+  # It's not possible to simulate problem directly from code, but it can occur 
+  # in knitr
+  # ```{r, tidy = TRUE}`
+  # for (i in 1) {}
+  # # two blank lines below
+  # 
+  # 
+  # 1
+  # ```
+  expect_equal(parse_all(c("\n", "", "1"))$src, c("\n", "\n", "1"))
+})
+
 test_that("a character vector is equivalent to a multi-line string", {
   expect_equal(parse_all(c("a", "b")), parse_all(c("a\nb")))
 })

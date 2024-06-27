@@ -40,6 +40,8 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   if (any(grepl("\n", x))) {
     # Track whether or not last element has a newline
     trailing_nl <- grepl("\n$", x[length(x)])
+    # Ensure that empty lines are not dropped by strsplit()
+    x[x == ""] <- "\n"
     # Standardise to a character vector with one line per element;
     # this is the input that parse() is documented to accept
     x <- unlist(strsplit(x, "\n"), recursive = FALSE, use.names = FALSE)
