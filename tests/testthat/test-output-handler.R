@@ -60,14 +60,15 @@ test_that("source handled called correctly when src is unparseable", {
 test_that("return value of value handler inserted directly in output list", {
   skip_if_not_installed("ggplot2")
 
-  ev <- evaluate_('
-    rnorm(10)
-    x <- list("I\'m a list!")
-    suppressPackageStartupMessages(library(ggplot2))
-    ggplot(mtcars, aes(mpg, wt)) + geom_point()
-  ', output_handler = new_output_handler(value = identity)
+  ev <- evaluate(
+    function() {
+      rnorm(10)
+      x <- list("I\'m a list!")
+      ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt))
+    },
+    output_handler = new_output_handler(value = identity)
   )
-  expect_output_types(ev, c("source", "numeric", "source", "source", "source", "gg"))
+  expect_output_types(ev, c("source", "numeric", "source", "source", "gg"))
 })
 
 test_that("invisible values can also be saved if value handler has two arguments", {
@@ -96,4 +97,3 @@ test_that("user can register calling handlers", {
   evaluate("stop('tilt')", stop_on_error = 0, output_handler = out_hnd)
   expect_s3_class(handled, "error")
 })
-

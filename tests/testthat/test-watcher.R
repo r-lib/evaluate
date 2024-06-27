@@ -3,7 +3,7 @@ test_that("capture messages in try() (#88)", {
   f <- function(x) stop(paste0("Obscure ", x))
   g <- function() f("error")
 
-  ev <- evaluate_('try(g())')
+  ev <- evaluate('try(g())')
   expect_output_types(ev, c("source", "text"))
   expect_match(ev[[2]], "Obscure error")
 })
@@ -39,7 +39,11 @@ test_that("evaluate recovers from closed sink", {
 
 test_that("unbalanced sink doesn't break evaluate", {
   path <- withr::local_tempfile()
-  ev <- evaluate("sink(path)\n1\n1")
+  ev <- evaluate(function() {
+    sink(path)
+    1
+    1
+  })
   expect_output_types(ev, c("source", "source", "source"))
 })
 

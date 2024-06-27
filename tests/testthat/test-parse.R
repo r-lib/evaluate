@@ -7,18 +7,6 @@ test_that("expr is always an expression", {
   expect_equal(lengths(parsed$expr), c(0, 1, 2))
 })
 
-test_that("{ not removed", {
-
-  f <- function() {
-    for (i in 1:3) {
-      plot(rnorm(100))
-      lines(rnorm(100))
-    }
-  }
-
-  expect_equal(nrow(parse_all(f)), 1)
-})
-
 test_that("parse(allow_error = TRUE/FALSE)", {
   expect_error(parse_all('x <-', allow_error = FALSE))
   res <- parse_all('x <-', allow_error = TRUE)
@@ -40,4 +28,55 @@ if (isTRUE(l10n_info()[['UTF-8']])) {
 
 test_that("can ignore parse errors", {
   expect_error(evaluate('x <-', stop_on_error = 0), NA)
+})
+
+# find_function_body -----------------------------------------------------------
+
+test_that("parsing a function parses its body", {
+  out <- parse_all(function() {
+    # Hi
+    1 + 1
+  })
+  expect_equal(out$src, c("# Hi\n", "1 + 1"))
+})
+
+test_that("dedents function body", {
+  f <- function() {
+    1 + 1
+  }
+  expect_equal(find_function_body(f), "1 + 1")
+})
+
+test_that("preserves src if possible", {
+  f <- function() {
+    1 +  1 # hi
+  }
+  expect_equal(find_function_body(f), "1 +  1 # hi")
+
+  f <- removeSource(f)
+  expect_equal(find_function_body(f), "1 + 1")
+})
+
+test_that("isn't flumoxed by nested parens", {
+  f <- function() {
+    {
+      1 + 1
+    }
+  }
+  expect_equal(find_function_body(f), c("{", "  1 + 1", "}")) 
+})
+
+test_that("works if no parens", {
+  f <- function() 1 + 1
+  expect_equal(find_function_body(f), "1 + 1")
+
+  f <- function() (
+    1 + 1
+  )
+  expect_equal(find_function_body(f), "(1 + 1)")
+})
+
+test_that("can handle empty body", {
+  f <- function() {}
+  expect_equal(find_function_body(f), character())
 })
