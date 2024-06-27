@@ -19,14 +19,17 @@ test_that("parse(allow_error = TRUE/FALSE)", {
 test_that("double quotes in Chinese characters not destroyed", {
   skip_if_not(l10n_info()[['UTF-8']])
 
-  expect_identical(parse_all(c('1+1', '"你好"'))[2, 1], '"你好"')
+  out <- parse_all(c('1+1', '"你好"'))
+  expect_equal(out$src[[2]], '"你好"')
+  expect_equal(out$expr[[2]], expression("你好"), ignore_attr = "srcref")
 })
 
-test_that("multibyte characters are parsed correct", {
+test_that("multibyte characters are parsed correctly", {
   skip_if_not(l10n_info()[['UTF-8']])
   
   code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
-  expect_identical(parse_all(code)$src, append_break(code))
+  out <- parse_all(code)
+  expect_equal(out$src, paste0(code, c("\n", "")))
 })
 
 # find_function_body -----------------------------------------------------------
