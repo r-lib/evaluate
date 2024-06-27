@@ -11,12 +11,15 @@
     Code
       replay(ev)
     Output
-      > f()
+      > print("1")
       [1] "1"
+      > message("2")
       2
-      Warning in f():
+      > warning("3")
+      Warning:
       3
-      Error in f():
+      > stop("4")
+      Error:
       4
 
 # replay handles rlang conditions
@@ -24,12 +27,23 @@
     Code
       replay(ev)
     Output
-      > f()
+      > rlang::inform("2")
       2
+      > rlang::warn("3")
       Warning:
       3
-      Error in f():
+      > rlang::abort("4", call = NULL)
+      Error:
       4
+
+# replace nicely formats multiple lines
+
+    Code
+      replay(ev)
+    Output
+      > 1 + 
+      +  2
+      [1] 3
 
 # format_condition handles different types of warning
 

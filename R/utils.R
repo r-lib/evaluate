@@ -16,10 +16,23 @@ defer <- function(expr, frame = parent.frame(), after = FALSE) {
 
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
-compact <- function(x) {
-  x[!vapply(x, is.null, logical(1))]
-}
-
 env_var_is_true <- function(x) {
   isTRUE(as.logical(Sys.getenv(x, "false")))
+}
+
+is_call <- function(x, name) {
+  if (!is.call(x)) {
+    return(FALSE)
+  }
+  is.name(x[[1]]) && as.character(x[[1]]) %in% name
+}
+
+last <- function(x) x[length(x)]
+
+seq2 <- function(start, end, by = 1) {
+  if (start > end) {
+    integer()
+  } else {
+    seq(start, end, by = 1)
+  }
 }

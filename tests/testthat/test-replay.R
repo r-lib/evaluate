@@ -11,26 +11,38 @@ test_that("replay() should work when print() returns visible NULLs", {
 })
 
 test_that("replay handles various output types", {
-  f <- function() {
+  ev <- evaluate(function() {
     print("1")
     message("2")
     warning("3")
     stop("4")
-  }
-
-  ev <- evaluate("f()")
+  })
   expect_snapshot(replay(ev))
 })
 
 test_that("replay handles rlang conditions", {
-  f <- function() {
+  ev <- evaluate(function() {
     rlang::inform("2")
     rlang::warn("3")
-    rlang::abort("4")
-  }
-
-  ev <- evaluate("f()")
+    rlang::abort("4", call = NULL)
+  })
   expect_snapshot(replay(ev))
+})
+
+test_that("replace nicely formats multiple lines", {
+  ev <- evaluate("1 + \n 2")
+  expect_snapshot(replay(ev))
+})
+
+test_that("can replay plots", {
+  ev <- evaluate("plot(1)")
+
+  path <- withr::local_tempfile()
+  pdf(path)
+  expect_output(replay(ev))
+  dev.off()
+
+  expect_true(file.exists(path))
 })
 
 test_that("format_condition handles different types of warning", {

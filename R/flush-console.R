@@ -13,23 +13,22 @@
 #' either a direct `evaluate()` call or in \pkg{knitr} code chunks).
 #' @export
 flush_console = function() {
-  if (!is.null(the$output_handler)) {
-    the$output_handler()
+  if (!is.null(the$console_flusher)) {
+    the$console_flusher()
   }
   invisible()
 }
 
+the$console_flusher <- NULL
 
-the$output_handler <- NULL
-
-set_output_handler <- function(handler) {
-  old <- the$output_handler
-  the$output_handler <- handler
-  invisible(old)
-} 
-
-local_output_handler <- function(handler, frame = parent.frame()) {
-  old <- set_output_handler(handler)
-  defer(set_output_handler(old), frame)
+local_console_flusher <- function(flusher, frame = parent.frame()) {
+  old <- set_console_flusher(flusher)
+  defer(set_console_flusher(old), frame)
   invisible()
 }
+
+set_console_flusher <- function(flusher) {
+  old <- the$console_flusher
+  the$console_flusher <- flusher
+  invisible(old)
+} 

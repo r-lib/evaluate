@@ -22,7 +22,9 @@
 #'   message("Goodbye")
 #' }
 #' replay(evaluate("f2()"))
-replay <- function(x) UseMethod("replay", x)
+replay <- function(x) {
+  UseMethod("replay", x)
+}
 
 #' @export
 replay.list <- function(x) {
@@ -45,23 +47,8 @@ replay.source <- function(x) {
 }
 
 #' @export
-replay.warning <- function(x) {
+replay.condition <- function(x) {
   cat_line(format_condition(x))
-}
-
-#' @export
-replay.message <- function(x) {
-  cat_line(format_condition(x))
-}
-
-#' @export
-replay.error <- function(x) {
-  cat_line(format_condition(x))
-}
-
-#' @export
-replay.value <- function(x) {
-  if (x$visible) print(x$value)
 }
 
 #' @export
@@ -88,13 +75,8 @@ format_condition <- function(x) {
   }
 
   body <- conditionMessage(x)
-  if (inherits(x, "message")) {
-    
-  }
-
   paste0(header, "\n", body)
 }
-
 
 #' Line prompt.
 #'
