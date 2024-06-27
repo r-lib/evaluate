@@ -10,7 +10,9 @@
 #' @return 
 #' A data frame with columns `src`, a character vector of source code, and 
 #' `expr`, a list-column of parsed expressions. There will be one row for each 
-#' top-level expression in `x`. A top-level expression is a complete expression 
+#' top-level expression in `x`. 
+#' 
+#' A top-level expression is a complete expression 
 #' which would trigger execution if typed at the console. The `expression`
 #' object in `expr` can be of any length: it will be 0 if the top-level 
 #' expression contains only whitespace and/or comments; 1 if the top-level 
@@ -35,97 +37,75 @@ parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_
 
 #' @export
 parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
-  if (length(grep("\n", x))) {
-    # strsplit('a\n', '\n') needs to return c('a', '') instead of c('a')
-    x <- gsub("\n$", "\n\n", x)
+  if (any(grepl("\n", x))) {
+    # Track whether or not last element has a newline
+    trailing_nl <- grepl("\n$", x[length(x)])
+    # Ensure that empty lines are not dropped by strsplit()
     x[x == ""] <- "\n"
+    # Standardise to a character vector with one line per element;
+    # this is the input that parse() is documented to accept
     x <- unlist(strsplit(x, "\n"), recursive = FALSE, use.names = FALSE)
+  } else {
+    lines <- x
+    trailing_nl <- FALSE
   }
   n <- length(x)
 
-  if (is.null(filename))
-    filename <- "<text>"
+  filename <- filename %||% "<text>"
+
   src <- srcfilecopy(filename, x)
   if (allow_error) {
     exprs <- tryCatch(parse(text = x, srcfile = src), error = identity)
-    if (inherits(exprs, 'error')) return(structure(
-      data.frame(src = paste(x, collapse = '\n'), expr = I(list(expression()))),
-      PARSE_ERROR = exprs
-    ))
+    if (inherits(exprs, 'error')) {
+      return(structure(
+        data.frame(src = paste(x, collapse = '\n'), expr = empty_expr()),
+        PARSE_ERROR = exprs
+      ))
+    }    
   } else {
     exprs <- parse(text = x, srcfile = src)
   }
 
-  # No code, only comments and/or empty lines
-  ne <- length(exprs)
-  if (ne == 0) {
-    return(data.frame(src = append_break(x), expr = I(rep(list(expression()), n))))
-  }
-
   srcref <- attr(exprs, "srcref", exact = TRUE)
+  pos <- data.frame(
+    start = vapply(srcref, `[[`, 7, FUN.VALUE = integer(1)),
+    end = vapply(srcref, `[[`, 8, FUN.VALUE = integer(1))
+  )
+  pos$exprs <- exprs
 
-  # Stard/End line numbers of expressions
-  pos <- do.call(rbind, lapply(srcref, unclass))[, c(7, 8), drop = FALSE]
-  l1 <- pos[, 1]
-  l2 <- pos[, 2]
-  # Add a third column i to store the indices of expressions
-  pos <- cbind(pos, i = seq_len(nrow(pos)))
-  pos <- as.data.frame(pos)  # split() does not work on matrices
-
-  # Split line number pairs into groups: if the next start line is the same as
-  # the last end line, the two expressions must belong to the same group
-  spl <- cumsum(c(TRUE, l1[-1] != l2[-ne]))
-  # Extract src lines and expressions for each group; also record the start line
-  # number of this group so we can re-order src/expr later
-  res <- lapply(split(pos, spl), function(p) {
+  # parse() splits TLEs that use ; into multiple expressions so we 
+  # join together expressions that overlaps on the same line(s)
+  line_group <- cumsum(is_new_line(pos$start, pos$end))
+  tles <- lapply(split(pos, line_group), function(p) {
     n <- nrow(p)
     data.frame(
-      src = paste(x[p[1, 1]:p[n, 2]], collapse = "\n"),
-      expr = I(list(exprs[p[, 3]])),
-      line = p[1, 1]
+      src = paste(x[p$start[1]:p$end[n]], collapse = "\n"),
+      expr = I(list(p$exprs)),
+      line = p$start[1]
     )
   })
+  tles <- do.call(rbind, tles)
+  
+  # parse() drops comments and whitespace so we add them back in
+  gaps <- data.frame(start = c(1, pos$end + 1), end = c(pos$start - 1, n))
+  gaps <- gaps[gaps$start <= gaps$end, ,]
+  # in sequence(), nvec is equivalent to length.out
+  lines <- sequence(from = gaps$start, nvec = gaps$end - gaps$start + 1)
+  comments <- data.frame(
+    src = x[lines],
+    expr = empty_expr(length(lines)),
+    line = lines
+  )
 
-  # Now process empty expressions (comments/blank lines); see if there is a
-  # "gap" between the last end number + 1 and the next start number - 1
-  pos <- cbind(c(1, l2 + 1), c(l1 - 1, n))
-  pos <- pos[pos[, 1] <= pos[, 2], , drop = FALSE]
-
-  # Extract src lines from the gaps, and assign empty expressions to them
-  res <- c(res, lapply(seq_len(nrow(pos)), function(i) {
-    p <- pos[i, ]
-    r <- p[1]:p[2]
-    data.frame(
-      src = x[r],
-      expr = I(rep(list(expression()), p[2] - p[1] + 1)),
-      line = r - 1
-    )
-  }))
-
-  # Bind everything into a data frame, order it by line numbers, append \n to
-  # all src lines except the last one, and remove the line numbers
-  res <- do.call(rbind, res)
-  res <- res[order(res$line), ]
-  res$src <- append_break(res$src)
-  res$line <- NULL
-
-  # For compatibility with evaluate (<= 0.5.7): remove the last empty line (YX:
-  # I think this is a bug)
-  n <- nrow(res)
-  if (res$src[n] == "") res <- res[-n, ]
-
+  res <- rbind(tles, comments)
+  res <- res[order(res$line), c("src", "expr")]
+  
+  # Restore newlines stripped while converting to vector of lines
+  nl <- c(rep("\n", nrow(res) - 1), if (trailing_nl) "\n" else "")
+  res$src <- paste0(res$src, nl)
+  
   rownames(res) <- NULL
   res
-}
-
-# YX: It seems evaluate (<= 0.5.7) had difficulties with preserving line breaks,
-# so it ended up with adding \n to the first n-1 lines, which does not seem to
-# be necessary to me, and is actually buggy. I'm not sure if it is worth shaking
-# the earth and work with authors of reverse dependencies to sort this out. Also
-# see #42.
-append_break <- function(x) {
-  n <- length(x)
-  if (n <= 1) x else paste(x, rep(c("\n", ""), c(n - 1, 1)), sep = "")
 }
 
 #' @export
@@ -159,6 +139,22 @@ parse_all.call <- function(x, filename = NULL, ...) {
   out <- parse_all.default(x, filename = filename, ...)
   out$expr <- list(as.expression(x))
   out
+}
+
+# Helpers ---------------------------------------------------------------------
+
+ empty_expr <- function(n = 1) {
+  I(rep(list(expression()), n))
+}
+
+is_new_line <- function(start, end) {
+  if (length(start) == 0) {
+    logical()
+  } else if (length(start) == 1) {
+    TRUE
+  } else {
+    c(TRUE, start[-1] != end[-length(end)])
+  }
 }
 
 find_function_body <- function(f) {
