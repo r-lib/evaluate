@@ -61,23 +61,22 @@ test_that("parse(allow_error = TRUE/FALSE)", {
   expect_error(parse_all('x <-', allow_error = FALSE))
   res <- parse_all('x <-', allow_error = TRUE)
   expect_true(inherits(attr(res, 'PARSE_ERROR'), 'error'))
+
+  # And correctly flows through to evaluate
+  expect_no_error(evaluate('x <-', stop_on_error = 0))
 })
 
-# test some multibyte characters when the locale is UTF8 based
-if (isTRUE(l10n_info()[['UTF-8']])) {
+test_that("double quotes in Chinese characters not destroyed", {
+  skip_if_not(l10n_info()[['UTF-8']])
 
-  test_that("double quotes in Chinese characters not destroyed", {
-    expect_identical(parse_all(c('1+1', '"你好"'))[2, 1], '"你好"')
-  })
+  expect_identical(parse_all(c('1+1', '"你好"'))[2, 1], '"你好"')
+})
 
-  test_that("multibyte characters are parsed correct", {
-    code <- c("ϱ <- 1# g / ml\n", "äöüßÄÖÜπ <- 7 + 3# nonsense")
-    expect_identical(parse_all(code)$src, code)
-  })
-}
-
-test_that("can ignore parse errors", {
-  expect_error(evaluate('x <-', stop_on_error = 0), NA)
+test_that("multibyte characters are parsed correct", {
+  skip_if_not(l10n_info()[['UTF-8']])
+  
+  code <- c("ϱ <- 1# g / ml\n", "äöüßÄÖÜπ <- 7 + 3# nonsense")
+  expect_identical(parse_all(code)$src, code)
 })
 
 # find_function_body -----------------------------------------------------------
