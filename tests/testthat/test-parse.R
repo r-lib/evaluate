@@ -30,6 +30,49 @@ test_that("can ignore parse errors", {
   expect_error(evaluate('x <-', stop_on_error = 0), NA)
 })
 
+# input types ------------------------------------------------------------------
+
+test_that("can parse a call", {
+  out <- parse_all(quote(f(a, b, c)))
+  expect_equal(out$src, "f(a, b, c)")
+  expect_equal(
+    out$expr,
+    I(list(expression(f(a, b, c)))),
+    ignore_attr = "srcref"
+  )
+})
+
+test_that("can parse a connection", {
+  path <- withr::local_tempfile(lines = c("# 1", "1 + 1"))
+  cur_cons <- getAllConnections()
+
+  con <- file(path)
+  out <- parse_all(con)
+
+  expect_equal(out$src, c("# 1\n", "1 + 1"))
+  expect_equal(
+    out$expr,
+    I(list(expression(), expression(1 + 1))),
+    ignore_attr = "srcref"
+  )
+
+  # Doesn't leave any connections around
+  expect_equal(getAllConnections(), cur_cons)
+})
+
+test_that("can parse a function", {
+  out <- parse_all(function() {
+    # Hi
+    1 + 1
+  })
+  expect_equal(out$src, c("# Hi\n", "1 + 1"))
+  expect_equal(
+    out$expr,
+    I(list(expression(), expression(1 + 1))),
+    ignore_attr = "srcref"
+  )
+})
+
 # find_function_body -----------------------------------------------------------
 
 test_that("parsing a function parses its body", {
