@@ -24,11 +24,11 @@ test_that("log_echo causes output to be immediately written to stderr()", {
     res <- evaluate("f()", log_echo = TRUE),
     type = "message"
   )
-  expect_equal(out, "f()")
+  expect_equal(out, c("f()", ""))
 
   # But still recorded in eval result
   expect_output_types(res, c("source", "text"))
-  expect_equal(res[[1]]$src, "f()")
+  expect_equal(res[[1]]$src, "f()\n")
 })
 
 test_that("data sets loaded", {

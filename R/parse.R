@@ -38,16 +38,11 @@ parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_
 #' @export
 parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   if (any(grepl("\n", x))) {
-    # Track whether or not last element has a newline
-    trailing_nl <- grepl("\n$", x[length(x)])
     # Ensure that empty lines are not dropped by strsplit()
     x[x == ""] <- "\n"
     # Standardise to a character vector with one line per element;
     # this is the input that parse() is documented to accept
     x <- unlist(strsplit(x, "\n"), recursive = FALSE, use.names = FALSE)
-  } else {
-    lines <- x
-    trailing_nl <- FALSE
   }
   n <- length(x)
 
@@ -101,8 +96,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   res <- res[order(res$line), c("src", "expr")]
   
   # Restore newlines stripped while converting to vector of lines
-  nl <- c(rep("\n", nrow(res) - 1), if (trailing_nl) "\n" else "")
-  res$src <- paste0(res$src, nl)
+  res$src <- paste0(res$src, "\n")
   
   rownames(res) <- NULL
   res

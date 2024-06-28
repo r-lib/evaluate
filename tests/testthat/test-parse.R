@@ -1,21 +1,16 @@
 test_that("can parse even if no expressions", {
-  expect_equal(parse_all("")$src, "")
-  expect_equal(parse_all("#")$src, "#")
+  expect_equal(parse_all("")$src, "\n")
+  expect_equal(parse_all("#")$src, "#\n")
   expect_equal(parse_all("#\n\n")$src, c("#\n", "\n"))
 })
 
-test_that("preserves trailing nl", {
-  expect_equal(parse_all("x")$src, "x")
-  expect_equal(parse_all("x\n")$src, "x\n")
-
-  expect_equal(parse_all("")$src, "")
+test_that("every line gets nl", {
+  expect_equal(parse_all("x")$src, "x\n")
+  expect_equal(parse_all("")$src, "\n")
   expect_equal(parse_all("\n")$src, "\n")
 
-  expect_equal(parse_all("{\n1\n}")$src, "{\n1\n}")
-  expect_equal(parse_all("{\n1\n}\n")$src, "{\n1\n}\n")
-
   # even empty lines
-  expect_equal(parse_all("a\n\nb")$src, c("a\n", "\n", "b"))
+  expect_equal(parse_all("a\n\nb")$src, c("a\n", "\n", "b\n"))
   expect_equal(parse_all("a\n\nb\n")$src, c("a\n", "\n", "b\n"))
   
   expect_equal(parse_all("\n\n")$src, c("\n", "\n"))
@@ -31,7 +26,7 @@ test_that("empty lines are never silently dropped", {
   # 
   # 1
   # ```
-  expect_equal(parse_all(c("\n", "", "1"))$src, c("\n", "\n", "1"))
+  expect_equal(parse_all(c("\n", "", "1"))$src, c("\n", "\n", "1\n"))
 })
 
 test_that("a character vector is equivalent to a multi-line string", {
@@ -57,8 +52,8 @@ test_that("recombines multi-expression TLEs", {
 })
 
 test_that("re-integrates lines without expressions", {
-  expect_equal(parse_all("1\n\n2")$src, c("1\n", "\n", "2"))
-  expect_equal(parse_all("1\n#\n2")$src, c("1\n", "#\n", "2"))
+  expect_equal(parse_all("1\n\n2")$src, c("1\n", "\n", "2\n"))
+  expect_equal(parse_all("1\n#\n2")$src, c("1\n", "#\n", "2\n"))
 })
 
 test_that("expr is always an expression", {
@@ -83,7 +78,7 @@ test_that("double quotes in Chinese characters not destroyed", {
   skip_if_not(l10n_info()[['UTF-8']])
 
   out <- parse_all(c('1+1', '"你好"'))
-  expect_equal(out$src[[2]], '"你好"')
+  expect_equal(out$src[[2]], '"你好"\n')
   expect_equal(out$expr[[2]], expression("你好"), ignore_attr = "srcref")
 })
 
@@ -92,14 +87,14 @@ test_that("multibyte characters are parsed correctly", {
   
   code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
   out <- parse_all(code)
-  expect_equal(out$src, paste0(code, c("\n", "")))
+  expect_equal(out$src, paste0(code, "\n"))
 })
 
 # input types ------------------------------------------------------------------
 
 test_that("can parse a call", {
   out <- parse_all(quote(f(a, b, c)))
-  expect_equal(out$src, "f(a, b, c)")
+  expect_equal(out$src, "f(a, b, c)\n")
   expect_equal(
     out$expr,
     I(list(expression(f(a, b, c)))),
@@ -114,7 +109,7 @@ test_that("can parse a connection", {
   con <- file(path)
   out <- parse_all(con)
 
-  expect_equal(out$src, c("# 1\n", "1 + 1"))
+  expect_equal(out$src, c("# 1\n", "1 + 1\n"))
   expect_equal(
     out$expr,
     I(list(expression(), expression(1 + 1))),
@@ -130,7 +125,7 @@ test_that("can parse a function", {
     # Hi
     1 + 1
   })
-  expect_equal(out$src, c("# Hi\n", "1 + 1"))
+  expect_equal(out$src, c("# Hi\n", "1 + 1\n"))
   expect_equal(
     out$expr,
     I(list(expression(), expression(1 + 1))),
@@ -145,7 +140,7 @@ test_that("parsing a function parses its body", {
     # Hi
     1 + 1
   })
-  expect_equal(out$src, c("# Hi\n", "1 + 1"))
+  expect_equal(out$src, c("# Hi\n", "1 + 1\n"))
 })
 
 test_that("dedents function body", {
