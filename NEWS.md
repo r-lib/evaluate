@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* Setting `ACTIONS_RUNNER_DEBUG=1` (as in a failing GHA workflow) will automatically set `log_echo` and `log_warning` to `TRUE` (#175).
 * `is.value()` has been removed since it tests for an object that evaluate never creates.
 * `parse_all()` no longer has a default method, which will generate better errors if you pass in something unexpectected.
 * The package now depends on R 4.0.0 in order to decrease our maintenance burden.

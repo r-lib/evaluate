@@ -38,6 +38,9 @@
 #'  force these arguments to be set to `NA`.
 #' @param log_echo,log_warning If `TRUE`, will immediately log code and
 #'   warnings (respectively) to `stderr`.
+#' 
+#'   This will be force to `TRUE` if env var `ACTIONS_RUNNER_DEBUG` is
+#'   `true`, as when debugging a failing GitHub Actions workflow.
 #' @param new_device if `TRUE`, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
 #'   interfering with your existing graphics environment.
@@ -68,6 +71,11 @@ evaluate <- function(input,
     keep_message <- NA 
     keep_warning <- NA
   }
+  if (env_var_is_true("ACTIONS_RUNNER_DEBUG")) {
+    log_warning <- TRUE
+    log_echo <- TRUE
+  }
+
   on_message <- check_keep(keep_message, "keep_message")
   on_warning <- check_keep(keep_warning, "keep_warning", log_warning)
 
