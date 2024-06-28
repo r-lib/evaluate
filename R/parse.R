@@ -18,7 +18,7 @@
 #' expression contains only whitespace and/or comments; 1 if the top-level 
 #' expression is a single scalar (like `TRUE`, `1`, or `"x"`), name, or call; 
 #' or 2 if the top-level expression uses `;` to put multiple expressions on 
-#' one line.
+#' one line. The expressions have their srcrefs removed.
 #' 
 #' If there are syntax errors in `x` and `allow_error = TRUE`, the data 
 #' frame will have an attribute `PARSE_ERROR` that stores the error object.
@@ -104,6 +104,8 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   nl <- c(rep("\n", nrow(res) - 1), if (trailing_nl) "\n" else "")
   res$src <- paste0(res$src, nl)
   
+  res$expr <- lapply(res$expr, removeSource)
+
   rownames(res) <- NULL
   res
 }
