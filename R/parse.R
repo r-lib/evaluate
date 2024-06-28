@@ -10,9 +10,7 @@
 #' @return 
 #' A data frame with columns `src`, a character vector of source code, and 
 #' `expr`, a list-column of parsed expressions. There will be one row for each 
-#' top-level expression in `x`. 
-#' 
-#' A top-level expression is a complete expression 
+#' top-level expression in `x`. A top-level expression is a complete expression 
 #' which would trigger execution if typed at the console. The `expression`
 #' object in `expr` can be of any length: it will be 0 if the top-level 
 #' expression contains only whitespace and/or comments; 1 if the top-level 
