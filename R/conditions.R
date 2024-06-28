@@ -11,14 +11,14 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
       }
     },
     warning =  function(cnd) {
-      # do not handle warnings that shortly become errors
-      if (getOption("warn") >= 2) return()
-      # do not handle warnings that have been completely silenced
-      if (getOption("warn") < 0) return()
+      # do not handle warnings that shortly become errors or have been silenced
+      if (getOption("warn") >= 2 || getOption("warn") < 0) {
+        return()
+      } 
 
       watcher$capture_plot_and_output()
       if (on_warning$capture) {
-        cnd <- reset_call(cnd)
+        cnd <- sanitize_call(cnd)
         watcher$push(cnd)
       }
       if (on_warning$silence) {
@@ -28,7 +28,7 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
     error = function(cnd) {
       watcher$capture_plot_and_output()
       
-      cnd <- reset_call(cnd)
+      cnd <- sanitize_call(cnd)
       watcher$push(cnd)
       
       switch(on_error,
@@ -50,7 +50,7 @@ with_handlers <- function(code, handlers) {
   eval(call)
 }
 
-reset_call <- function(cnd) {
+sanitize_call <- function(cnd) {
   if (identical(cnd$call, quote(eval(expr, envir)))) {
     cnd$call <- NULL
   }
