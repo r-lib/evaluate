@@ -111,12 +111,12 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
 #' @export
 parse_all.connection <- function(x, filename = NULL, ...) {
   if (!isOpen(x, "r")) {
-      open(x, "r")
-      on.exit(close(x))
+    open(x, "r")
+    defer(close(x))
   }
   text <- readLines(x)
-  if (is.null(filename))
-    filename <- summary(x)$description
+  filename <- filename %||% summary(x)$description
+  
   parse_all(text, filename, ...)
 }
 
@@ -126,19 +126,10 @@ parse_all.function <- function(x, filename = NULL, ...) {
   parse_all(find_function_body(x), filename = filename, ...)
 }
 
-#' @export
-parse_all.default <- function(x, filename = NULL, ...) {
-  if (is.null(filename))
-    filename <- "<expression>"
-  parse_all(deparse(x), filename, ...)
-}
-
 # Calls are already parsed and always length one
 #' @export
 parse_all.call <- function(x, filename = NULL, ...) {
-  out <- parse_all.default(x, filename = filename, ...)
-  out$expr <- list(as.expression(x))
-  out
+  parse_all(deparse(x), filename = filename, ...)
 }
 
 # Helpers ---------------------------------------------------------------------
