@@ -69,9 +69,6 @@ is.warning <- function(x) inherits(x, "warning")
 is.error <- function(x) inherits(x, "error")
 #' @rdname is.message
 #' @export
-is.value <- function(x) inherits(x, "value")
-#' @rdname is.message
-#' @export
 is.source <- function(x) inherits(x, "source")
 #' @rdname is.message
 #' @export
