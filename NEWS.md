@@ -1,6 +1,6 @@
 # evaluate (development version)
 
-* The `source` output handler is now parsed the entire top-level expression, not just the first component.
+* The `source` output handler is now passed the entire top-level expression, not just the first component.
 * `evaluate()` will now terminate on the first error in a top-level expression. This matches R's own behaviour more closely.
 * `is.value()` has been removed since it tests for an object that evaluate never creates.
 * `parse_all()` no longer has a default method, which will generate better errors if you pass in something unexpectected.
