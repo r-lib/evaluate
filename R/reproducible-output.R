@@ -16,6 +16,8 @@
 #' @param unicode Should we use unicode characaters where possible?
 #' @param hyperlinks Should we use ANSI hyperlinks?
 #' @param rstudio Should we pretend that we're running inside of RStudio?
+#' @param frame Scope of the changes; when this calling frame terminates the
+#'   changes will be undone. For expert use only.
 local_reproducible_output <- function(width = 80,
                                       color = FALSE,
                                       unicode = FALSE,
@@ -29,7 +31,8 @@ local_reproducible_output <- function(width = 80,
   
     # cli
     cli.width = width,
-    cli.num_colors = if (color) 8L else 1L,    
+    cli.condition_width = width,
+    cli.num_colors = if (color) 8L else 1L, 
     cli.hyperlink = hyperlinks,
     cli.hyperlink_run = hyperlinks,
     cli.hyperlink_help = hyperlinks,

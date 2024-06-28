@@ -23,6 +23,9 @@ local_reproducible_output(
 \item{hyperlinks}{Should we use ANSI hyperlinks?}
 
 \item{rstudio}{Should we pretend that we're running inside of RStudio?}
+
+\item{frame}{Scope of the changes; when this calling frame terminates the
+changes will be undone. For expert use only.}
 }
 \description{
 Often when using \code{evaluate()} you are running R code with a specific output
