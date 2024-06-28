@@ -106,7 +106,7 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
 
-  local_output_handler(capture_output, frame = frame)
+  local_console_flusher(capture_output, frame = frame)
   local_plot_hooks(capture_plot_and_output, frame = frame)
 
   list(

@@ -2,6 +2,8 @@
 
 * The `source` output handler is now parsed the entire top-level expression, not just the first component.
 * `evaluate()` will now terminate on the first error in a top-level expression. This matches R's own behaviour more closely.
+* `is.value()` has been removed since it tests for an object that evaluate never creates.
+* `parse_all()` no longer has a default method, which will generate better errors if you pass in something unexpectected.
 * The package now depends on R 4.0.0 in order to decrease our maintenance burden.
 * `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
 * `evalute(include_timing)` has been deprecated. I can't find any use of it on GitHub, and it adds substantial code complexity for little gain.

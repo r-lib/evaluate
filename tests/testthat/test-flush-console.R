@@ -6,12 +6,12 @@ test_that("flush_console() is a null op by default", {
 
 test_that("can set and restore output handler", {
   f <- function() message("Hi")
-  old <- set_output_handler(function() message("Hi"))
-  expect_equal(the$output_handler, f)
+  old <- set_console_flusher(function() message("Hi"))
+  expect_equal(the$console_flusher, f)
   expect_equal(old, NULL)
 
   expect_message(flush_console(), "Hi")
-  old2 <- set_output_handler(old)
+  old2 <- set_console_flusher(old)
   expect_equal(old2, f)
 })
 

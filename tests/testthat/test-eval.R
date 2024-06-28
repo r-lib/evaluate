@@ -1,9 +1,9 @@
 
 test_that("file with only comments runs", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     # This test case contains no executable code
     # but it shouldn't throw an error
-  ")
+  })
   expect_output_types(ev, c("source", "source"))
 })
 
@@ -34,10 +34,10 @@ test_that("log_echo causes output to be immediately written to stderr()", {
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
-  ev <- evaluate_('
+  ev <- evaluate(function() {
     data(barley, package = "lattice")
     barley
-  ')
+  })
   expect_output_types(ev, c("source", "source", "text"))
 })
 
@@ -57,20 +57,20 @@ test_that("S4 methods are displayed with show, not print", {
 })
 
 test_that("output and plots interleaved correctly", {
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     for (i in 1:2) {
       cat(i)
       plot(i)
     }
-  ")
+  })
   expect_output_types(ev, c("source", "text", "plot", "text", "plot"))
 
-  ev <- evaluate_("
+  ev <- evaluate(function() {
     for (i in 1:2) {
       plot(i)
       cat(i)
     }
-  ")
+  })
   expect_output_types(ev, c("source", "plot", "text", "plot", "text"))
 })
 

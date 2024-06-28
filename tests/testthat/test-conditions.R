@@ -110,7 +110,7 @@ test_that("an error terminates evaluation of top-level expression", {
 })
 
 test_that("all three starts of stop_on_error work as expected", {
-  ev <- evaluate_('stop("1")\n2', stop_on_error = 0L)
+  ev <- evaluate('stop("1")\n2', stop_on_error = 0L)
   expect_output_types(ev, c("source", "error", "source", "text"))
 
   ev <- evaluate('stop("1")\n2', stop_on_error = 1L)
