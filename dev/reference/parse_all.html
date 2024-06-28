@@ -78,7 +78,10 @@ If a connection, will be opened and closed only if it was closed initially.</p><
 
 <p>A data frame with columns <code>src</code>, a character vector of source code, and
 <code>expr</code>, a list-column of parsed expressions. There will be one row for each
-top-level expression in <code>x</code>. A top-level expression is a complete expression
+top-level expression in <code>x</code>.</p>
+
+
+<p>A top-level expression is a complete expression
 which would trigger execution if typed at the console. The <code>expression</code></p>
 
 
@@ -110,13 +113,13 @@ frame will have an attribute <code>PARSE_ERROR</code> that stores the error obje
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :length 1 expression(x)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "srcref")=List of 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 3 3 3 3 3 3 3 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x558e6dae2eb8&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x564ec78dcad0&gt; </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :length 2 expression(x, y)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "srcref")=List of 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 4 3 4 3 3 3 4 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x558e6dae2eb8&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x564ec78dcad0&gt; </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 4 5 4 5 5 5 4 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x558e6dae2eb8&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x564ec78dcad0&gt; </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, "class")= chr "AsIs"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
