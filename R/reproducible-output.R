@@ -42,7 +42,9 @@ local_reproducible_output <- function(width = 80,
 
     # base R
     width = width, 
-    useFancyQuotes = FALSE,
+    useFancyQuotes = unicode,
+
+    # rlang
     rlang_interactive = FALSE,
 
     .frame = frame
