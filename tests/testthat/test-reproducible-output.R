@@ -30,11 +30,12 @@ test_that("local_envvar respects local context", {
 })
 
 test_that("local_collate respects local context", {
-  if (Sys.info()[["sysname"]] == "Windows") {
-    locale <- l10n_info()$codeset
-  } else {
-    locale <- "en_US"
-  }
+  locale <- switch(Sys.info()[["sysname"]],
+    Darwin = "en_US",
+    Linux = "en_US.UTF-8",
+    NULL
+  )
+  skip_if(is.null(locale), "Don't know good locale to use for this platform")
   
   local_collate("C")
   expect_equal(Sys.getlocale("LC_COLLATE"), "C")
