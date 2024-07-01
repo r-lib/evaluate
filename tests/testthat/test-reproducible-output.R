@@ -31,9 +31,9 @@ test_that("local_envvar respects local context", {
 
 test_that("local_collate respects local context", {
   locale <- switch(Sys.info()[["sysname"]],
-    Darwin = "en_US",
+    Darwin = ,
     Linux = "en_US.UTF-8",
-    NULL
+    Windows = "en-US"
   )
   skip_if(is.null(locale), "Don't know good locale to use for this platform")
   
