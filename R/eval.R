@@ -86,6 +86,11 @@ evaluate <- function(input,
     watcher$push(err)
     return(watcher$get())
   }
+  # "Transpose" parsed so we get a list that's easier to iterate over
+  tles <- Map(
+    function(src, exprs) list(src = src, exprs = exprs),
+    parsed$src, parsed$expr
+  )
 
   if (is.list(envir)) {
     envir <- list2env(envir, parent = enclos %||% parent.frame())
@@ -104,18 +109,18 @@ evaluate <- function(input,
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
   
-  for (i in seq_len(nrow(parsed))) {
-    watcher$push_source(parsed$src[[i]], parsed$expr[[i]])
+  for (tle in tles) {
+    watcher$push_source(tle$src, tle$exprs)
     if (debug || log_echo) {
-      cat_line(parsed$src[[i]], file = stderr())
+      cat_line(tle$src, file = stderr())
     }
 
     continue <- withRestarts(
       with_handlers(
         {
-          for (expr in parsed$expr[[i]]) {
-            ev <- withVisible(eval(expr, envir))
-            watcher$capture_plot_and_output()
+          for (expr in tle$exprs) {
+          ev <- withVisible(eval(expr, envir))
+          watcher$capture_plot_and_output()
             watcher$print_value(ev$value, ev$visible)
           }
           TRUE
