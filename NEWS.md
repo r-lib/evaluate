@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* New `local_reproducible_output()` helper that sets various options and env vars to help ensure consistency of output across environments.
 * The `source` output handler is now passed the entire top-level expression, not just the first component.
 * `evaluate()` will now terminate on the first error in a top-level expression. This matches R's own behaviour more closely.
 * `is.value()` has been removed since it tests for an object that evaluate never creates.
