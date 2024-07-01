@@ -46,7 +46,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="evaluate-development-version">evaluate (development version)<a class="anchor" aria-label="anchor" href="#evaluate-development-version"></a></h2>
-<ul><li>
+<ul><li>The <code>source</code> output handler is now passed the entire top-level expression, not just the first component.</li>
+<li>
+<code><a href="../reference/evaluate.html">evaluate()</a></code> will now terminate on the first error in a top-level expression. This matches R’s own behaviour more closely.</li>
+<li>
 <code>is.value()</code> has been removed since it tests for an object that evaluate never creates.</li>
 <li>
 <code><a href="../reference/parse_all.html">parse_all()</a></code> no longer has a default method, which will generate better errors if you pass in something unexpectected.</li>
