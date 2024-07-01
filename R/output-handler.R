@@ -16,10 +16,10 @@
 #' printing, then the `text` or `graphics` handlers may be called.
 #'
 #' @param source Function to handle the echoed source code under evaluation.
-#'  This function should take two arguments (`src` and `call`), and return
+#'  This function should take two arguments (`src` and `tle`), and return
 #'  an object that will be inserted into the evaluate outputs. `src` is the
-#'  unparsed text of the source code, and `call` is the parsed language object 
-#'  If `src` is unparsable, `call` will be `expression()`.
+#'  unparsed text of the source code, and `tle` is the parsed top-level 
+#'  expression. If `src` is unparsable, `tle` will be `expression()`.
 #' 
 #'  Return `src` for the default evaluate behaviour. Return `NULL` to 
 #'  drop the source from the output.

@@ -17,7 +17,22 @@ watchout <- function(handler = new_output_handler(),
   push <- function(value) {
     output[i] <<- list(value)
     i <<- i + 1
+
+    switch(output_type(value),
+      plot = handler$graphics(value),
+      text = handler$text(value),
+      message = handler$message(value),
+      warning = handler$warning(value),
+      error = handler$error(value)
+    )
+
     invisible()
+  }
+  push_source <- function(src, tle) {
+    source <- new_source(src, tle, handler$source)
+    if (!is.null(source)) {
+      push(source)
+    }
   }
 
   # record current devices for plot handling
@@ -48,7 +63,6 @@ watchout <- function(handler = new_output_handler(),
     }
 
     last_plot <<- plot
-    handler$graphics(plot)
     push(plot)
     invisible()
   }
@@ -57,7 +71,6 @@ watchout <- function(handler = new_output_handler(),
     out <- sink_con()
     if (!is.null(out)) {
       push(out)
-      handler$text(out)
     }
     invisible()
   }
@@ -65,6 +78,22 @@ watchout <- function(handler = new_output_handler(),
   capture_plot_and_output <- function() {
     capture_plot()
     capture_output()
+  }
+
+  print_value <- function(value, visible) {
+    if (!show_value(handler, visible)) 
+      return()
+    
+    # Ideally we'd evaluate the print() generic in envir in order to find
+    # any methods registered in that environment. That, however, is 
+    # challenging and only makes a few tests a little simpler so we don't
+    # bother.
+    pv <- withVisible(handle_value(handler, value, visible))
+    capture_plot_and_output()
+    # If the return value is visible, save the value to the output
+    if (pv$visible) {
+      push(pv$value)
+    }
   }
 
   check_devices <- function() {
@@ -77,12 +106,17 @@ watchout <- function(handler = new_output_handler(),
     invisible()
   }
 
+  local_console_flusher(capture_output, frame = frame)
+  local_plot_hooks(capture_plot_and_output, frame = frame)
+
   list(
     capture_plot = capture_plot,
     capture_output = capture_output,
     capture_plot_and_output = capture_plot_and_output,
     check_devices = check_devices,
     push = push,
+    push_source = push_source,
+    print_value = print_value,
     get = function() new_evaluation(output)
   )
 }

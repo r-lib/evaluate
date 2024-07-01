@@ -25,8 +25,10 @@ test_that("graphic output handler not called with no graphics", {
 
 
 test_that("can conditionally omit output with output handler", {
-  hide_source <- function(src, call) {
-    if (is.call(call) && identical(call[[1]], quote(hide))) {
+  hide_source <- function(src, tle) {
+    if (length(tle) == 0) {
+      src
+    } else if (is.call(tle[[1]]) && identical(tle[[1]][[1]], quote(hide))) {
       NULL
     } else {
       src
