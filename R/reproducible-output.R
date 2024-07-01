@@ -86,6 +86,13 @@ local_collate <- function(locale, frame = parent.frame()) {
   defer(Sys.setlocale("LC_COLLATE", old), frame)
   Sys.setlocale("LC_COLLATE", locale)
 
+  # From https://github.com/r-lib/withr/blob/v3.0.0/R/locale.R#L51-L55:
+  # R supports setting LC_COLLATE to C via envvar. When that is the
+  # case, it takes precedence over the currently set locale. We need
+  # to set both the envvar and the locale for collate to fully take
+  # effect.
+  local_envvar(LC_COLLATE = locale, .frame = frame)
+
   invisible()
 }
 
