@@ -31,6 +31,18 @@ test_that("log_echo causes output to be immediately written to stderr()", {
   expect_equal(res[[1]]$src, "f()\n")
 })
 
+test_that("ACTIONS_STEP_DEBUG forces log_warning and log_echo to TRUE", {
+  f <- function() {
+    1
+    warning("abc")
+  }
+  out <- local({
+    withr::local_envvar(ACTIONS_STEP_DEBUG = "true")
+    capture.output(expect_warning(evaluate("f()"), "abc"), type = "message")
+  })
+  expect_equal(out, "f()")
+})
+
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
