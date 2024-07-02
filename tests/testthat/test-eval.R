@@ -40,7 +40,7 @@ test_that("ACTIONS_STEP_DEBUG forces log_warning and log_echo to TRUE", {
     withr::local_envvar(ACTIONS_STEP_DEBUG = "true")
     capture.output(expect_warning(evaluate("f()"), "abc"), type = "message")
   })
-  expect_equal(out, "f()\n")
+  expect_equal(out, c("f()", ""))
 })
 
 test_that("data sets loaded", {
