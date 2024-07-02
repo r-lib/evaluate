@@ -39,7 +39,7 @@
 #' @param log_echo,log_warning If `TRUE`, will immediately log code and
 #'   warnings (respectively) to `stderr`.
 #' 
-#'   This will be force to `TRUE` if env var `ACTIONS_RUNNER_DEBUG` is
+#'   This will be force to `TRUE` if env var `ACTIONS_STEP_DEBUG` is
 #'   `true`, as when debugging a failing GitHub Actions workflow.
 #' @param new_device if `TRUE`, will open a new graphics device and
 #'   automatically close it after completion. This prevents evaluation from
@@ -71,7 +71,7 @@ evaluate <- function(input,
     keep_message <- NA 
     keep_warning <- NA
   }
-  if (env_var_is_true("ACTIONS_RUNNER_DEBUG")) {
+  if (env_var_is_true("ACTIONS_STEP_DEBUG")) {
     log_warning <- TRUE
     log_echo <- TRUE
   }

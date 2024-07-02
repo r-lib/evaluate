@@ -60,7 +60,7 @@ force these arguments to be set to \code{NA}.}
 \item{log_echo, log_warning}{If \code{TRUE}, will immediately log code and
 warnings (respectively) to \code{stderr}.
 
-This will be force to \code{TRUE} if env var \code{ACTIONS_RUNNER_DEBUG} is
+This will be force to \code{TRUE} if env var \code{ACTIONS_STEP_DEBUG} is
 \code{true}, as when debugging a failing GitHub Actions workflow.}
 
 \item{new_device}{if \code{TRUE}, will open a new graphics device and
