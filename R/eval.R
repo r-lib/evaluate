@@ -80,12 +80,14 @@ evaluate <- function(input,
   # Capture output
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
-  parsed <- parse_all(input, filename, on_error != "error")
-  if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
-    watcher$push_source(parsed$src, expression())
+  if (on_error != "error" && !can_parse(input)) {
+    err <- tryCatch(parse(text = input), error = function(cnd) cnd) 
+    watcher$push_source(input, expression())
     watcher$push(err)
     return(watcher$get())
   }
+  
+  parsed <- parse_all(input, filename = filename)
   # "Transpose" parsed so we get a list that's easier to iterate over
   tles <- Map(
     function(src, exprs) list(src = src, exprs = exprs),
