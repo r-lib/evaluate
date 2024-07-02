@@ -18,10 +18,10 @@ new_output_handler(
 }
 \arguments{
 \item{source}{Function to handle the echoed source code under evaluation.
-This function should take two arguments (\code{src} and \code{call}), and return
+This function should take two arguments (\code{src} and \code{tle}), and return
 an object that will be inserted into the evaluate outputs. \code{src} is the
-unparsed text of the source code, and \code{call} is the parsed language object
-If \code{src} is unparsable, \code{call} will be \code{expression()}.
+unparsed text of the source code, and \code{tle} is the parsed top-level
+expression. If \code{src} is unparsable, \code{tle} will be \code{expression()}.
 
 Return \code{src} for the default evaluate behaviour. Return \code{NULL} to
 drop the source from the output.}

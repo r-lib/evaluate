@@ -25,7 +25,7 @@ object in \code{expr} can be of any length: it will be 0 if the top-level
 expression contains only whitespace and/or comments; 1 if the top-level
 expression is a single scalar (like \code{TRUE}, \code{1}, or \code{"x"}), name, or call;
 or 2 if the top-level expression uses \verb{;} to put multiple expressions on
-one line.
+one line. The expressions have their srcrefs removed.
 
 If there are syntax errors in \code{x} and \code{allow_error = TRUE}, the data
 frame will have an attribute \code{PARSE_ERROR} that stores the error object.
