@@ -8,22 +8,25 @@
 #' @param filename string overriding the file name
 #' @param allow_error whether to allow syntax errors in `x`
 #' @return 
-#' A data frame two columns, `src` and `expr`, and one row for each top-level 
-#' expression in `x`.
+#' A data frame two columns, `src` and `expr`, and one row for each complete
+#' input in `x`. A complete input is R code that would trigger execution when 
+#' typed at the console. This might consist of multiple expressions separated 
+#' by `;` or one expression spread over multiple lines (like a function 
+#' definition).
 #' 
 #' `src` is a character vector of source code. Each element represents a 
-#' complete line (or multi-line) expression, i.e. it always has a terminal `\n`.
+#' complete input expression (which might span multiple line) and always has a 
+#' terminal `\n`.
 #' 
-#' `expr`, a list-column of top-level expressions. A top-level expression 
-#' is a complete expression which would trigger execution if typed at the 
-#' console. Each element is an [expression()] object, which can be of any
-#' length. It will be length:
+#' `expr` is a list-column of [expression]s. The expressions can be of any 
+#' length, depending on the structure of the complete input source:
 #' 
-#' * 0 if the top-level expression contains only whitespace and/or comments.
-#' * 1 if the top-level expression is a single scalar (
-#'   like `TRUE`, `1`, or `"x"`), name, or call
-#' * 2 or more if the top-level expression uses `;` to put multiple expressions
-#'   on one line.
+#' * If `src` consists of only only whitespace and/or comments, `expr` will
+#'   be length 0.
+#' * If `src` a single scalar (like `TRUE`, `1`, or `"x"`), name, or 
+#'   function call, `expr` will be length 1.
+#' * If `src` contains multiple expressions separated by `;`, `expr` will 
+#'   have length two or more.
 #' 
 #' The expressions have their srcrefs removed.
 #' 

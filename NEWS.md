@@ -3,8 +3,8 @@
 * `parse_all()` adds a `\n` to the end of every line, even the last one if it didn't have one in the input.
 * Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will automatically set `log_echo` and `log_warning` to `TRUE` (#175).
 * New `local_reproducible_output()` helper that sets various options and env vars to help ensure consistency of output across environments.
-* The `source` output handler is now passed the entire top-level expression, not just the first component.
-* `evaluate()` will now terminate on the first error in a top-level expression. This matches R's own behaviour more closely.
+* The `source` output handler is now passed the entire complete input expression, not just the first component.
+* `evaluate()` now terminates on the first error in a multi-expression input, i.e. `1;stop('2');3` will no longer evaluate the third component. This matches console behaviour more closely.
 * `is.value()` has been removed since it tests for an object that evaluate never creates.
 * `parse_all()` no longer has a default method, which will generate better errors if you pass in something unexpectected.
 * The package now depends on R 4.0.0 in order to decrease our maintenance burden.
