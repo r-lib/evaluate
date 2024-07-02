@@ -129,7 +129,9 @@ force these arguments to be set to <code>NA</code>.</p></dd>
 
 <dt>log_echo, log_warning</dt>
 <dd><p>If <code>TRUE</code>, will immediately log code and
-warnings (respectively) to <code>stderr</code>.</p></dd>
+warnings (respectively) to <code>stderr</code>.</p>
+<p>This will be force to <code>TRUE</code> if env var <code>ACTIONS_STEP_DEBUG</code> is
+<code>true</code>, as when debugging a failing GitHub Actions workflow.</p></dd>
 
 
 <dt>new_device</dt>
