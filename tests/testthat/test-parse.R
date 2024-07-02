@@ -34,20 +34,11 @@ test_that("a character vector is equivalent to a multi-line string", {
 })
 
 test_that("recombines multi-expression TLEs", {
-  expect_equal(
-    parse_all("1;2;3")$expr[[1]],
-    expression(1, 2, 3),
-    ignore_attr = "srcref"
-  )
-  expect_equal(
-    parse_all("1+\n2;3")$expr[[1]],
-    expression(1 + 2, 3),
-    ignore_attr = "srcref"
-  )
+  expect_equal(parse_all("1;2;3")$expr[[1]], expression(1, 2, 3))
+  expect_equal(parse_all("1+\n2;3")$expr[[1]], expression(1 + 2, 3))
   expect_equal(
     parse_all("1+\n2;3+\n4; 5")$expr[[1]],
-    expression(1 + 2, 3 + 4, 5),
-    ignore_attr = "srcref"
+    expression(1 + 2, 3 + 4, 5)
   )
 })
 
@@ -58,8 +49,8 @@ test_that("re-integrates lines without expressions", {
 
 test_that("expr is always an expression", {
   expect_equal(parse_all("#")$expr[[1]], expression())
-  expect_equal(parse_all("1")$expr[[1]], expression(1), ignore_attr = "srcref")
-  expect_equal(parse_all("1;2")$expr[[1]], expression(1, 2), ignore_attr = "srcref")
+  expect_equal(parse_all("1")$expr[[1]], expression(1))
+  expect_equal(parse_all("1;2")$expr[[1]], expression(1, 2))
 
   parsed <- parse_all("#\n1\n1;2")
   expect_equal(lengths(parsed$expr), c(0, 1, 2))
@@ -79,7 +70,7 @@ test_that("double quotes in Chinese characters not destroyed", {
 
   out <- parse_all(c('1+1', '"你好"'))
   expect_equal(out$src[[2]], '"你好"\n')
-  expect_equal(out$expr[[2]], expression("你好"), ignore_attr = "srcref")
+  expect_equal(out$expr[[2]], expression("你好"))
 })
 
 test_that("multibyte characters are parsed correctly", {
@@ -95,11 +86,7 @@ test_that("multibyte characters are parsed correctly", {
 test_that("can parse a call", {
   out <- parse_all(quote(f(a, b, c)))
   expect_equal(out$src, "f(a, b, c)\n")
-  expect_equal(
-    out$expr,
-    I(list(expression(f(a, b, c)))),
-    ignore_attr = "srcref"
-  )
+  expect_equal(out$expr, list(expression(f(a, b, c))))
 })
 
 test_that("can parse a connection", {
@@ -110,11 +97,7 @@ test_that("can parse a connection", {
   out <- parse_all(con)
 
   expect_equal(out$src, c("# 1\n", "1 + 1\n"))
-  expect_equal(
-    out$expr,
-    I(list(expression(), expression(1 + 1))),
-    ignore_attr = "srcref"
-  )
+  expect_equal(out$expr, list(expression(), expression(1 + 1)))
 
   # Doesn't leave any connections around
   expect_equal(getAllConnections(), cur_cons)
@@ -126,11 +109,7 @@ test_that("can parse a function", {
     1 + 1
   })
   expect_equal(out$src, c("# Hi\n", "1 + 1\n"))
-  expect_equal(
-    out$expr,
-    I(list(expression(), expression(1 + 1))),
-    ignore_attr = "srcref"
-  )
+  expect_equal(out$expr, list(expression(), expression(1 + 1)))
 })
 
 # find_function_body -----------------------------------------------------------

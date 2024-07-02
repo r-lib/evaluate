@@ -77,40 +77,58 @@ evaluate <- function(input,
     warning("`evaluate(include_timing)` is deprecated")
   }
 
-  parsed <- parse_all(input, filename, on_error != "error")
-  if (inherits(err <- attr(parsed, 'PARSE_ERROR'), 'error')) {
-    source <- new_source(parsed$src, expression(), output_handler$source)
-    output_handler$error(err)
-    err$call <- NULL  # the call is unlikely to be useful
-    return(new_evaluation(list(source, err)))
+  # Capture output
+  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
+
+  if (on_error != "error" && !can_parse(input)) {
+    err <- tryCatch(parse(text = input), error = function(cnd) cnd) 
+    watcher$push_source(input, expression())
+    watcher$push(err)
+    return(watcher$get())
   }
+  
+  parsed <- parse_all(input, filename = filename)
+  # "Transpose" parsed so we get a list that's easier to iterate over
+  tles <- Map(
+    function(src, exprs) list(src = src, exprs = exprs),
+    parsed$src, parsed$expr
+  )
 
   if (is.list(envir)) {
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
   local_inject_funs(envir)
 
-  # Capture output
-  watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
-  for (i in seq_len(nrow(parsed))) {
-    if (log_echo || debug) {
-      cat_line(parsed$src[[i]], file = stderr())
+  # Handlers for warnings, errors and messages
+  user_handlers <- output_handler$calling_handlers
+  evaluate_handlers <- condition_handlers(
+    watcher,
+    on_error = on_error,
+    on_warning = on_warning,
+    on_message = on_message
+  )
+  # The user's condition handlers have priority over ours
+  handlers <- c(user_handlers, evaluate_handlers)
+  
+  for (tle in tles) {
+    watcher$push_source(tle$src, tle$exprs)
+    if (debug || log_echo) {
+      cat_line(tle$src, file = stderr())
     }
+
     continue <- withRestarts(
-      {
-        evaluate_top_level_expression(
-          exprs = parsed$expr[[i]],
-          src = parsed$src[[i]],
-          watcher = watcher,
-          envir = envir,
-          on_error = on_error,
-          on_warning = on_warning,
-          on_message = on_message,
-          output_handler = output_handler
-        )
-        TRUE
-      },
+      with_handlers(
+        {
+          for (expr in tle$exprs) {
+          ev <- withVisible(eval(expr, envir))
+          watcher$capture_plot_and_output()
+            watcher$print_value(ev$value, ev$visible)
+          }
+          TRUE
+        },
+        handlers
+      ),
       eval_continue = function() TRUE,
       eval_stop = function() FALSE,
       eval_error = function(cnd) stop(cnd)
@@ -121,120 +139,10 @@ evaluate <- function(input,
       break
     }
   }
-
   # Always capture last plot, even if incomplete
   watcher$capture_plot(TRUE)
 
   watcher$get()
-}
-
-evaluate_top_level_expression <- function(exprs,
-                                          src,
-                                          watcher,
-                                          envir = parent.frame(),
-                                          on_error = "continue",
-                                          on_warning,
-                                          on_message,
-                                          log_warning = FALSE,
-                                          output_handler = new_output_handler()) {
-  stopifnot(is.expression(exprs))
-
-  source <- new_source(src, exprs[[1]], output_handler$source)
-  if (!is.null(source))
-    watcher$push(source)
-
-  local_console_flusher(watcher$capture_output)
-  local_plot_hooks(watcher$capture_plot_and_output)
-
-  # Handlers for warnings, errors and messages
-  mHandler <- function(cnd) {
-    watcher$capture_plot_and_output()
-    
-    if (on_message$capture) {
-      watcher$push(cnd)
-      output_handler$message(cnd)
-    }
-    if (on_message$silence) {
-      invokeRestart("muffleMessage")
-    }
-  }
-  wHandler <- function(cnd) {
-    # do not handle warnings that shortly become errors
-    if (getOption("warn") >= 2) return()
-    # do not handle warnings that have been completely silenced
-    if (getOption("warn") < 0) return()
-
-    watcher$capture_plot_and_output()
-    if (on_warning$capture) {
-      cnd <- reset_call(cnd)
-      watcher$push(cnd)
-      output_handler$warning(cnd)
-    }
-    if (on_warning$silence) {
-      invokeRestart("muffleWarning")
-    }
-  }
-  eHandler <- function(cnd) {
-    watcher$capture_plot_and_output()
-    
-    cnd <- reset_call(cnd)
-    watcher$push(cnd)
-    
-    switch(on_error,
-      continue = invokeRestart("eval_continue"),
-      stop = invokeRestart("eval_stop"),
-      error = invokeRestart("eval_error", cnd)
-    )
-  }
-
-  user_handlers <- output_handler$calling_handlers
-  evaluate_handlers <- list(error = eHandler, warning = wHandler, message = mHandler)
-  # The user's condition handlers have priority over ours
-  handlers <- c(user_handlers, evaluate_handlers)
-
-  for (expr in exprs) {
-    ev <- with_handlers(
-      withVisible(eval(expr, envir)),
-      handlers
-    )
-    watcher$capture_plot_and_output()
-
-    if (show_value(output_handler, ev$visible)) {
-      # Ideally we'd evaluate the print() generic in envir in order to find
-      # any methods registered in that environment. That, however, is 
-      # challenging and only makes a few tests a little simpler so we don't
-      # bother.
-      pv <- with_handlers(
-        withVisible(
-          handle_value(output_handler, ev$value, ev$visible)
-        ),
-        handlers
-      )
-      watcher$capture_plot_and_output()
-      # If the return value is visible, save the value to the output
-      if (pv$visible) {
-        watcher$push(pv$value)
-      }
-    }
-  }
-
-  invisible()
-}
-
-with_handlers <- function(code, handlers) {
-  if (!is.list(handlers)) {
-    stop("`handlers` must be a list", call. = FALSE)
-  }
-
-  call <- as.call(c(quote(withCallingHandlers), quote(code), handlers))
-  eval(call)
-}
-
-reset_call <- function(cnd) {
-  if (identical(cnd$call, quote(eval(expr, envir)))) {
-    cnd$call <- NULL
-  }
-  cnd
 }
 
 check_stop_on_error <- function(x) {

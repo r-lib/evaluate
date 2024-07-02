@@ -36,3 +36,17 @@ seq2 <- function(start, end, by = 1) {
     seq(start, end, by = 1)
   }
 }
+
+can_parse <- function(x) {
+  if (!is.character(x)) {
+    return(TRUE)
+  }
+
+  tryCatch(
+    {
+      parse(text = x)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+}
