@@ -89,7 +89,7 @@ which would trigger execution if typed at the console. The <code>expression</cod
 expression contains only whitespace and/or comments; 1 if the top-level
 expression is a single scalar (like <code>TRUE</code>, <code>1</code>, or <code>"x"</code>), name, or call;
 or 2 if the top-level expression uses <code>;</code> to put multiple expressions on
-one line.</p>
+one line. The expressions have their srcrefs removed.</p>
 
 
 <p>If there are syntax errors in <code>x</code> and <code>allow_error = TRUE</code>, the data
@@ -110,17 +110,8 @@ frame will have an attribute <code>PARSE_ERROR</code> that stores the error obje
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression()</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :length 1 expression(x)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "srcref")=List of 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 3 3 3 3 3 3 3 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x55571c969770&gt; </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :length 2 expression(x, y)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "srcref")=List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 4 3 4 3 3 3 4 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x55571c969770&gt; </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : 'srcref' int [1:8] 4 5 4 5 5 5 4 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x55571c969770&gt; </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, "class")= chr "AsIs"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression(x)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression(x, y)</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
