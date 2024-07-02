@@ -46,13 +46,31 @@ Works very similarly to parse, but also keeps original formatting and
 comments.
 }
 \examples{
-source <- "
-  # a comment
-  x
-  x;y
-"
+# Each of these inputs are single line, but generate different numbers of 
+# expressions
+source <- c(
+  "# a comment",
+  "x",
+  "x;y",
+  "x;y;z"
+)
 parsed <- parse_all(source)
 lengths(parsed$expr)
 str(parsed$expr)
 
+# Each of these inputs are a single expression, but span different numbers
+# of lines
+source <- c(
+  "function() {}",
+  "function() {",
+  "  # Hello!",
+  "}",
+  "function() {",
+  "  # Hello!",
+  "  # Goodbye!",
+  "}"
+)
+parsed <- parse_all(source)
+lengths(parsed$expr)
+parsed$src
 }

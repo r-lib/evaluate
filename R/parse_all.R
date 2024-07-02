@@ -34,15 +34,33 @@
 #' frame will have an attribute `PARSE_ERROR` that stores the error object.
 #' @export
 #' @examples
-#' source <- "
-#'   # a comment
-#'   x
-#'   x;y
-#' "
+#' # Each of these inputs are single line, but generate different numbers of 
+#' # expressions
+#' source <- c(
+#'   "# a comment",
+#'   "x",
+#'   "x;y",
+#'   "x;y;z"
+#' )
 #' parsed <- parse_all(source)
 #' lengths(parsed$expr)
 #' str(parsed$expr)
 #' 
+#' # Each of these inputs are a single expression, but span different numbers
+#' # of lines
+#' source <- c(
+#'   "function() {}",
+#'   "function() {",
+#'   "  # Hello!",
+#'   "}",
+#'   "function() {",
+#'   "  # Hello!",
+#'   "  # Goodbye!",
+#'   "}"
+#' )
+#' parsed <- parse_all(source)
+#' lengths(parsed$expr)
+#' parsed$src
 parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_all")
 
 #' @export
