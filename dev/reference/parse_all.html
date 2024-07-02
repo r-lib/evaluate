@@ -76,20 +76,23 @@ If a connection, will be opened and closed only if it was closed initially.</p><
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data frame with columns <code>src</code>, a character vector of source code, and
-<code>expr</code>, a list-column of parsed expressions. There will be one row for each
-top-level expression in <code>x</code>.</p>
+<p>A data frame two columns, <code>src</code> and <code>expr</code>, and one row for each top-level
+expression in <code>x</code>.</p>
 
 
-<p>A top-level expression is a complete expression
-which would trigger execution if typed at the console. The <code>expression</code></p>
+<p><code>src</code> is a character vector of source code. Each element represents a
+complete line (or multi-line) expression, i.e. it always has a terminal <code>\n</code>.</p>
 
 
-<p>object in <code>expr</code> can be of any length: it will be 0 if the top-level
-expression contains only whitespace and/or comments; 1 if the top-level
-expression is a single scalar (like <code>TRUE</code>, <code>1</code>, or <code>"x"</code>), name, or call;
-or 2 if the top-level expression uses <code>;</code> to put multiple expressions on
-one line. The expressions have their srcrefs removed.</p>
+<p><code>expr</code>, a list-column of top-level expressions. A top-level expression
+is a complete expression which would trigger execution if typed at the
+console. Each element is an <code><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression()</a></code> object, which can be of any
+length. It will be length:</p><ul><li><p>0 if the top-level expression contains only whitespace and/or comments.</p></li>
+<li><p>1 if the top-level expression is a single scalar (
+like <code>TRUE</code>, <code>1</code>, or <code>"x"</code>), name, or call</p></li>
+<li><p>2 or more if the top-level expression uses <code>;</code> to put multiple expressions
+on one line.</p></li>
+</ul><p>The expressions have their srcrefs removed.</p>
 
 
 <p>If there are syntax errors in <code>x</code> and <code>allow_error = TRUE</code>, the data
