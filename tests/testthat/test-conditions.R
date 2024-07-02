@@ -98,7 +98,7 @@ test_that("log_warning causes warnings to be emitted", {
 
   # And still recorded in eval result
   expect_output_types(ev, c("source", "warning"))
-  expect_equal(ev[[1]]$src, "f()")
+  expect_equal(ev[[1]]$src, "f()\n")
   expect_equal(ev[[2]], simpleWarning("Hi!", quote(f())))
 })
 

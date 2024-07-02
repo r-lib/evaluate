@@ -24,11 +24,11 @@ test_that("log_echo causes output to be immediately written to stderr()", {
     res <- evaluate("f()", log_echo = TRUE),
     type = "message"
   )
-  expect_equal(out, "f()")
+  expect_equal(out, c("f()", ""))
 
   # But still recorded in eval result
   expect_output_types(res, c("source", "text"))
-  expect_equal(res[[1]]$src, "f()")
+  expect_equal(res[[1]]$src, "f()\n")
 })
 
 test_that("ACTIONS_STEP_DEBUG forces log_warning and log_echo to TRUE", {
@@ -40,7 +40,7 @@ test_that("ACTIONS_STEP_DEBUG forces log_warning and log_echo to TRUE", {
     withr::local_envvar(ACTIONS_STEP_DEBUG = "true")
     capture.output(expect_warning(evaluate("f()"), "abc"), type = "message")
   })
-  expect_equal(out, "f()")
+  expect_equal(out, c("f()", ""))
 })
 
 test_that("data sets loaded", {
