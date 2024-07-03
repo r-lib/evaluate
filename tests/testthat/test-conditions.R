@@ -104,7 +104,7 @@ test_that("log_warning causes warnings to be emitted", {
 
 # errors ----------------------------------------------------------------------
 
-test_that("an error terminates evaluation of top-level expression", {
+test_that("an error terminates evaluation of multi-expression input", {
   ev <- evaluate("stop('1');2\n3")
   expect_output_types(ev, c("source", "error", "source", "text"))
   expect_equal(ev[[1]]$src, "stop('1');2\n")

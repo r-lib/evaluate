@@ -15,22 +15,25 @@ If a connection, will be opened and closed only if it was closed initially.}
 \item{allow_error}{whether to allow syntax errors in \code{x}}
 }
 \value{
-A data frame two columns, \code{src} and \code{expr}, and one row for each top-level
-expression in \code{x}.
+A data frame two columns, \code{src} and \code{expr}, and one row for each complete
+input in \code{x}. A complete input is R code that would trigger execution when
+typed at the console. This might consist of multiple expressions separated
+by \verb{;} or one expression spread over multiple lines (like a function
+definition).
 
 \code{src} is a character vector of source code. Each element represents a
-complete line (or multi-line) expression, i.e. it always has a terminal \verb{\\n}.
+complete input expression (which might span multiple line) and always has a
+terminal \verb{\\n}.
 
-\code{expr}, a list-column of top-level expressions. A top-level expression
-is a complete expression which would trigger execution if typed at the
-console. Each element is an \code{\link[=expression]{expression()}} object, which can be of any
-length. It will be length:
+\code{expr} is a list-column of \link{expression}s. The expressions can be of any
+length, depending on the structure of the complete input source:
 \itemize{
-\item 0 if the top-level expression contains only whitespace and/or comments.
-\item 1 if the top-level expression is a single scalar (
-like \code{TRUE}, \code{1}, or \code{"x"}), name, or call
-\item 2 or more if the top-level expression uses \verb{;} to put multiple expressions
-on one line.
+\item If \code{src} consists of only only whitespace and/or comments, \code{expr} will
+be length 0.
+\item If \code{src} a single scalar (like \code{TRUE}, \code{1}, or \code{"x"}), name, or
+function call, \code{expr} will be length 1.
+\item If \code{src} contains multiple expressions separated by \verb{;}, \code{expr} will
+have length two or more.
 }
 
 The expressions have their srcrefs removed.
@@ -43,13 +46,31 @@ Works very similarly to parse, but also keeps original formatting and
 comments.
 }
 \examples{
-source <- "
-  # a comment
-  x
-  x;y
-"
+# Each of these inputs are single line, but generate different numbers of 
+# expressions
+source <- c(
+  "# a comment",
+  "x",
+  "x;y",
+  "x;y;z"
+)
 parsed <- parse_all(source)
 lengths(parsed$expr)
 str(parsed$expr)
 
+# Each of these inputs are a single expression, but span different numbers
+# of lines
+source <- c(
+  "function() {}",
+  "function() {",
+  "  # Hello!",
+  "}",
+  "function() {",
+  "  # Hello!",
+  "  # Goodbye!",
+  "}"
+)
+parsed <- parse_all(source)
+lengths(parsed$expr)
+parsed$src
 }

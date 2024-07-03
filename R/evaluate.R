@@ -50,6 +50,21 @@
 #' @param filename string overrriding the [base::srcfile()] filename.
 #' @param include_timing Deprecated. 
 #' @import graphics grDevices utils
+#' @examples
+#' evaluate(c(
+#'   "1 + 1", 
+#'   "2 + 2"
+#' ))
+#' 
+#' # Not that's there's a difference in output between putting multiple 
+#' # expressions on one line vs spreading them across multiple lines
+#' evaluate("1;2;3")
+#' evaluate(c("1", "2", "3"))
+#' 
+#' # This also affects how errors propagate, matching the behaviour
+#' # of the R console
+#' evaluate("1;stop(2);3")
+#' evaluate(c("1", "stop(2)", "3"))
 evaluate <- function(input,
                      envir = parent.frame(),
                      enclos = NULL,
