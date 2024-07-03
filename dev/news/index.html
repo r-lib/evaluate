@@ -50,9 +50,9 @@
 <code><a href="../reference/parse_all.html">parse_all()</a></code> adds a <code>\n</code> to the end of every line, even the last one if it didn’t have one in the input.</li>
 <li>Setting <code>ACTIONS_STEP_DEBUG=1</code> (as in a failing GHA workflow) will automatically set <code>log_echo</code> and <code>log_warning</code> to <code>TRUE</code> (<a href="https://github.com/r-lib/evaluate/issues/175" class="external-link">#175</a>).</li>
 <li>New <code><a href="../reference/local_reproducible_output.html">local_reproducible_output()</a></code> helper that sets various options and env vars to help ensure consistency of output across environments.</li>
-<li>The <code>source</code> output handler is now passed the entire top-level expression, not just the first component.</li>
+<li>The <code>source</code> output handler is now passed the entire complete input expression, not just the first component.</li>
 <li>
-<code><a href="../reference/evaluate.html">evaluate()</a></code> will now terminate on the first error in a top-level expression. This matches R’s own behaviour more closely.</li>
+<code><a href="../reference/evaluate.html">evaluate()</a></code> now terminates on the first error in a multi-expression input, i.e. <code>1;stop('2');3</code> will no longer evaluate the third component. This matches console behaviour more closely.</li>
 <li>
 <code>is.value()</code> has been removed since it tests for an object that evaluate never creates.</li>
 <li>

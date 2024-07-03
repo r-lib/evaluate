@@ -155,6 +155,77 @@ visible return values.</p></dd>
 
 </dl></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">evaluate</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"1 + 1"</span>, </span></span>
+<span class="r-in"><span>  <span class="st">"2 + 2"</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1 + 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2 + 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 4</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Not that's there's a difference in output between putting multiple </span></span></span>
+<span class="r-in"><span><span class="co"># expressions on one line vs spreading them across multiple lines</span></span></span>
+<span class="r-in"><span><span class="fu">evaluate</span><span class="op">(</span><span class="st">"1;2;3"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1;2;3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 3</span>
+<span class="r-in"><span><span class="fu">evaluate</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 3</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># This also affects how errors propagate, matching the behaviour</span></span></span>
+<span class="r-in"><span><span class="co"># of the R console</span></span></span>
+<span class="r-in"><span><span class="fu">evaluate</span><span class="op">(</span><span class="st">"1;stop(2);3"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1;stop(2);3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Condition: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Error:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2</span>
+<span class="r-in"><span><span class="fu">evaluate</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"stop(2)"</span>, <span class="st">"3"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;evaluation&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   stop(2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Condition: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Error:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source code: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Text output: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 3</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

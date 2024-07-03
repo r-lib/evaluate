@@ -76,22 +76,25 @@ If a connection, will be opened and closed only if it was closed initially.</p><
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data frame two columns, <code>src</code> and <code>expr</code>, and one row for each top-level
-expression in <code>x</code>.</p>
+<p>A data frame two columns, <code>src</code> and <code>expr</code>, and one row for each complete
+input in <code>x</code>. A complete input is R code that would trigger execution when
+typed at the console. This might consist of multiple expressions separated
+by <code>;</code> or one expression spread over multiple lines (like a function
+definition).</p>
 
 
 <p><code>src</code> is a character vector of source code. Each element represents a
-complete line (or multi-line) expression, i.e. it always has a terminal <code>\n</code>.</p>
+complete input expression (which might span multiple line) and always has a
+terminal <code>\n</code>.</p>
 
 
-<p><code>expr</code>, a list-column of top-level expressions. A top-level expression
-is a complete expression which would trigger execution if typed at the
-console. Each element is an <code><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression()</a></code> object, which can be of any
-length. It will be length:</p><ul><li><p>0 if the top-level expression contains only whitespace and/or comments.</p></li>
-<li><p>1 if the top-level expression is a single scalar (
-like <code>TRUE</code>, <code>1</code>, or <code>"x"</code>), name, or call</p></li>
-<li><p>2 or more if the top-level expression uses <code>;</code> to put multiple expressions
-on one line.</p></li>
+<p><code>expr</code> is a list-column of <a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a>s. The expressions can be of any
+length, depending on the structure of the complete input source:</p><ul><li><p>If <code>src</code> consists of only only whitespace and/or comments, <code>expr</code> will
+be length 0.</p></li>
+<li><p>If <code>src</code> a single scalar (like <code>TRUE</code>, <code>1</code>, or <code>"x"</code>), name, or
+function call, <code>expr</code> will be length 1.</p></li>
+<li><p>If <code>src</code> contains multiple expressions separated by <code>;</code>, <code>expr</code> will
+have length two or more.</p></li>
 </ul><p>The expressions have their srcrefs removed.</p>
 
 
@@ -101,21 +104,43 @@ frame will have an attribute <code>PARSE_ERROR</code> that stores the error obje
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">source</span> <span class="op">&lt;-</span> <span class="st">"</span></span></span>
-<span class="r-in"><span><span class="st">  # a comment</span></span></span>
-<span class="r-in"><span><span class="st">  x</span></span></span>
-<span class="r-in"><span><span class="st">  x;y</span></span></span>
-<span class="r-in"><span><span class="st">"</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Each of these inputs are single line, but generate different numbers of </span></span></span>
+<span class="r-in"><span><span class="co"># expressions</span></span></span>
+<span class="r-in"><span><span class="va">source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"# a comment"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"x"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"x;y"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"x;y;z"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu">parse_all</span><span class="op">(</span><span class="va">source</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">$</span><span class="va">expr</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 1 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 1 2 3</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">$</span><span class="va">expr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression()</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression(x)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression(x, y)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ :  expression(x, y, z)</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Each of these inputs are a single expression, but span different numbers</span></span></span>
+<span class="r-in"><span><span class="co"># of lines</span></span></span>
+<span class="r-in"><span><span class="va">source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"function() {}"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"function() {"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"  # Hello!"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"}"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"function() {"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"  # Hello!"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"  # Goodbye!"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"}"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu">parse_all</span><span class="op">(</span><span class="va">source</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">$</span><span class="va">expr</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 1 1</span>
+<span class="r-in"><span><span class="va">parsed</span><span class="op">$</span><span class="va">src</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "function() {}\n"                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "function() {\n  # Hello!\n}\n"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "function() {\n  # Hello!\n  # Goodbye!\n}\n"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

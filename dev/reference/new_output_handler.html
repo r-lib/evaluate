@@ -73,10 +73,11 @@ a particular function in the handler object.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>source</dt>
 <dd><p>Function to handle the echoed source code under evaluation.
-This function should take two arguments (<code>src</code> and <code>tle</code>), and return
+This function should take two arguments (<code>src</code> and <code>expr</code>), and return
 an object that will be inserted into the evaluate outputs. <code>src</code> is the
-unparsed text of the source code, and <code>tle</code> is the parsed top-level
-expression. If <code>src</code> is unparsable, <code>tle</code> will be <code><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression()</a></code>.</p>
+unparsed text of the source code, and <code>expr</code> is the complete input
+expression (which may have 0, 1, 2, or more components; see <code><a href="parse_all.html">parse_all()</a></code>
+for details).</p>
 <p>Return <code>src</code> for the default evaluate behaviour. Return <code>NULL</code> to
 drop the source from the output.</p></dd>
 
