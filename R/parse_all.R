@@ -112,8 +112,10 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   # parse() drops comments and whitespace so we add them back in
   gaps <- data.frame(start = c(1, pos$end + 1), end = c(pos$start - 1, n))
   gaps <- gaps[gaps$start <= gaps$end, ,]
-  # in sequence(), nvec is equivalent to length.out
-  lines <- sequence(from = gaps$start, nvec = gaps$end - gaps$start + 1)
+  # some indexing magic in order to vectorise the extraction
+  lengths <- gaps$end - gaps$start + 1
+  lines <- sequence(lengths) + rep(gaps$start, lengths) - 1
+  
   comments <- data.frame(
     src = x[lines],
     expr = empty_expr(length(lines)),
