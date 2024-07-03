@@ -50,3 +50,9 @@ can_parse <- function(x) {
     error = function(e) FALSE
   )
 }
+
+if (getRversion() <= "3.6") {
+  deparse1 <- function (expr, collapse = " ", width.cutoff = 500L, ...) {
+    paste(deparse(expr, width.cutoff, ...), collapse = collapse)
+  }
+}
