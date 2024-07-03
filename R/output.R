@@ -23,15 +23,31 @@ show_value <- function(handler, visible) {
   visible || length(formals(handler$value)) > 1
 }
 
-handle_value <- function(handler, value, visible) {
+handle_value <- function(handler, value, visible, envir = parent.frame()) {
   n_args <- length(formals(handler$value))
   if (n_args == 1) {
     handler$value(value)
   } else if (n_args == 2) {
     handler$value(value, visible)
+  } else if (n_args == 3) {
+    handler$value(value, visible, envir)
   } else {
     stop("Value output handler must have one or two arguments")
   }
 }
 
-render <- function(x) if (isS4(x)) methods::show(x) else print(x)
+render <- function(value, visible, envir) {
+  if (!visible) {
+    return(invisible())
+  }
+
+  if (isS4(value)) {
+    methods::show(value)
+  } else {
+    # We need to the print() generic in a child environment of the evaluation 
+    # frame in order to find any methods registered there
+    print_env <- new.env(parent = envir) 
+    print_env$value <- value
+    evalq(print(value), envir = print_env)
+  }
+}
