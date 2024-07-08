@@ -144,8 +144,8 @@ evaluate <- function(input,
       with_handlers(
         {
           for (expr in tle$exprs) {
-          ev <- withVisible(eval(expr, envir))
-          watcher$capture_plot_and_output()
+            ev <- withVisible(eval(expr, envir))
+            watcher$capture_plot_and_output()
             watcher$print_value(ev$value, ev$visible, envir)
           }
           TRUE
