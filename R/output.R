@@ -44,8 +44,8 @@ render <- function(value, visible, envir) {
   if (isS4(value)) {
     methods::show(value)
   } else {
-    # We need to the print() generic in a child environment of the evaluation 
-    # frame in order to find any methods registered there
+    # We need to evaluate the print() generic in a child environment of the 
+    # evaluation frame in order to find any methods registered there
     print_env <- new.env(parent = envir) 
     print_env$value <- value
     evalq(print(value), envir = print_env)
