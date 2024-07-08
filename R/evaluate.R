@@ -134,34 +134,49 @@ evaluate <- function(input,
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
   
-  for (tle in tles) {
-    watcher$push_source(tle$src, tle$exprs)
-    if (debug || log_echo) {
-      cat_line(tle$src, file = stderr())
-    }
+  cb <- function() {
+    do <- NULL # silence R CMD check note
 
-    continue <- withRestarts(
-      with_handlers(
-        {
-          for (expr in tle$exprs) {
-          ev <- withVisible(eval(expr, envir))
-          watcher$capture_plot_and_output()
-            watcher$print_value(ev$value, ev$visible)
-          }
-          TRUE
-        },
-        handlers
-      ),
-      eval_continue = function() TRUE,
-      eval_stop = function() FALSE,
-      eval_error = function(cnd) stop(cnd)
-    )
-    watcher$check_devices()
-
-    if (!continue) {
-      break
+    for (tle in tles) {
+      watcher$push_source(tle$src, tle$exprs)
+      if (debug || log_echo) {
+        cat_line(tle$src, file = stderr())
+      }
+  
+      continue <- withRestarts(
+        with_handlers(
+          {
+            for (expr in tle$exprs) {
+              # Using `delayedAssign()` as an interface to the C-level function
+              # `Rf_eval()`. Unlike the R-level `eval()`, this doesn't create
+              # an unwinding scope.
+              eval(bquote(delayedAssign("do", .(expr), eval.env = envir)))
+              
+              ev <- withVisible(do)
+              watcher$capture_plot_and_output()
+              watcher$print_value(ev$value, ev$visible)
+            }
+            TRUE
+          },
+          handlers
+        ),
+        eval_continue = function() TRUE,
+        eval_stop = function() FALSE,
+        eval_error = function(cnd) stop(cnd)
+      )
+      watcher$check_devices()
+  
+      if (!continue) {
+        break
+      }
     }
   }
+
+  # Here we use `eval()` to create an unwinding scope for `envir`.
+  # We call ourselves back immediately once the scope is created. 
+  eval(as.call(list(cb)), envir)
+  watcher$capture_output()
+
   # Always capture last plot, even if incomplete
   watcher$capture_plot(TRUE)
 

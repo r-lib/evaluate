@@ -97,6 +97,14 @@ test_that("multiple lines of comments do not lose the terminating \\n", {
   expect_equal(ev[[1]]$src, "# foo\n")
 })
 
+test_that("on.exit is evaluated at end of code", {
+  ev <- evaluate::evaluate(c(
+    "on.exit(print('bye'))",
+    "print('hi')"
+  ))
+  expect_snapshot(ev)
+})
+
 test_that("check_stop_on_error converts integer to enum", {
   expect_equal(check_stop_on_error(0), "continue")
   expect_equal(check_stop_on_error(1), "stop")
