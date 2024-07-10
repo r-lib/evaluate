@@ -16,6 +16,10 @@ test_that("all condition handlers first capture output", {
 test_that("conditions get calls stripped", {
   expect_equal(evaluate("warning('x')")[[2]]$call, NULL)
   expect_equal(evaluate("stop('x')")[[2]]$call, NULL)
+
+  # including errors emitted by C
+  expect_equal(evaluate("mpg")[[2]]$call, NULL)
+  expect_equal(evaluate("3()")[[2]]$call, NULL)
 })
 
 test_that("envvar overrides keep_* arguments", {
