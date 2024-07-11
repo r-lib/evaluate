@@ -43,16 +43,14 @@ test_that("base plots in a single expression are captured", {
 
 test_that("captures ggplots", {
   skip_if_not_installed("ggplot2")
-  library(ggplot2)
-
   ev <- evaluate(
-    "ggplot(mtcars, aes(mpg, wt)) + geom_point()"
+    "ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) + ggplot2::geom_point()"
   )
   expect_output_types(ev, c("source", "plot"))
 
   ev <- evaluate(function() {
     for (j in 1:2) {
-      print(ggplot(mtcars, aes(mpg, wt)) + geom_point())
+      print(ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) + ggplot2::geom_point())
     }
   })
   expect_output_types(ev, c("source", "plot", "plot"))
@@ -60,17 +58,18 @@ test_that("captures ggplots", {
 
 test_that("erroring ggplots should not be recorded", {
   skip_if_not_installed("ggplot2")
-  library(ggplot2)
-
+  
   # error in aesthetics
   ev <- evaluate(function() {
-    ggplot(iris, aes(XXXXXXXXXX, Sepal.Length)) + geom_boxplot()
+    ggplot2::ggplot(iris, ggplot2::aes(XXXXXXXXXX, Sepal.Length)) + 
+      ggplot2::geom_boxplot()
   })
   expect_output_types(ev, c("source", "error"))
   
   # error in geom
   ev <- evaluate(function() {
-    ggplot(iris, aes(Species, Sepal.Length)) + geom_bar()
+    ggplot2::ggplot(iris, ggplot2::aes(Species, Sepal.Length)) + 
+      ggplot2::geom_bar()
   })
   expect_output_types(ev, c("source", "error"))
 })

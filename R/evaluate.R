@@ -94,7 +94,7 @@ evaluate <- function(input,
   on_message <- check_keep(keep_message, "keep_message")
   on_warning <- check_keep(keep_warning, "keep_warning", log_warning)
 
-  output_handler <- output_handler %||% evaluate_default_output_handler
+  output_handler <- output_handler %||% default_output_handler
 
   if (isTRUE(include_timing)) {
     warning("`evaluate(include_timing)` is deprecated")
@@ -144,9 +144,9 @@ evaluate <- function(input,
       with_handlers(
         {
           for (expr in tle$exprs) {
-            ev <- withVisible(eval(expr, envir))
-            watcher$capture_plot_and_output()
-            watcher$print_value(ev$value, ev$visible, envir)
+          ev <- withVisible(eval(expr, envir))
+          watcher$capture_plot_and_output()
+            watcher$print_value(ev$value, ev$visible)
           }
           TRUE
         },

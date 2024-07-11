@@ -43,9 +43,6 @@ drop the source from the output.}
 \item If it has one argument, it called on visible values.
 \item If it has two arguments, it handles all values, with the second
 argument indicating whether or not the value is visible.
-\item If it has three arguments, it will be called on all values, with the
-the third argument given the evaluation environment which is needed
-to look up print methods for S3 objects.
 }}
 
 \item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.

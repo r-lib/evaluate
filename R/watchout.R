@@ -80,11 +80,15 @@ watchout <- function(handler = new_output_handler(),
     capture_output()
   }
 
-  print_value <- function(value, visible, envir) {
+  print_value <- function(value, visible) {
     if (!show_value(handler, visible)) 
       return()
     
-    pv <- withVisible(handle_value(handler, value, visible, envir))
+    # Ideally we'd evaluate the print() generic in envir in order to find
+    # any methods registered in that environment. That, however, is 
+    # challenging and only makes a few tests a little simpler so we don't
+    # bother.
+    pv <- withVisible(handle_value(handler, value, visible))
     capture_plot_and_output()
     # If the return value is visible, save the value to the output
     if (pv$visible) {
