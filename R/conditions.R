@@ -51,8 +51,12 @@ with_handlers <- function(code, handlers) {
 }
 
 sanitize_call <- function(cnd) {
-  if (identical(cnd$call, quote(eval(expr, envir)))) {
+  if (identical(cnd$call, quote(withVisible(do)))) {
     cnd$call <- NULL
   }
+  if (identical(cnd$call, quote(eval(as.call(list(cb)), envir)))) {
+    cnd$call <- NULL
+  }
+  
   cnd
 }
