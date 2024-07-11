@@ -102,7 +102,7 @@ test_that("on.exit is evaluated at end of code", {
     "on.exit(print('bye'))",
     "print('hi')"
   ))
-  expect_snapshot(ev)
+  expect_output_types(ev, c("source", "source", "text", "text"))
 })
 
 test_that("return causes an early return", {

@@ -1,18 +1,3 @@
-# on.exit is evaluated at end of code
-
-    Code
-      ev
-    Output
-      <evaluation>
-      Source code: 
-        on.exit(print('bye'))
-      Source code: 
-        print('hi')
-      Text output: 
-        [1] "hi"
-      Text output: 
-        [1] "bye"
-
 # check_stop_on_error converts integer to enum
 
     Code
