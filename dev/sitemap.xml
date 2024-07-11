@@ -1,66 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>evaluate.r-lib.org/dev/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/authors.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/index.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/news/index.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/create_traceback.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/evaluate-package.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/evaluate.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/flush_console.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/inject_funs.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/is.message.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/line_prompt.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/local_reproducible_output.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/new_output_handler.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/parse_all.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/replay.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/set_hooks.html</loc>
-  </url>
-  <url>
-    <loc>evaluate.r-lib.org/dev/reference/try_capture_stack.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>evaluate.r-lib.org/dev/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/CONTRIBUTING.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/LICENSE-text.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/LICENSE.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/authors.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/index.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/news/index.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/create_traceback.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/evaluate-package.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/evaluate.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/flush_console.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/index.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/inject_funs.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/is.message.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/line_prompt.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/local_reproducible_output.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/new_output_handler.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/parse_all.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/replay.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/set_hooks.html</loc></url>
+<url><loc>evaluate.r-lib.org/dev/reference/try_capture_stack.html</loc></url>
 </urlset>
+
