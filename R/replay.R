@@ -33,7 +33,7 @@ replay.list <- function(x) {
 
 #' @export
 replay.default <- function(x) {
-  render(x)
+  render(x, TRUE, parent.frame())
 }
 
 #' @export

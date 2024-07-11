@@ -1,6 +1,7 @@
 # evaluate (development version)
 
 * evaluation "chunks" now provide a function-like scope. This means that `on.exit()` will now run at the end of the evaluate code, rather than immediately and `return()` will cause the evaluation to finish (#201).
+* The default `value` handler now evaluates print in a child environment of the evaluation environment. This largely makes evaluate easier to test, but should make defining S3 methods for print a little easier (#192).
 * `parse_all()` adds a `\n` to the end of every line, even the last one if it didn't have one in the input.
 * Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will automatically set `log_echo` and `log_warning` to `TRUE` (#175).
 * New `local_reproducible_output()` helper that sets various options and env vars to help ensure consistency of output across environments.

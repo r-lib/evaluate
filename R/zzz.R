@@ -1,6 +1,13 @@
-# used by knitr to avoid overheard of calling new_output_handler() repeatedly
+# used evaluate() to avoid overhead of calling new_output_handler() repeatedly
+evaluate_default_output_handler <- NULL
+# used by knitr, as above, but also for value handler
 default_output_handler <- NULL
 
 .onLoad <- function(...) {
+  evaluate_default_output_handler <<- new_output_handler()
   default_output_handler <<- new_output_handler()
+  # Match knitr's expectations
+  default_output_handler$value <<- function(x) {
+    render(x, visible = TRUE, envir = parent.frame())
+  }
 }
