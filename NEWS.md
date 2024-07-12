@@ -9,7 +9,6 @@
 * `evaluate()` now terminates on the first error in a multi-expression input, i.e. `1;stop('2');3` will no longer evaluate the third component. This matches console behaviour more closely.
 * `is.value()` has been removed since it tests for an object that evaluate never creates.
 * `parse_all()` no longer has a default method, which will generate better errors if you pass in something unexpectected.
-* The package now depends on R 4.0.0 in order to decrease our maintenance burden.
 * `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
 * `evalute(include_timing)` has been deprecated. I can't find any use of it on GitHub, and it adds substantial code complexity for little gain.
 * `watchout()` is no longer exported; it's really an implementation detail that should never have been leaked to the public interface.
@@ -20,6 +19,7 @@
 
 * The `source` output handler can now take two arguments (the unparsed `src` 
   and the parsed `call`) and choose to affect the displayed source.
+* The package now depends on R 4.0.0 in order to decrease our maintenance burden.
 
 # Version 0.23
 
