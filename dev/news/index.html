@@ -47,7 +47,6 @@
 <code>is.value()</code> has been removed since it tests for an object that evaluate never creates.</li>
 <li>
 <code><a href="../reference/parse_all.html">parse_all()</a></code> no longer has a default method, which will generate better errors if you pass in something unexpectected.</li>
-<li>The package now depends on R 4.0.0 in order to decrease our maintenance burden.</li>
 <li>
 <code><a href="../reference/evaluate.html">evaluate()</a></code> automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they’re wrapped inside <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code>) (<a href="https://github.com/r-lib/evaluate/issues/150" class="external-link">#150</a>).</li>
 <li>
@@ -58,10 +57,12 @@
 <code><a href="../reference/evaluate.html">evaluate()</a></code> gains an output class (<code>evaluate_evaluation</code>/<code>list</code>) and a basic print method.</li>
 <li>
 <code><a href="../reference/evaluate.html">evaluate()</a></code> now correctly captures plots created before messages/warnings/errors (<a href="https://github.com/r-lib/evaluate/issues/28" class="external-link">#28</a>).</li>
+<li>The package now again supports on R 3.6.0.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.24.0" id="evaluate-0240">evaluate 0.24.0<a class="anchor" aria-label="anchor" href="#evaluate-0240"></a></h2><p class="text-muted">CRAN release: 2024-06-10</p>
 <ul><li>The <code>source</code> output handler can now take two arguments (the unparsed <code>src</code> and the parsed <code>call</code>) and choose to affect the displayed source.</li>
+<li>The package now depends on R 4.0.0 in order to decrease our maintenance burden.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.23" id="version-023">Version 0.23<a class="anchor" aria-label="anchor" href="#version-023"></a></h2><p class="text-muted">CRAN release: 2023-11-01</p>
