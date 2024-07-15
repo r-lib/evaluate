@@ -34,6 +34,9 @@
 #'   * If it has one argument, it called on visible values.
 #'   * If it has two arguments, it handles all values, with the second
 #'     argument indicating whether or not the value is visible.
+#'   * If it has three arguments, it will be called on all values, with the
+#'     the third argument given the evaluation environment which is needed
+#'     to look up print methods for S3 objects.
 #' @param calling_handlers List of [calling handlers][withCallingHandlers].
 #'   These handlers have precedence over the exiting handler installed
 #'   by [evaluate()] when `stop_on_error` is set to 0.
