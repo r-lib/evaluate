@@ -57,12 +57,28 @@ non_visual_calls <- c(
   "palette", "palette2"
 )
 
-
 # plot trimming ----------------------------------------------------------
 
-# Eliminate plots that are modified by subsequent lines so that we only
-# show the final plot
-trim_plots <- function(x) {
+#' Trim away intermediate plots
+#' 
+#' Trim off plots that are modified by subsequent lines to only shown
+#' the final plot.
+#' 
+#' @param An evaluation object produced by [evaluate()].
+#' @return A modified evaluation object.
+#' @export
+#' @examples
+#' ev <- evaluate(c(
+#'   "plot(1:3)",
+#'   "text(1, 1, 'x')",
+#'   "text(1, 1, 'y')"
+#' ))
+#' 
+#' # All intermediate plots are captured
+#' ev
+#' # Only the final plot is shown
+#' trim_intermediate_plots(ev)
+trim_intermediate_plots <- function(x) {
   if (!is_evaluation(x)) {
     stop("`x` must be an evaluation object.")
   }

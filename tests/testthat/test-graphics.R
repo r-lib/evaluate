@@ -221,3 +221,33 @@ test_that("evaluate ignores plots created in new device", {
   })
   expect_output_types(ev, c("source", "source", "source", "source", "plot"))
 })
+
+
+# trim_intermediate_plots ------------------------------------------------
+
+test_that("can trim off intermediate plots", {
+  ev <- evaluate(c(
+    "plot(1:3)",
+    "text(1, 1, 'x')",
+    "text(1, 1, 'y')"
+  ))
+  ev <- trim_intermediate_plots(ev)
+  expect_output_types(ev, c("source", "source", "source", "plot"))
+
+  ev <- evaluate(c(
+    "plot(1:3)",
+    "text(1, 1, 'x')",
+    "plot(1:3)",
+    "text(1, 1, 'y')"
+  ))
+  ev <- trim_intermediate_plots(ev)
+  expect_output_types(ev, c("source", "source", "plot", "source", "source", "plot"))
+})
+
+test_that("works with empty output", {
+  ev <- trim_intermediate_plots(evaluate(""))
+  expect_output_types(ev, "source")
+
+  ev <- trim_intermediate_plots(new_evaluation(list()))
+  expect_output_types(ev, character())
+})

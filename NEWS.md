@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* New `trim_intermediate_plots()` drops intermediate plots to reveal the complete/final plot (#206).
 * `parse_all()` adds a `\n` to the end of every line, even the last one if it didn't have one in the input.
 * Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will automatically set `log_echo` and `log_warning` to `TRUE` (#175).
 * New `local_reproducible_output()` helper that sets various options and env vars to help ensure consistency of output across environments.
