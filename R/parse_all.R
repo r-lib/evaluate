@@ -128,6 +128,8 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   # Restore newlines stripped while converting to vector of lines
   if (length(res$src)) {
     res$src <- paste0(res$src, "\n")
+  } else {
+    res$src <- character()
   }
   
   res$expr <- lapply(res$expr, removeSource)
