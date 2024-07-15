@@ -251,3 +251,7 @@ test_that("works with empty output", {
   ev <- trim_intermediate_plots(new_evaluation(list()))
   expect_output_types(ev, character())
 })
+
+test_that("checks its input", {
+  expect_snapshot(trim_intermediate_plots(1), error = TRUE)
+})
