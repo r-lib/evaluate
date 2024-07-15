@@ -54,7 +54,7 @@ sanitize_call <- function(cnd) {
   if (identical(cnd$call, quote(withVisible(do)))) {
     cnd$call <- NULL
   }
-  if (identical(cnd$call, quote(eval(as.call(list(cb)), envir)))) {
+  if (identical(cnd$call, quote(eval(as.call(list(context)), envir)))) {
     cnd$call <- NULL
   }
   

@@ -121,8 +121,7 @@ evaluate <- function(input,
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
   local_inject_funs(envir)
-
-
+  
   # Handlers for warnings, errors and messages
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- condition_handlers(
@@ -134,7 +133,7 @@ evaluate <- function(input,
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
   
-  cb <- function() {
+  context <- function() {
     do <- NULL # silence R CMD check note
 
     for (tle in tles) {
@@ -174,7 +173,7 @@ evaluate <- function(input,
 
   # Here we use `eval()` to create an unwinding scope for `envir`.
   # We call ourselves back immediately once the scope is created. 
-  eval(as.call(list(cb)), envir)
+  eval(as.call(list(context)), envir)
   watcher$capture_output()
 
   # Always capture last plot, even if incomplete
