@@ -7,14 +7,14 @@
 trim_intermediate_plots(x)
 }
 \arguments{
-\item{An}{evaluation object produced by \code{\link[=evaluate]{evaluate()}}.}
+\item{x}{An evaluation object produced by \code{\link[=evaluate]{evaluate()}}.}
 }
 \value{
 A modified evaluation object.
 }
 \description{
-Trim off plots that are modified by subsequent lines to only shown
-the final plot.
+Trim off plots that are modified by subsequent lines to only show
+the "final" plot.
 }
 \examples{
 ev <- evaluate(c(

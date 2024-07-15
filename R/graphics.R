@@ -61,10 +61,10 @@ non_visual_calls <- c(
 
 #' Trim away intermediate plots
 #' 
-#' Trim off plots that are modified by subsequent lines to only shown
-#' the final plot.
+#' Trim off plots that are modified by subsequent lines to only show
+#' the "final" plot.
 #' 
-#' @param An evaluation object produced by [evaluate()].
+#' @param x An evaluation object produced by [evaluate()].
 #' @return A modified evaluation object.
 #' @export
 #' @examples
