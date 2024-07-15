@@ -1,3 +1,7 @@
+test_that("can parse empty input", {
+  expect_equal(parse_all(character())$src, character())
+})
+
 test_that("can parse even if no expressions", {
   expect_equal(parse_all("")$src, "\n")
   expect_equal(parse_all("#")$src, "#\n")
