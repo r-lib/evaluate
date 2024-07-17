@@ -3,6 +3,15 @@ new_evaluation <- function(x) {
   structure(x, class = c("evaluate_evaluation", "list"))
 }
 
+is_evaluation <- function(x) {
+  inherits(x, "evaluate_evaluation")
+}
+
+#' @export
+`[.evaluate_evaluation` <- function(x, i, ...) {
+  new_evaluation(NextMethod())
+}
+
 #' @export
 print.evaluate_evaluation <- function(x, ...) {
   cat_line("<evaluation>")
