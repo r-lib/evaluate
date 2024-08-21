@@ -160,7 +160,7 @@ evaluate <- function(input,
         ),
         eval_continue = function() TRUE,
         eval_stop = function() FALSE,
-        eval_error = function(cnd) stop(cnd)
+        eval_error = function(cnd) signalCondition(cnd)
       )
       watcher$check_devices()
 

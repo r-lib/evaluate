@@ -128,6 +128,25 @@ test_that("all three starts of stop_on_error work as expected", {
   expect_snapshot(evaluate('stop("1")\n2', stop_on_error = 2L), error = TRUE)
 })
 
+test_that("errors have useful call", {
+  f <- function() g()
+  g <- function() h()
+  h <- function() rlang::abort("Error")
+  cnd <- tryCatch(
+    evaluate('f()', stop_on_error = 2L),
+    error = function(cnd) cnd
+  )
+  expect_snapshot(cnd$trace)
+})
+
+test_that("errors have useful call", {
+  cnd <- tryCatch(
+    evaluate('stop("Error")', stop_on_error = 2L),
+    error = function(cnd) cnd
+  )
+  expect_equal(cnd$call, NULL)
+})
+
 test_that("errors during printing are captured", {
   methods::setClass("A", contains = "function", where = environment())
   methods::setMethod("show", "A", function(object) stop("B"))
