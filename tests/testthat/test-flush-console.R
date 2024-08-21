@@ -1,5 +1,3 @@
-
-
 test_that("flush_console() is a null op by default", {
   expect_no_error(flush_console())
 })

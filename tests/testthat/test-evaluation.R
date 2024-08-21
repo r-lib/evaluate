@@ -9,5 +9,5 @@ test_that("has a reasonable print method", {
   expect_snapshot({
     evaluate("f()")
     evaluate("plot(1:3)")
-  })  
+  })
 })

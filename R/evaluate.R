@@ -171,9 +171,9 @@ evaluate <- function(input,
     }
   }
 
-  # Here we use `eval()` to create an unwinding scope for `envir`, using
-  # an inlined call to `context()`.
-  eval(substitute(context()), envir)
+  # Here we use `eval()` to create an unwinding scope for `envir`.
+  # We call ourselves back immediately once the scope is created.
+  eval(as.call(list(context)), envir)
   watcher$capture_output()
 
   # Always capture last plot, even if incomplete

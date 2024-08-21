@@ -16,18 +16,18 @@ test_that("every line gets nl", {
   # even empty lines
   expect_equal(parse_all("a\n\nb")$src, c("a\n", "\n", "b\n"))
   expect_equal(parse_all("a\n\nb\n")$src, c("a\n", "\n", "b\n"))
-  
+
   expect_equal(parse_all("\n\n")$src, c("\n", "\n"))
 })
 
 test_that("empty lines are never silently dropped", {
-  # It's not possible to simulate problem directly from code, but it can occur 
+  # It's not possible to simulate problem directly from code, but it can occur
   # in knitr
   # ```{r, tidy = TRUE}`
   # for (i in 1) {}
   # # two blank lines below
-  # 
-  # 
+  #
+  #
   # 1
   # ```
   expect_equal(parse_all(c("\n", "", "1"))$src, c("\n", "\n", "1\n"))
@@ -61,25 +61,25 @@ test_that("expr is always an expression", {
 })
 
 test_that("parse(allow_error = TRUE/FALSE)", {
-  expect_error(parse_all('x <-', allow_error = FALSE))
-  res <- parse_all('x <-', allow_error = TRUE)
-  expect_true(inherits(attr(res, 'PARSE_ERROR'), 'error'))
+  expect_error(parse_all("x <-", allow_error = FALSE))
+  res <- parse_all("x <-", allow_error = TRUE)
+  expect_true(inherits(attr(res, "PARSE_ERROR"), "error"))
 
   # And correctly flows through to evaluate
-  expect_no_error(evaluate('x <-', stop_on_error = 0))
+  expect_no_error(evaluate("x <-", stop_on_error = 0))
 })
 
 test_that("double quotes in Chinese characters not destroyed", {
-  skip_if_not(l10n_info()[['UTF-8']])
+  skip_if_not(l10n_info()[["UTF-8"]])
 
-  out <- parse_all(c('1+1', '"你好"'))
+  out <- parse_all(c("1+1", '"你好"'))
   expect_equal(out$src[[2]], '"你好"\n')
   expect_equal(out$expr[[2]], expression("你好"))
 })
 
 test_that("multibyte characters are parsed correctly", {
-  skip_if_not(l10n_info()[['UTF-8']])
-  
+  skip_if_not(l10n_info()[["UTF-8"]])
+
   code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
   out <- parse_all(code)
   expect_equal(out$src, paste0(code, "\n"))
@@ -149,7 +149,7 @@ test_that("isn't flumoxed by nested parens", {
       1 + 1
     }
   }
-  expect_equal(find_function_body(f), c("{", "  1 + 1", "}")) 
+  expect_equal(find_function_body(f), c("{", "  1 + 1", "}"))
 })
 
 test_that("works if no parens", {

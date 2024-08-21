@@ -39,7 +39,8 @@ print.evaluate_evaluation <- function(x, ...) {
       }
     } else {
       cat_line("Other: ")
-      cat(" "); str(component, indent.str = "  ")
+      cat(" ")
+      str(component, indent.str = "  ")
     }
   }
 

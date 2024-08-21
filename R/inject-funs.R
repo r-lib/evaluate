@@ -16,17 +16,17 @@
 #'
 #' # replace the system() function
 #' old <- inject_funs(system = function(...) {
-#'   cat(base::system(..., intern = TRUE), sep = '\n')
+#'   cat(base::system(..., intern = TRUE), sep = "\n")
 #' })
 #'
 #' evaluate("system('R --version')")
 #'
 #' # restore previously injected functions
-#' inject_funs(old) 
+#' inject_funs(old)
 #' @export
 inject_funs <- function(...) {
   funs <- list(...)
-  funs <- funs[names(funs) != '']
+  funs <- funs[names(funs) != ""]
   old <- the$inject_funs
   the$inject_funs <- Filter(is.function, funs)
 
@@ -43,12 +43,12 @@ local_inject_funs <- function(envir, frame = parent.frame()) {
   funs_new <- !vapply(funs_names, exists, logical(1), envir, inherits = FALSE)
   funs_names <- funs_names[funs_new]
   funs <- funs[funs_new]
-  
+
   defer(rm(list = funs_names, envir = envir), frame = frame)
-  
+
   for (i in seq_along(funs_names)) {
     assign(funs_names[i], funs[[i]], envir)
   }
-  
+
   invisible()
 }

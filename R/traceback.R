@@ -5,7 +5,9 @@
 #' @keywords internal
 #' @export
 create_traceback <- function(callstack) {
-  if (length(callstack) == 0) return()
+  if (length(callstack) == 0) {
+    return()
+  }
 
   # Convert to text
   calls <- lapply(callstack, deparse, width = 500)

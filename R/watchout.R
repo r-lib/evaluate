@@ -10,7 +10,7 @@ watchout <- function(handler = new_output_handler(),
     dev <- dev.cur()
     defer(dev.off(dev), frame)
   }
-      
+
   # Maintain a list of outputs that we'll grow over time
   output <- list()
   i <- 1
@@ -57,7 +57,7 @@ watchout <- function(handler = new_output_handler(),
     if (!makes_visual_change(plot[[1]])) {
       return()
     }
-  
+
     if (!looks_different(last_plot[[1]], plot[[1]])) {
       return()
     }
@@ -81,9 +81,10 @@ watchout <- function(handler = new_output_handler(),
   }
 
   print_value <- function(value, visible, envir) {
-    if (!show_value(handler, visible)) 
+    if (!show_value(handler, visible)) {
       return()
-    
+    }
+
     pv <- withVisible(handle_value(handler, value, visible, envir))
     capture_plot_and_output()
     # If the return value is visible, save the value to the output
@@ -93,7 +94,7 @@ watchout <- function(handler = new_output_handler(),
   }
 
   check_devices <- function() {
-    # if dev.off() was called, make sure to restore device to the one opened 
+    # if dev.off() was called, make sure to restore device to the one opened
     # when watchout() was called
     if (length(dev.list()) < devn) {
       dev.set(dev)
@@ -127,7 +128,7 @@ local_persistent_sink_connection <- function(debug = FALSE,
   # try() defaults to using stderr() so we need to explicitly override(#88)
   old <- options(try.outFile = con)
   defer(options(old), frame)
-  
+
   sink(con, split = debug)
   sinkn <- sink.number()
   defer(if (sink.number() >= sinkn) sink(), frame)
@@ -164,7 +165,7 @@ read_con <- function(con, buffer = 32 * 1024) {
 # isOpen doesn't work for two reasons:
 # 1. It errors if con has been closed, rather than returning FALSE
 # 2. If returns TRUE if con has been closed and a new connection opened
-# 
+#
 # So instead we retrieve the connection from its number and compare to the
 # original connection. This works because connections have an undocumented
 # external pointer.

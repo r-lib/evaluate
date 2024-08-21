@@ -24,7 +24,7 @@ test_that("conditions get calls stripped", {
 
 test_that("envvar overrides keep_* arguments", {
   withr::local_envvar(R_EVALUATE_BYPASS_MESSAGES = "true")
-  
+
   expect_message(ev <- evaluate("message('Hi!')", keep_message = FALSE), "Hi")
   expect_output_types(ev, "source")
 
@@ -131,7 +131,7 @@ test_that("all three starts of stop_on_error work as expected", {
 test_that("errors during printing are captured", {
   methods::setClass("A", contains = "function", where = environment())
   methods::setMethod("show", "A", function(object) stop("B"))
-  a <- methods::new('A', function() b)
+  a <- methods::new("A", function() b)
 
   ev <- evaluate("a")
   expect_output_types(ev, c("source", "error"))

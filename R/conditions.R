@@ -2,7 +2,7 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
   list(
     message = function(cnd) {
       watcher$capture_plot_and_output()
-      
+
       if (on_message$capture) {
         watcher$push(cnd)
       }
@@ -10,11 +10,11 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
         invokeRestart("muffleMessage")
       }
     },
-    warning =  function(cnd) {
+    warning = function(cnd) {
       # do not handle warnings that shortly become errors or have been silenced
       if (getOption("warn") >= 2 || getOption("warn") < 0) {
         return()
-      } 
+      }
 
       watcher$capture_plot_and_output()
       if (on_warning$capture) {
@@ -27,10 +27,10 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
     },
     error = function(cnd) {
       watcher$capture_plot_and_output()
-      
+
       cnd <- sanitize_call(cnd)
       watcher$push(cnd)
-      
+
       switch(on_error,
         continue = invokeRestart("eval_continue"),
         stop = invokeRestart("eval_stop"),
@@ -57,6 +57,6 @@ sanitize_call <- function(cnd) {
   if (identical(cnd$call, quote(eval(as.call(list(context)), envir)))) {
     cnd$call <- NULL
   }
-  
+
   cnd
 }

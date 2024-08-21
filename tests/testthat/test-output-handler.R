@@ -75,7 +75,7 @@ test_that("return value of value handler inserted directly in output list", {
 
 test_that("invisible values can also be saved if value handler has two arguments", {
   handler <- new_output_handler(value = function(x, visible) {
-    x  # always returns a visible value
+    x # always returns a visible value
   })
   expect_true(show_value(handler, FALSE))
 
