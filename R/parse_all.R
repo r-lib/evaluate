@@ -7,34 +7,34 @@
 #'   If a connection, will be opened and closed only if it was closed initially.
 #' @param filename string overriding the file name
 #' @param allow_error whether to allow syntax errors in `x`
-#' @return 
+#' @return
 #' A data frame two columns, `src` and `expr`, and one row for each complete
-#' input in `x`. A complete input is R code that would trigger execution when 
-#' typed at the console. This might consist of multiple expressions separated 
-#' by `;` or one expression spread over multiple lines (like a function 
+#' input in `x`. A complete input is R code that would trigger execution when
+#' typed at the console. This might consist of multiple expressions separated
+#' by `;` or one expression spread over multiple lines (like a function
 #' definition).
-#' 
-#' `src` is a character vector of source code. Each element represents a 
-#' complete input expression (which might span multiple line) and always has a 
+#'
+#' `src` is a character vector of source code. Each element represents a
+#' complete input expression (which might span multiple line) and always has a
 #' terminal `\n`.
-#' 
-#' `expr` is a list-column of [expression]s. The expressions can be of any 
+#'
+#' `expr` is a list-column of [expression]s. The expressions can be of any
 #' length, depending on the structure of the complete input source:
-#' 
+#'
 #' * If `src` consists of only only whitespace and/or comments, `expr` will
 #'   be length 0.
-#' * If `src` a single scalar (like `TRUE`, `1`, or `"x"`), name, or 
+#' * If `src` a single scalar (like `TRUE`, `1`, or `"x"`), name, or
 #'   function call, `expr` will be length 1.
-#' * If `src` contains multiple expressions separated by `;`, `expr` will 
+#' * If `src` contains multiple expressions separated by `;`, `expr` will
 #'   have length two or more.
-#' 
+#'
 #' The expressions have their srcrefs removed.
-#' 
-#' If there are syntax errors in `x` and `allow_error = TRUE`, the data 
+#'
+#' If there are syntax errors in `x` and `allow_error = TRUE`, the data
 #' frame will have an attribute `PARSE_ERROR` that stores the error object.
 #' @export
 #' @examples
-#' # Each of these inputs are single line, but generate different numbers of 
+#' # Each of these inputs are single line, but generate different numbers of
 #' # expressions
 #' source <- c(
 #'   "# a comment",
@@ -45,7 +45,7 @@
 #' parsed <- parse_all(source)
 #' lengths(parsed$expr)
 #' str(parsed$expr)
-#' 
+#'
 #' # Each of these inputs are a single expression, but span different numbers
 #' # of lines
 #' source <- c(
@@ -84,7 +84,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
         data.frame(src = paste(x, collapse = '\n'), expr = empty_expr()),
         PARSE_ERROR = exprs
       ))
-    }    
+    }
   } else {
     exprs <- parse(text = x, srcfile = src)
   }
@@ -96,7 +96,7 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   )
   pos$exprs <- exprs
 
-  # parse() splits TLEs that use ; into multiple expressions so we 
+  # parse() splits TLEs that use ; into multiple expressions so we
   # join together expressions that overlaps on the same line(s)
   line_group <- cumsum(is_new_line(pos$start, pos$end))
   tles <- lapply(split(pos, line_group), function(p) {
@@ -108,14 +108,14 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
     )
   })
   tles <- do.call(rbind, tles)
-  
+
   # parse() drops comments and whitespace so we add them back in
   gaps <- data.frame(start = c(1, pos$end + 1), end = c(pos$start - 1, n))
-  gaps <- gaps[gaps$start <= gaps$end, ,]
+  gaps <- gaps[gaps$start <= gaps$end, , ]
   # some indexing magic in order to vectorise the extraction
   lengths <- gaps$end - gaps$start + 1
   lines <- sequence(lengths) + rep(gaps$start, lengths) - 1
-  
+
   comments <- data.frame(
     src = x[lines],
     expr = empty_expr(length(lines)),
@@ -124,14 +124,14 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
 
   res <- rbind(tles, comments)
   res <- res[order(res$line), c("src", "expr")]
-  
+
   # Restore newlines stripped while converting to vector of lines
   if (length(res$src)) {
     res$src <- paste0(res$src, "\n")
   } else {
     res$src <- character()
   }
-  
+
   res$expr <- lapply(res$expr, removeSource)
 
   rownames(res) <- NULL
@@ -146,7 +146,7 @@ parse_all.connection <- function(x, filename = NULL, ...) {
   }
   text <- readLines(x)
   filename <- filename %||% summary(x)$description
-  
+
   parse_all(text, filename, ...)
 }
 
@@ -164,7 +164,7 @@ parse_all.call <- function(x, filename = NULL, ...) {
 
 # Helpers ---------------------------------------------------------------------
 
- empty_expr <- function(n = 1) {
+empty_expr <- function(n = 1) {
   I(rep(list(expression()), n))
 }
 
@@ -182,7 +182,7 @@ find_function_body <- function(f) {
   if (is_call(body(f), "{")) {
     lines <- deparse(f, control = "useSource")
     expr <- parse(text = lines, keep.source = TRUE)
-    
+
     data <- getParseData(expr)
     token_start <- which(data$token == "'{'")[[1]]
     token_end <- last(which(data$token == "'}'"))
@@ -191,7 +191,7 @@ find_function_body <- function(f) {
     line_end <- data$line2[token_end] - 1
     lines <- lines[seq2(line_start, line_end)]
 
-    dedent <- min(data$col1[seq2(token_start + 1, token_end - 1)], 1e3) 
+    dedent <- min(data$col1[seq2(token_start + 1, token_end - 1)], 1e3)
     substr(lines, dedent, nchar(lines))
   } else {
     deparse(body(f))

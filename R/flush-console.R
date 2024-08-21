@@ -8,7 +8,7 @@
 #' (specified in the `output_handler` argument of `evaluate()`) will
 #' be called, which makes it possible for users to know it when the code
 #' produces text output using the handler.
-#' 
+#'
 #' This function is supposed to be called inside `evaluate()` (e.g.
 #' either a direct `evaluate()` call or in \pkg{knitr} code chunks).
 #' @export
@@ -31,4 +31,4 @@ set_console_flusher <- function(flusher) {
   old <- the$console_flusher
   the$console_flusher <- flusher
   invisible(old)
-} 
+}

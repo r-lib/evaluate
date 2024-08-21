@@ -67,7 +67,7 @@ test_that("erroring ggplots should not be recorded", {
     ggplot(iris, aes(XXXXXXXXXX, Sepal.Length)) + geom_boxplot()
   })
   expect_output_types(ev, c("source", "error"))
-  
+
   # error in geom
   ev <- evaluate(function() {
     ggplot(iris, aes(Species, Sepal.Length)) + geom_bar()
@@ -164,7 +164,7 @@ test_that("clip() does not produce new plots", {
 test_that("perspective plots are captured", {
   x <- seq(-10, 10, length.out = 30)
   y <- x
-  ff <- function(x,y) { r <- sqrt(x^2 + y^2); 10 * sin(r) / r }
+  ff <- function(x, y) { r <- sqrt(x^2 + y^2); 10 * sin(r) / r }
   z <- outer(x, y, ff)
   z[is.na(z)] <- 1
 
@@ -187,7 +187,7 @@ test_that("evaluate() doesn't depend on device option", {
   path <- withr::local_tempfile()
   # This would error if used because recording is not enable
   withr::local_options(device = function() png(path))
-  
+
   ev <- evaluate("plot(1)")
   expect_output_types(ev, c("source", "plot"))
 })

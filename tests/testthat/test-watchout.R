@@ -1,4 +1,3 @@
-
 test_that("capture messages in try() (#88)", {
   f <- function(x) stop(paste0("Obscure ", x))
   g <- function() f("error")
@@ -12,7 +11,7 @@ test_that("code can use own sink", {
   f <- function() {
     con <- file("")
     defer(close(con))
-    
+
     sink(con)
     cat("One")
     sink()
@@ -25,10 +24,10 @@ test_that("evaluate preserves externally created sinks", {
   sink(withr::local_tempfile())
   defer(sink())
   n <- sink.number()
-  
+
   ev <- evaluate("1")
   expect_output_types(ev, c("source", "text"))
-  
+
   expect_equal(sink.number(), n)
 })
 
@@ -57,7 +56,7 @@ test_that("isValid() works correctly", {
   expect_true(isValid(con1))
   close(con1)
   expect_false(isValid(con1))
-  
+
   con2 <- file("")
   expect_false(isValid(con1)) # isOpen would return TRUE here
   expect_true(isValid(con2))

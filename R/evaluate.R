@@ -17,28 +17,28 @@
 #'   including all output that evaluate captures.
 #' @param stop_on_error A number between 0 and 2 that controls what happens
 #'   when the code errors:
-#' 
+#'
 #'   * If `0`, the default, will continue running all code, just as if you'd
 #'     pasted the code into the command line.
-#'   * If `1`, evaluation will stop on first error without signaling the error, 
-#'     and you will get back all results up to that point. 
-#'   * If `2`, evaluation will halt on first error and you will get back no 
+#'   * If `1`, evaluation will stop on first error without signaling the error,
+#'     and you will get back all results up to that point.
+#'   * If `2`, evaluation will halt on first error and you will get back no
 #'     results.
 #' @param keep_warning,keep_message A single logical value that controls what
 #'   happens to warnings and messages.
-#' 
+#'
 #'   * If `TRUE`, the default, warnings and messages will be captured in the
 #'     output.
 #'   * If `NA`, warnings and messages will not be captured and bubble up to
 #'     the calling environment of `evaluate()`.
 #'   * If `FALSE`, warnings and messages will be completed supressed and
 #'     not shown anywhere.
-#'     
-#'  Note that setting the envvar `R_EVALUATE_BYPASS_MESSAGES` to `true` will 
+#'
+#'  Note that setting the envvar `R_EVALUATE_BYPASS_MESSAGES` to `true` will
 #'  force these arguments to be set to `NA`.
 #' @param log_echo,log_warning If `TRUE`, will immediately log code and
 #'   warnings (respectively) to `stderr`.
-#' 
+#'
 #'   This will be force to `TRUE` if env var `ACTIONS_STEP_DEBUG` is
 #'   `true`, as when debugging a failing GitHub Actions workflow.
 #' @param new_device if `TRUE`, will open a new graphics device and
@@ -48,19 +48,19 @@
 #'   processes the output from the evaluation. The default simply prints the
 #'   visible return values.
 #' @param filename string overrriding the [base::srcfile()] filename.
-#' @param include_timing Deprecated. 
+#' @param include_timing Deprecated.
 #' @import graphics grDevices utils
 #' @examples
 #' evaluate(c(
-#'   "1 + 1", 
+#'   "1 + 1",
 #'   "2 + 2"
 #' ))
-#' 
-#' # Not that's there's a difference in output between putting multiple 
+#'
+#' # Not that's there's a difference in output between putting multiple
 #' # expressions on one line vs spreading them across multiple lines
 #' evaluate("1;2;3")
 #' evaluate(c("1", "2", "3"))
-#' 
+#'
 #' # This also affects how errors propagate, matching the behaviour
 #' # of the R console
 #' evaluate("1;stop(2);3")
@@ -78,12 +78,12 @@ evaluate <- function(input,
                      output_handler = NULL,
                      filename = NULL,
                      include_timing = FALSE) {
-  
+
   on_error <- check_stop_on_error(stop_on_error)
 
   # if this env var is set to true, always bypass messages
   if (env_var_is_true('R_EVALUATE_BYPASS_MESSAGES')) {
-    keep_message <- NA 
+    keep_message <- NA
     keep_warning <- NA
   }
   if (env_var_is_true("ACTIONS_STEP_DEBUG")) {
@@ -104,12 +104,12 @@ evaluate <- function(input,
   watcher <- watchout(output_handler, new_device = new_device, debug = debug)
 
   if (on_error != "error" && !can_parse(input)) {
-    err <- tryCatch(parse(text = input), error = function(cnd) cnd) 
+    err <- tryCatch(parse(text = input), error = function(cnd) cnd)
     watcher$push_source(input, expression())
     watcher$push(err)
     return(watcher$get())
   }
-  
+
   parsed <- parse_all(input, filename = filename)
   # "Transpose" parsed so we get a list that's easier to iterate over
   tles <- Map(
@@ -121,7 +121,7 @@ evaluate <- function(input,
     envir <- list2env(envir, parent = enclos %||% parent.frame())
   }
   local_inject_funs(envir)
-  
+
   # Handlers for warnings, errors and messages
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- condition_handlers(
@@ -132,7 +132,7 @@ evaluate <- function(input,
   )
   # The user's condition handlers have priority over ours
   handlers <- c(user_handlers, evaluate_handlers)
-  
+
   context <- function() {
     do <- NULL # silence R CMD check note
 
@@ -141,7 +141,7 @@ evaluate <- function(input,
       if (debug || log_echo) {
         cat_line(tle$src, file = stderr())
       }
-  
+
       continue <- withRestarts(
         with_handlers(
           {
@@ -150,7 +150,7 @@ evaluate <- function(input,
               # `Rf_eval()`. Unlike the R-level `eval()`, this doesn't create
               # an unwinding scope.
               eval(bquote(delayedAssign("do", .(expr), eval.env = envir)))
-              
+
               ev <- withVisible(do)
               watcher$capture_plot_and_output()
               watcher$print_value(ev$value, ev$visible, envir)
@@ -164,7 +164,7 @@ evaluate <- function(input,
         eval_error = function(cnd) stop(cnd)
       )
       watcher$check_devices()
-  
+
       if (!continue) {
         break
       }
@@ -172,7 +172,7 @@ evaluate <- function(input,
   }
 
   # Here we use `eval()` to create an unwinding scope for `envir`.
-  # We call ourselves back immediately once the scope is created. 
+  # We call ourselves back immediately once the scope is created.
   eval(as.call(list(context)), envir)
   watcher$capture_output()
 

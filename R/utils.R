@@ -51,6 +51,6 @@ can_parse <- function(x) {
   )
 }
 
-deparse1 <- function (expr, collapse = " ", width.cutoff = 500L, ...) {
+deparse1 <- function(expr, collapse = " ", width.cutoff = 500L, ...) {
   paste(deparse(expr, width.cutoff, ...), collapse = collapse)
 }

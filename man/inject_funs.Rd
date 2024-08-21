@@ -36,6 +36,6 @@ old <- inject_funs(system = function(...) {
 evaluate("system('R --version')")
 
 # restore previously injected functions
-inject_funs(old) 
+inject_funs(old)
 }
 \keyword{internal}

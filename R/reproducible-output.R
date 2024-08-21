@@ -1,15 +1,15 @@
 #' Control common output options
-#' 
+#'
 #' @description
 #' Often when using `evaluate()` you are running R code with a specific output
-#' context in mind. But there are many options and env vars that packages 
+#' context in mind. But there are many options and env vars that packages
 #' will take from the current environment, meaning that output depends on
-#' the current state in undesirable ways. 
-#' 
+#' the current state in undesirable ways.
+#'
 #' This function allows you to describe the characteristics of the desired
 #' output and takes care of setting the options and environment variables
 #' for you.
-#' 
+#'
 #' @export
 #' @param width Value of the `"width"` option.
 #' @param color Determines whether or not cli/crayon colour should be used.
@@ -28,11 +28,11 @@ local_reproducible_output <- function(width = 80,
   local_options(
     # crayon
     crayon.enabled = color,
-  
+
     # cli
     cli.width = width,
     cli.condition_width = width,
-    cli.num_colors = if (color) 8L else 1L, 
+    cli.num_colors = if (color) 8L else 1L,
     cli.hyperlink = hyperlinks,
     cli.hyperlink_run = hyperlinks,
     cli.hyperlink_help = hyperlinks,
@@ -41,7 +41,7 @@ local_reproducible_output <- function(width = 80,
     cli.dynamic = FALSE,
 
     # base R
-    width = width, 
+    width = width,
     useFancyQuotes = unicode,
 
     # rlang

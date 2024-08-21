@@ -1,10 +1,9 @@
-
 # new_source -------------------------------------------------------------------
 
 test_that("handles various numbers of arguments", {
   signal_condition <- function(class) {
     signalCondition(structure(list(), class = c(class, "condition")))
-  } 
+  }
   expected <- structure(list(src = "x"), class = "source")
 
   # No handler

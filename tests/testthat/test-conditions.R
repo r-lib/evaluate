@@ -24,7 +24,7 @@ test_that("conditions get calls stripped", {
 
 test_that("envvar overrides keep_* arguments", {
   withr::local_envvar(R_EVALUATE_BYPASS_MESSAGES = "true")
-  
+
   expect_message(ev <- evaluate("message('Hi!')", keep_message = FALSE), "Hi")
   expect_output_types(ev, "source")
 

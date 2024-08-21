@@ -15,7 +15,7 @@
 #'   stop("6")
 #' }
 #' replay(evaluate("f1()"))
-#' 
+#'
 #' f2 <- function() {
 #'   message("Hello")
 #'   plot(1:10)
