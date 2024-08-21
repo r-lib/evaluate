@@ -61,7 +61,7 @@ test_that("terminal newline not needed", {
 test_that("S4 methods are displayed with show, not print", {
   methods::setClass("A", contains = "function", where = environment())
   methods::setMethod("show", "A", function(object) cat("B"))
-  a <- methods::new('A', function() b)
+  a <- methods::new("A", function() b)
 
   ev <- evaluate("a")
   expect_equal(ev[[2]], "B")

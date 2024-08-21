@@ -81,8 +81,9 @@ watchout <- function(handler = new_output_handler(),
   }
 
   print_value <- function(value, visible, envir) {
-    if (!show_value(handler, visible))
+    if (!show_value(handler, visible)) {
       return()
+    }
 
     pv <- withVisible(handle_value(handler, value, visible, envir))
     capture_plot_and_output()

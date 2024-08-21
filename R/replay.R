@@ -92,8 +92,9 @@ line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("c
   n <- length(lines)
 
   lines[1] <- paste0(prompt, lines[1])
-  if (n > 1)
+  if (n > 1) {
     lines[2:n] <- paste0(continue, lines[2:n])
+  }
 
   paste0(lines, "\n", collapse = "")
 }

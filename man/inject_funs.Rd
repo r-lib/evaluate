@@ -30,7 +30,7 @@ evaluate("system('R --version')")
 
 # replace the system() function
 old <- inject_funs(system = function(...) {
-  cat(base::system(..., intern = TRUE), sep = '\n')
+  cat(base::system(..., intern = TRUE), sep = "\n")
 })
 
 evaluate("system('R --version')")

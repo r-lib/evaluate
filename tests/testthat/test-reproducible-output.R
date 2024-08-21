@@ -1,5 +1,4 @@
 test_that("local_reproducible_output() respects local context", {
-
   local_reproducible_output(width = 105)
   expect_equal(getOption("width"), 105)
 

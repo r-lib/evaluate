@@ -79,9 +79,9 @@ parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {
   src <- srcfilecopy(filename, x)
   if (allow_error) {
     exprs <- tryCatch(parse(text = x, srcfile = src), error = identity)
-    if (inherits(exprs, 'error')) {
+    if (inherits(exprs, "error")) {
       return(structure(
-        data.frame(src = paste(x, collapse = '\n'), expr = empty_expr()),
+        data.frame(src = paste(x, collapse = "\n"), expr = empty_expr()),
         PARSE_ERROR = exprs
       ))
     }

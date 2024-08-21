@@ -61,24 +61,24 @@ test_that("expr is always an expression", {
 })
 
 test_that("parse(allow_error = TRUE/FALSE)", {
-  expect_error(parse_all('x <-', allow_error = FALSE))
-  res <- parse_all('x <-', allow_error = TRUE)
-  expect_true(inherits(attr(res, 'PARSE_ERROR'), 'error'))
+  expect_error(parse_all("x <-", allow_error = FALSE))
+  res <- parse_all("x <-", allow_error = TRUE)
+  expect_true(inherits(attr(res, "PARSE_ERROR"), "error"))
 
   # And correctly flows through to evaluate
-  expect_no_error(evaluate('x <-', stop_on_error = 0))
+  expect_no_error(evaluate("x <-", stop_on_error = 0))
 })
 
 test_that("double quotes in Chinese characters not destroyed", {
-  skip_if_not(l10n_info()[['UTF-8']])
+  skip_if_not(l10n_info()[["UTF-8"]])
 
-  out <- parse_all(c('1+1', '"你好"'))
+  out <- parse_all(c("1+1", '"你好"'))
   expect_equal(out$src[[2]], '"你好"\n')
   expect_equal(out$expr[[2]], expression("你好"))
 })
 
 test_that("multibyte characters are parsed correctly", {
-  skip_if_not(l10n_info()[['UTF-8']])
+  skip_if_not(l10n_info()[["UTF-8"]])
 
   code <- c("ϱ <- 1# g / ml", "äöüßÄÖÜπ <- 7 + 3# nonsense")
   out <- parse_all(code)

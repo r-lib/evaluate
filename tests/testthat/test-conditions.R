@@ -131,7 +131,7 @@ test_that("all three starts of stop_on_error work as expected", {
 test_that("errors during printing are captured", {
   methods::setClass("A", contains = "function", where = environment())
   methods::setMethod("show", "A", function(object) stop("B"))
-  a <- methods::new('A', function() b)
+  a <- methods::new("A", function() b)
 
   ev <- evaluate("a")
   expect_output_types(ev, c("source", "error"))

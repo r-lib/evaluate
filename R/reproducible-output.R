@@ -24,7 +24,6 @@ local_reproducible_output <- function(width = 80,
                                       hyperlinks = FALSE,
                                       rstudio = FALSE,
                                       frame = parent.frame()) {
-
   local_options(
     # crayon
     crayon.enabled = color,
@@ -46,7 +45,6 @@ local_reproducible_output <- function(width = 80,
 
     # rlang
     rlang_interactive = FALSE,
-
     .frame = frame
   )
 

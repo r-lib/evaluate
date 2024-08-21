@@ -16,7 +16,7 @@
 #'
 #' # replace the system() function
 #' old <- inject_funs(system = function(...) {
-#'   cat(base::system(..., intern = TRUE), sep = '\n')
+#'   cat(base::system(..., intern = TRUE), sep = "\n")
 #' })
 #'
 #' evaluate("system('R --version')")
@@ -26,7 +26,7 @@
 #' @export
 inject_funs <- function(...) {
   funs <- list(...)
-  funs <- funs[names(funs) != '']
+  funs <- funs[names(funs) != ""]
   old <- the$inject_funs
   the$inject_funs <- Filter(is.function, funs)
 

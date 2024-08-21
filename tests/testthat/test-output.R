@@ -15,7 +15,10 @@ test_that("handles various numbers of arguments", {
   expect_equal(out, expected)
 
   # Two arguments
-  f2 <- function(src, call) {signal_condition("handler_called"); NULL}
+  f2 <- function(src, call) {
+    signal_condition("handler_called")
+    NULL
+  }
   expect_condition(out <- new_source("x", quote(x), f2), class = "handler_called")
   expect_equal(out, NULL)
 

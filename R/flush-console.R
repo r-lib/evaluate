@@ -12,7 +12,7 @@
 #' This function is supposed to be called inside `evaluate()` (e.g.
 #' either a direct `evaluate()` call or in \pkg{knitr} code chunks).
 #' @export
-flush_console = function() {
+flush_console <- function() {
   if (!is.null(the$console_flusher)) {
     the$console_flusher()
   }

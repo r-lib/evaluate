@@ -78,11 +78,10 @@ evaluate <- function(input,
                      output_handler = NULL,
                      filename = NULL,
                      include_timing = FALSE) {
-
   on_error <- check_stop_on_error(stop_on_error)
 
   # if this env var is set to true, always bypass messages
-  if (env_var_is_true('R_EVALUATE_BYPASS_MESSAGES')) {
+  if (env_var_is_true("R_EVALUATE_BYPASS_MESSAGES")) {
     keep_message <- NA
     keep_warning <- NA
   }
