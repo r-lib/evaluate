@@ -85,11 +85,11 @@ contents of the current graphics device.
 }
 \examples{
 evaluate(c(
-  "1 + 1", 
+  "1 + 1",
   "2 + 2"
 ))
 
-# Not that's there's a difference in output between putting multiple 
+# Not that's there's a difference in output between putting multiple
 # expressions on one line vs spreading them across multiple lines
 evaluate("1;2;3")
 evaluate(c("1", "2", "3"))

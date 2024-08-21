@@ -19,7 +19,7 @@
 
 # evaluate 0.24.0
 
-* The `source` output handler can now take two arguments (the unparsed `src` 
+* The `source` output handler can now take two arguments (the unparsed `src`
   and the parsed `call`) and choose to affect the displayed source.
 * The package now depends on R 4.0.0 in order to decrease our maintenance burden.
 
@@ -36,7 +36,7 @@
 # Version 0.21
 
 - `evaluate()` gains `log_echo` and `log_warning` arguments. When set to `TRUE`
-  these cause code and warnings (respectively) to be immediately emitted to 
+  these cause code and warnings (respectively) to be immediately emitted to
   `stderr()`. This is useful for logging in unattended environments (#118).
 
 - Improved the error message when users accidentally called `closeAllConnections()` (thanks, @guslipkin, quarto-dev/quarto-cli#5214).

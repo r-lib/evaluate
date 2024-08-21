@@ -3,7 +3,7 @@ new_source <- function(src, call, handler = NULL) {
   if (is.null(handler)) {
     return(src)
   }
-  
+
   n_args <- length(formals(handler))
   if (n_args == 1) {
     # Old format only called for side effects
@@ -44,9 +44,9 @@ render <- function(value, visible, envir) {
   if (isS4(value)) {
     methods::show(value)
   } else {
-    # We need to evaluate the print() generic in a child environment of the 
+    # We need to evaluate the print() generic in a child environment of the
     # evaluation frame in order to find any methods registered there
-    print_env <- new.env(parent = envir) 
+    print_env <- new.env(parent = envir)
     print_env$value <- value
     evalq(print(value), envir = print_env)
   }

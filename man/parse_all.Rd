@@ -46,7 +46,7 @@ Works very similarly to parse, but also keeps original formatting and
 comments.
 }
 \examples{
-# Each of these inputs are single line, but generate different numbers of 
+# Each of these inputs are single line, but generate different numbers of
 # expressions
 source <- c(
   "# a comment",

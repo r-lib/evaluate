@@ -1,4 +1,3 @@
-
 test_that("file with only comments runs", {
   ev <- evaluate(function() {
     # This test case contains no executable code
@@ -62,7 +61,7 @@ test_that("terminal newline not needed", {
 test_that("S4 methods are displayed with show, not print", {
   methods::setClass("A", contains = "function", where = environment())
   methods::setMethod("show", "A", function(object) cat("B"))
-  a <- methods::new('A', function() b)
+  a <- methods::new("A", function() b)
 
   ev <- evaluate("a")
   expect_equal(ev[[2]], "B")
@@ -108,7 +107,7 @@ test_that("on.exit is evaluated at end of code", {
 test_that("return causes an early return", {
   ev <- evaluate::evaluate(c(
     "1 + 1",
-    "return()", 
+    "return()",
     "2 + 2"
   ))
   expect_output_types(ev, c("source", "text", "source"))
@@ -127,7 +126,7 @@ test_that("check_keep converts to logical as expected", {
   expect_true(check_keep(TRUE)$capture)
   expect_false(check_keep(NA)$capture)
   expect_false(check_keep(FALSE)$capture)
-  
+
   expect_true(check_keep(TRUE)$silence)
   expect_false(check_keep(NA)$silence)
   expect_true(check_keep(FALSE)$silence)

@@ -18,11 +18,11 @@
 #' @param source Function to handle the echoed source code under evaluation.
 #'   This function should take two arguments (`src` and `expr`), and return
 #'   an object that will be inserted into the evaluate outputs. `src` is the
-#'   unparsed text of the source code, and `expr` is the complete input 
+#'   unparsed text of the source code, and `expr` is the complete input
 #'   expression (which may have 0, 1, 2, or more components; see [parse_all()]
 #'   for details).
-#' 
-#'   Return `src` for the default evaluate behaviour. Return `NULL` to 
+#'
+#'   Return `src` for the default evaluate behaviour. Return `NULL` to
 #'   drop the source from the output.
 #' @param text Function to handle any textual console output.
 #' @param graphics Function to handle graphics, as returned by
@@ -30,7 +30,7 @@
 #' @param message Function to handle [message()] output.
 #' @param warning Function to handle [warning()] output.
 #' @param error Function to handle [stop()] output.
-#' @param value Function to handle the values returned from evaluation. 
+#' @param value Function to handle the values returned from evaluation.
 #'   * If it has one argument, it called on visible values.
 #'   * If it has two arguments, it handles all values, with the second
 #'     argument indicating whether or not the value is visible.
@@ -44,9 +44,12 @@
 #' @aliases output_handler
 #' @export
 new_output_handler <- function(source = identity,
-                               text = identity, graphics = identity,
-                               message = identity, warning = identity,
-                               error = identity, value = render,
+                               text = identity,
+                               graphics = identity,
+                               message = identity,
+                               warning = identity,
+                               error = identity,
+                               value = render,
                                calling_handlers = list()) {
   source <- match.fun(source)
   stopifnot(length(formals(source)) >= 1)
@@ -65,10 +68,19 @@ new_output_handler <- function(source = identity,
 
   check_handlers(calling_handlers)
 
-  structure(list(source = source, text = text, graphics = graphics,
-                 message = message, warning = warning, error = error,
-                 value = value, calling_handlers = calling_handlers),
-            class = "output_handler")
+  structure(
+    list(
+      source = source,
+      text = text,
+      graphics = graphics,
+      message = message,
+      warning = warning,
+      error = error,
+      value = value,
+      calling_handlers = calling_handlers
+    ),
+    class = "output_handler"
+  )
 }
 
 check_handlers <- function(x) {

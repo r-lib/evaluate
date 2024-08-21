@@ -20,7 +20,7 @@ looks_different <- function(old_dl, new_dl) {
   if (length(new_dl) < length(old_dl)) {
     return(TRUE)
   }
-  
+
   # If the initial calls are different, it must be a visual change
   if (!identical(old_dl[], new_dl[seq_along(old_dl)])) {
     return(TRUE)
@@ -49,21 +49,21 @@ makes_visual_change <- function(plot) {
 }
 
 non_visual_calls <- c(
-  "C_clip", 
-  "C_layout", 
-  "C_par", 
-  "C_plot_window", 
-  "C_strHeight", "C_strWidth", 
+  "C_clip",
+  "C_layout",
+  "C_par",
+  "C_plot_window",
+  "C_strHeight", "C_strWidth",
   "palette", "palette2"
 )
 
 # plot trimming ----------------------------------------------------------
 
 #' Trim away intermediate plots
-#' 
+#'
 #' Trim off plots that are modified by subsequent lines to only show
 #' the "final" plot.
-#' 
+#'
 #' @param x An evaluation object produced by [evaluate()].
 #' @return A modified evaluation object.
 #' @export
@@ -73,7 +73,7 @@ non_visual_calls <- c(
 #'   "text(1, 1, 'x')",
 #'   "text(1, 1, 'y')"
 #' ))
-#' 
+#'
 #' # All intermediate plots are captured
 #' ev
 #' # Only the final plot is shown
