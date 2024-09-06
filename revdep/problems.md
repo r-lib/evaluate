@@ -44,84 +44,54 @@ Run `revdepcheck::cloud_details(, "babelmixr2")` for more info
     Package suggested but not available for checking: ‘lixoftConnectors’
     ```
 
-# CGGP
+# BeeGUTS
 
 <details>
 
-* Version: 1.0.4
-* GitHub: https://github.com/CollinErickson/CGGP
-* Source code: https://github.com/cran/CGGP
-* Date/Publication: 2024-01-23 03:22:57 UTC
-* Number of recursive dependencies: 77
+* Version: 1.1.3
+* GitHub: https://github.com/bgoussen/BeeGUTS
+* Source code: https://github.com/cran/BeeGUTS
+* Date/Publication: 2023-09-18 15:40:02 UTC
+* Number of recursive dependencies: 86
 
-Run `revdepcheck::cloud_details(, "CGGP")` for more info
+Run `revdepcheck::cloud_details(, "BeeGUTS")` for more info
 
 </details>
 
 ## Newly broken
 
-*   checking tests ... ERROR
+*   checking re-building of vignette outputs ... NOTE
     ```
-      Running ‘testthat.R’
-    Running the tests in ‘tests/testthat.R’ failed.
-    Complete output:
-      > library(testthat)
-      > library(CGGP)
-      > 
-      > test_check("CGGP")
-      [ FAIL 1 | WARN 2 | SKIP 0 | PASS 695 ]
-      
-      ══ Failed tests ════════════════════════════════════════════════════════════════
-      ── Failure ('testcorr.R:543:9'): Logs work for all ─────────────────────────────
-      `numdC` not equal to corr_C_dC_logs$dCdtheta[, (1 + n2 * i - n2):(n2 * i)].
-      1/30 mismatches
-      [12] 137283 - 137248 == 34.5
-      theta dimension with error is 1 , icor is 10 use_log_scale is TRUE theta is -0.678574629127979
-      
-      [ FAIL 1 | WARN 2 | SKIP 0 | PASS 695 ]
-      Error: Test failures
-      Execution halted
+    Error(s) in re-building vignettes:
+      ...
+    --- re-building ‘Tutorial.Rmd’ using rmarkdown
+    
+    Quitting from lines 45-58 [example] (Tutorial.Rmd)
+    Error: processing vignette 'Tutorial.Rmd' failed with diagnostics:
+    Stan model 'GUTS_SD' does not contain samples.
+    
+    --- failed re-building ‘Tutorial.Rmd’
+    
+    SUMMARY: processing the following file failed:
+      ‘Tutorial.Rmd’
+    
+    Error: Vignette re-building failed.
+    Execution halted
     ```
 
-# circhelp
+## In both
 
-<details>
-
-* Version: 1.1
-* GitHub: https://github.com/achetverikov/circhelp
-* Source code: https://github.com/cran/circhelp
-* Date/Publication: 2024-07-04 17:10:02 UTC
-* Number of recursive dependencies: 106
-
-Run `revdepcheck::cloud_details(, "circhelp")` for more info
-
-</details>
-
-## Newly broken
-
-*   checking tests ... ERROR
+*   checking installed package size ... NOTE
     ```
-      Running ‘testthat.R’
-    Running the tests in ‘tests/testthat.R’ failed.
-    Complete output:
-      > library(testthat)
-      > library(circhelp)
-      Loading required package: data.table
-      Loading required package: ggplot2
-      > library(circular)
-      
-      Attaching package: 'circular'
-    ...
-      [1] "Difference between expected and observed correlation is -0.000000"
-      [ FAIL 1 | WARN 0 | SKIP 0 | PASS 16 ]
-      
-      ══ Failed tests ════════════════════════════════════════════════════════════════
-      ── Failure ('test-functions.R:70:3'): conversion from circular SD to kappa works both ways ──
-      abs(test_sd_deg - vm_kappa_to_circ_sd_deg(kappa_from_deg)) is not strictly less than `tolerance`. Difference: 0.000254
-      
-      [ FAIL 1 | WARN 0 | SKIP 0 | PASS 16 ]
-      Error: Test failures
-      Execution halted
+      installed size is 78.9Mb
+      sub-directories of 1Mb or more:
+        data   4.0Mb
+        libs  74.3Mb
+    ```
+
+*   checking for GNU extensions in Makefiles ... NOTE
+    ```
+    GNU make is a SystemRequirements.
     ```
 
 # coro
@@ -165,17 +135,39 @@ Run `revdepcheck::cloud_details(, "coro")` for more info
       Execution halted
     ```
 
-# Haplin
+# etwfe
 
 <details>
 
-* Version: 7.3.1
-* GitHub: NA
-* Source code: https://github.com/cran/Haplin
-* Date/Publication: 2024-02-08 22:20:02 UTC
-* Number of recursive dependencies: 66
+* Version: 0.4.0
+* GitHub: https://github.com/grantmcdermott/etwfe
+* Source code: https://github.com/cran/etwfe
+* Date/Publication: 2024-02-27 04:20:02 UTC
+* Number of recursive dependencies: 130
 
-Run `revdepcheck::cloud_details(, "Haplin")` for more info
+Run `revdepcheck::cloud_details(, "etwfe")` for more info
+
+</details>
+
+## Newly broken
+
+*   checking re-building of vignette outputs ... NOTE
+    ```
+    Error(s) in re-building vignettes:
+    --- re-building ‘etwfe.Rmd’ using rmarkdown
+    ```
+
+# fauxpas
+
+<details>
+
+* Version: 0.5.2
+* GitHub: https://github.com/sckott/fauxpas
+* Source code: https://github.com/cran/fauxpas
+* Date/Publication: 2023-05-03 08:10:09 UTC
+* Number of recursive dependencies: 59
+
+Run `revdepcheck::cloud_details(, "fauxpas")` for more info
 
 </details>
 
@@ -183,10 +175,10 @@ Run `revdepcheck::cloud_details(, "Haplin")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.4Mb
+      installed size is  5.1Mb
       sub-directories of 1Mb or more:
-        R         1.5Mb
-        extdata   3.0Mb
+        R     4.0Mb
+        doc   1.0Mb
     ```
 
 # multiverse
@@ -279,17 +271,17 @@ Run `revdepcheck::cloud_details(, "OptimModel")` for more info
     --- re-building ‘OptimModel_vignette.Rmd’ using rmarkdown
     ```
 
-# polmineR
+# ordinalbayes
 
 <details>
 
-* Version: 0.8.9
-* GitHub: https://github.com/PolMine/polmineR
-* Source code: https://github.com/cran/polmineR
-* Date/Publication: 2023-10-29 21:50:02 UTC
-* Number of recursive dependencies: 97
+* Version: 0.1.1
+* GitHub: https://github.com/kelliejarcher/ordinalbayes
+* Source code: https://github.com/cran/ordinalbayes
+* Date/Publication: 2022-04-06 15:10:02 UTC
+* Number of recursive dependencies: 160
 
-Run `revdepcheck::cloud_details(, "polmineR")` for more info
+Run `revdepcheck::cloud_details(, "ordinalbayes")` for more info
 
 </details>
 
@@ -297,10 +289,17 @@ Run `revdepcheck::cloud_details(, "polmineR")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is  5.3Mb
+      installed size is 12.3Mb
       sub-directories of 1Mb or more:
-        R         2.0Mb
-        extdata   1.9Mb
+        data  12.0Mb
+    ```
+
+## In both
+
+*   checking dependencies in R code ... NOTE
+    ```
+    Namespace in Imports field not imported from: ‘devtools’
+      All declared Imports should be used.
     ```
 
 # PopED
@@ -375,17 +374,58 @@ Run `revdepcheck::cloud_details(, "PopED")` for more info
         test   1.1Mb
     ```
 
-# PubChemR
+# posologyr
 
 <details>
 
-* Version: 2.0
-* GitHub: https://github.com/selcukorkmaz/PubChemR
-* Source code: https://github.com/cran/PubChemR
-* Date/Publication: 2024-07-13 06:30:02 UTC
-* Number of recursive dependencies: 68
+* Version: 1.2.6
+* GitHub: https://github.com/levenc/posologyr
+* Source code: https://github.com/cran/posologyr
+* Date/Publication: 2024-08-27 16:30:02 UTC
+* Number of recursive dependencies: 98
 
-Run `revdepcheck::cloud_details(, "PubChemR")` for more info
+Run `revdepcheck::cloud_details(, "posologyr")` for more info
+
+</details>
+
+## Newly broken
+
+*   checking re-building of vignette outputs ... NOTE
+    ```
+    Error(s) in re-building vignettes:
+    --- re-building ‘a_posteriori_dosing.Rmd’ using rmarkdown
+    
+    Quitting from lines 85-87 [estim_map] (a_posteriori_dosing.Rmd)
+    Error: processing vignette 'a_posteriori_dosing.Rmd' failed with diagnostics:
+    object of type 'closure' is not subsettable
+    --- failed re-building ‘a_posteriori_dosing.Rmd’
+    
+    --- re-building ‘a_priori_dosing.Rmd’ using rmarkdown
+    
+    ...
+    object of type 'closure' is not subsettable
+    --- failed re-building ‘route_of_administration.Rmd’
+    
+    SUMMARY: processing the following files failed:
+      ‘a_posteriori_dosing.Rmd’ ‘a_priori_dosing.Rmd’
+      ‘auc_based_dosing.Rmd’ ‘multiple_endpoints.Rmd’
+      ‘route_of_administration.Rmd’
+    
+    Error: Vignette re-building failed.
+    Execution halted
+    ```
+
+# rgho
+
+<details>
+
+* Version: 3.0.2
+* GitHub: https://github.com/aphp/rgho
+* Source code: https://github.com/cran/rgho
+* Date/Publication: 2024-01-19 08:00:02 UTC
+* Number of recursive dependencies: 62
+
+Run `revdepcheck::cloud_details(, "rgho")` for more info
 
 </details>
 
@@ -396,79 +436,47 @@ Run `revdepcheck::cloud_details(, "PubChemR")` for more info
       Running ‘testthat.R’
     Running the tests in ‘tests/testthat.R’ failed.
     Complete output:
-      > # This file is part of the standard setup for testthat.
-      > # It is recommended that you do not modify it.
-      > #
-      > # Where should you do additional test configuration?
-      > # Learn more about the roles of various files in:
-      > # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
-      > # * https://testthat.r-lib.org/articles/special-files.html
-    ...
-      Error in `file(file, "rt")`: cannot open the connection to 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/137349406/xrefs/PatentID/TXT'
-      Backtrace:
-          ▆
-       1. └─PubChemR::get_pug_rest(...) at test-get_pug_rest.R:80:3
-       2.   └─utils::read.table(response$url)
-       3.     └─base::file(file, "rt")
+      > library(testthat)
+      > library(rgho)
+      > 
+      > test_check("rgho")
+      [ FAIL 2 | WARN 0 | SKIP 2 | PASS 1 ]
       
-      [ FAIL 1 | WARN 1 | SKIP 0 | PASS 202 ]
+      ══ Skipped tests (2) ═══════════════════════════════════════════════════════════
+    ...
+      ── Failure ('test-get_gho.R:37:5'): Connection errors ──────────────────────────
+      `get_gho_values(dimension = "COUNTRY")` produced unexpected messages.
+      Expected match: [45]04
+      Actual values:
+      * Server error: (503) Service Unavailable
+      
+      
+      [ FAIL 2 | WARN 0 | SKIP 2 | PASS 1 ]
       Error: Test failures
       Execution halted
     ```
 
-*   checking running R code from vignettes ... ERROR
-    ```
-    Errors in running code in vignettes:
-    when running code in ‘Exploring_Chemical_Data_with_PubChemR.Rmd’
-      ...
-    
-    
-    > result <- get_pug_rest(identifier = "2697049", namespace = "taxid", 
-    +     domain = "taxonomy", operation = "aids", output = "TXT")
-    Warning in file(file, "rt") :
-      cannot open URL 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/taxonomy/taxid/2697049/aids/TXT': HTTP status was '503 Service Unavailable'
-    
-      When sourcing ‘Exploring_Chemical_Data_with_PubChemR.R’:
-    Error: cannot open the connection to 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/taxonomy/taxid/2697049/aids/TXT'
-    Execution halted
-    
-      ‘Enhancing_Chemical_Data_Access_with_PubChemR.Rmd’ using ‘UTF-8’... OK
-      ‘Exploring_Chemical_Data_with_PubChemR.Rmd’ using ‘UTF-8’... failed
-      ‘Working_with_PubChemR_to_Access_Chemical_Data.Rmd’ using ‘UTF-8’... OK
-    ```
-
-# refer
+# rTensor2
 
 <details>
 
-* Version: 0.1.0
+* Version: 2.0.0
 * GitHub: NA
-* Source code: https://github.com/cran/refer
-* Date/Publication: 2021-11-08 12:10:04 UTC
-* Number of recursive dependencies: 28
+* Source code: https://github.com/cran/rTensor2
+* Date/Publication: 2024-03-29 16:30:02 UTC
+* Number of recursive dependencies: 39
 
-Run `revdepcheck::cloud_details(, "refer")` for more info
+Run `revdepcheck::cloud_details(, "rTensor2")` for more info
 
 </details>
 
 ## Newly broken
 
-*   checking re-building of vignette outputs ... NOTE
+*   checking installed package size ... NOTE
     ```
-    Error(s) in re-building vignettes:
-      ...
-    --- re-building ‘introRef.Rmd’ using rmarkdown
-    
-    Quitting from lines 128-132 [unnamed-chunk-16] (introRef.Rmd)
-    Error: processing vignette 'introRef.Rmd' failed with diagnostics:
-    promise already under evaluation: recursive default argument reference or earlier problems?
-    --- failed re-building ‘introRef.Rmd’
-    
-    SUMMARY: processing the following file failed:
-      ‘introRef.Rmd’
-    
-    Error: Vignette re-building failed.
-    Execution halted
+      installed size is  6.4Mb
+      sub-directories of 1Mb or more:
+        data   6.0Mb
     ```
 
 # rxode2
@@ -498,7 +506,7 @@ Run `revdepcheck::cloud_details(, "rxode2")` for more info
     
     ``` r
     library(rxode2)
-    #> rxode2 2.1.3 using 1 threads (see ?getRxThreads)
+    #> rxode2 2.1.3 using 2 threads (see ?getRxThreads)
     ...
     <text>:1:1: unexpected '<'
     1: <
@@ -516,10 +524,10 @@ Run `revdepcheck::cloud_details(, "rxode2")` for more info
 
 *   checking installed package size ... NOTE
     ```
-      installed size is 22.1Mb
+      installed size is 22.8Mb
       sub-directories of 1Mb or more:
         R      1.5Mb
-        libs  18.8Mb
+        libs  19.5Mb
     ```
 
 # spathial
@@ -582,7 +590,7 @@ Run `revdepcheck::cloud_details(, "trampoline")` for more info
     
     Quitting from lines 43-44 [blow_up] (tampolining.Rmd)
     Error: processing vignette 'tampolining.Rmd' failed with diagnostics:
-    C stack usage  9969444 is too close to the limit
+    C stack usage  9961812 is too close to the limit
     --- failed re-building ‘tampolining.Rmd’
     
     SUMMARY: processing the following file failed:
@@ -607,10 +615,51 @@ Run `revdepcheck::cloud_details(, "trampoline")` for more info
     > print_numbers(10000)
     
       When sourcing ‘tampolining.R’:
-    Error: C stack usage  9968180 is too close to the limit
+    Error: C stack usage  9968228 is too close to the limit
     Execution halted
     
       ‘tampolining.Rmd’ using ‘UTF-8’... failed
+    ```
+
+# treesliceR
+
+<details>
+
+* Version: 1.0.2
+* GitHub: https://github.com/AraujoMat/treesliceR
+* Source code: https://github.com/cran/treesliceR
+* Date/Publication: 2024-08-23 18:30:02 UTC
+* Number of recursive dependencies: 159
+
+Run `revdepcheck::cloud_details(, "treesliceR")` for more info
+
+</details>
+
+## Newly broken
+
+*   checking tests ... ERROR
+    ```
+      Running ‘testthat.R’
+    Running the tests in ‘tests/testthat.R’ failed.
+    Complete output:
+      > # This file is part of the standard setup for testthat.
+      > # It is recommended that you do not modify it.
+      > #
+      > # Where should you do additional test configuration?
+      > # Learn more about the roles of various files in:
+      > # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
+      > # * https://testthat.r-lib.org/articles/special-files.html
+    ...
+          ▆
+       1. ├─base::suppressWarnings(...) at test-CpB.R:31:3
+       2. │ └─base::withCallingHandlers(...)
+       3. └─treesliceR::CpB(...) at test-CpB.R:34:5
+       4.   └─foreach::foreach(commu = asb, .combine = rbind) %do% ...
+       5.     └─e$fun(obj, substitute(ex), parent.frame(), e$data)
+      
+      [ FAIL 1 | WARN 0 | SKIP 0 | PASS 1743 ]
+      Error: Test failures
+      Execution halted
     ```
 
 # WindCurves
@@ -657,7 +706,7 @@ Run `revdepcheck::cloud_details(, "wordpredictor")` for more info
       ...
     --- re-building ‘features.Rmd’ using rmarkdown
     Warning in file("", "w+b") :
-      cannot open file '/tmp/RtmpsUf68T/Rfe4a3453de72': No such file or directory
+      cannot open file '/tmp/Rtmph6yuor/Rfcbe17d2b8c': No such file or directory
     
     Quitting from lines 92-121 [data-sampling-1] (features.Rmd)
     Error: processing vignette 'features.Rmd' failed with diagnostics:
