@@ -1,6 +1,6 @@
 # Revdeps
 
-## Failed to check (210)
+## Failed to check (213)
 
 |package                 |version    |error |warning |note |
 |:-----------------------|:----------|:-----|:-------|:----|
@@ -55,6 +55,7 @@
 |DrugSim2DR              |?          |      |        |     |
 |DRviaSPCN               |?          |      |        |     |
 |ech                     |0.1.3      |1     |        |     |
+|EcoEnsemble             |1.1.0      |1     |        |     |
 |ecolottery              |1.0.0      |1     |        |     |
 |EdSurvey                |4.0.7      |1     |        |     |
 |EpiEstim                |2.2-4      |1     |        |     |
@@ -69,6 +70,7 @@
 |GeneSelectR             |?          |      |        |     |
 |geomorph                |?          |      |        |     |
 |gJLS2                   |0.2.0      |1     |        |     |
+|gllvm                   |1.4.3      |1     |        |     |
 |gmoTree                 |?          |      |        |     |
 |gpuR                    |2.0.6      |1     |        |     |
 |hettx                   |0.1.3      |1     |        |     |
@@ -108,6 +110,7 @@
 |MRZero                  |0.2.0      |1     |        |     |
 |MultiKink               |0.2.0      |1     |        |     |
 |multilevelTools         |0.1.1      |1     |        |     |
+|multinma                |0.7.1      |1     |        |     |
 |mvDFA                   |0.0.4      |1     |        |     |
 |MXM                     |1.5.5      |1     |        |     |
 |nebula                  |1.5.3      |1     |        |     |

@@ -1,9 +1,9 @@
 ## revdepcheck results
 
-We checked 8798 reverse dependencies (8788 from CRAN + 10 from Bioconductor), comparing R CMD check results across CRAN and dev versions of this package.
+We checked 8826 reverse dependencies (8816 from CRAN + 10 from Bioconductor), comparing R CMD check results across CRAN and dev versions of this package.
 
  * We saw 18 new problems
- * We failed to check 200 packages
+ * We failed to check 203 packages
 
 Issues with CRAN packages are summarised below.
 
@@ -117,6 +117,7 @@ Issues with CRAN packages are summarised below.
 * DrugSim2DR              (NA)
 * DRviaSPCN               (NA)
 * ech                     (NA)
+* EcoEnsemble             (NA)
 * ecolottery              (NA)
 * EdSurvey                (NA)
 * EpiEstim                (NA)
@@ -129,6 +130,7 @@ Issues with CRAN packages are summarised below.
 * GeneNMF                 (NA)
 * GeneSelectR             (NA)
 * gJLS2                   (NA)
+* gllvm                   (NA)
 * gpuR                    (NA)
 * hettx                   (NA)
 * Hmisc                   (NA)
@@ -166,6 +168,7 @@ Issues with CRAN packages are summarised below.
 * MRZero                  (NA)
 * MultiKink               (NA)
 * multilevelTools         (NA)
+* multinma                (NA)
 * mvDFA                   (NA)
 * MXM                     (NA)
 * nebula                  (NA)
