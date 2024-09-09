@@ -35,7 +35,6 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="evaluate-development-version">evaluate (development version)<a class="anchor" aria-label="anchor" href="#evaluate-development-version"></a></h2>
 <ul><li>New <code><a href="../reference/trim_intermediate_plots.html">trim_intermediate_plots()</a></code> drops intermediate plots to reveal the complete/final plot (<a href="https://github.com/r-lib/evaluate/issues/206" class="external-link">#206</a>).</li>
-<li>evaluation “chunks” now provide a function-like scope. This means that <code><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit()</a></code> will now run at the end of the evaluate code, rather than immediately and <code><a href="https://rdrr.io/r/base/function.html" class="external-link">return()</a></code> will cause the evaluation to finish (<a href="https://github.com/r-lib/evaluate/issues/201" class="external-link">#201</a>).</li>
 <li>The default <code>value</code> handler now evaluates print in a child environment of the evaluation environment. This largely makes evaluate easier to test, but should make defining S3 methods for print a little easier (<a href="https://github.com/r-lib/evaluate/issues/192" class="external-link">#192</a>).</li>
 <li>
 <code><a href="../reference/parse_all.html">parse_all()</a></code> adds a <code>\n</code> to the end of every line, even the last one if it didn’t have one in the input.</li>
