@@ -1,4 +1,4 @@
-# evaluate (development version)
+# evaluate 1.0.0
 
 * Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will
   automatically set `log_echo` and `log_warning` to `TRUE` (#175).
