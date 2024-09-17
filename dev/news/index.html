@@ -34,30 +34,26 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="evaluate-development-version">evaluate (development version)<a class="anchor" aria-label="anchor" href="#evaluate-development-version"></a></h2>
-<ul><li>New <code><a href="../reference/trim_intermediate_plots.html">trim_intermediate_plots()</a></code> drops intermediate plots to reveal the complete/final plot (<a href="https://github.com/r-lib/evaluate/issues/206" class="external-link">#206</a>).</li>
-<li>The default <code>value</code> handler now evaluates print in a child environment of the evaluation environment. This largely makes evaluate easier to test, but should make defining S3 methods for print a little easier (<a href="https://github.com/r-lib/evaluate/issues/192" class="external-link">#192</a>).</li>
+<ul><li><p>Setting <code>ACTIONS_STEP_DEBUG=1</code> (as in a failing GHA workflow) will automatically set <code>log_echo</code> and <code>log_warning</code> to <code>TRUE</code> (<a href="https://github.com/r-lib/evaluate/issues/175" class="external-link">#175</a>).</p></li>
+<li><p>evaluate works on R 3.6.0 once again.</p></li>
 <li>
-<code><a href="../reference/parse_all.html">parse_all()</a></code> adds a <code>\n</code> to the end of every line, even the last one if it didn’t have one in the input.</li>
-<li>Setting <code>ACTIONS_STEP_DEBUG=1</code> (as in a failing GHA workflow) will automatically set <code>log_echo</code> and <code>log_warning</code> to <code>TRUE</code> (<a href="https://github.com/r-lib/evaluate/issues/175" class="external-link">#175</a>).</li>
-<li>New <code><a href="../reference/local_reproducible_output.html">local_reproducible_output()</a></code> helper that sets various options and env vars to help ensure consistency of output across environments.</li>
-<li>The <code>source</code> output handler is now passed the entire complete input expression, not just the first component.</li>
+<p><code><a href="../reference/evaluate.html">evaluate()</a></code> improvements:</p>
+<ul><li><p>Now terminates on the first error in a multi-expression input, i.e. <code>1;stop('2');3</code> will no longer evaluate the third component. This matches console behaviour more closely.</p></li>
+<li><p>Calls from conditions emitted by top-level code are automatically stripped (<a href="https://github.com/r-lib/evaluate/issues/150" class="external-link">#150</a>).</p></li>
+<li><p>Result has a class (<code>evaluate_evaluation</code>/<code>list</code>) with a basic print method.</p></li>
+<li><p>Plots created before messages/warnings/errors are correctly captured (<a href="https://github.com/r-lib/evaluate/issues/28" class="external-link">#28</a>).</p></li>
+</ul></li>
 <li>
-<code><a href="../reference/evaluate.html">evaluate()</a></code> now terminates on the first error in a multi-expression input, i.e. <code>1;stop('2');3</code> will no longer evaluate the third component. This matches console behaviour more closely.</li>
-<li>
-<code>is.value()</code> has been removed since it tests for an object that evaluate never creates.</li>
-<li>
-<code><a href="../reference/parse_all.html">parse_all()</a></code> no longer has a default method, which will generate better errors if you pass in something unexpectected.</li>
-<li>
-<code><a href="../reference/evaluate.html">evaluate()</a></code> automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they’re wrapped inside <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code>) (<a href="https://github.com/r-lib/evaluate/issues/150" class="external-link">#150</a>).</li>
-<li>
-<code>evalute(include_timing)</code> has been deprecated. I can’t find any use of it on GitHub, and it adds substantial code complexity for little gain.</li>
-<li>
-<code>watchout()</code> is no longer exported; it’s really an implementation detail that should never have been leaked to the public interface.</li>
-<li>
-<code><a href="../reference/evaluate.html">evaluate()</a></code> gains an output class (<code>evaluate_evaluation</code>/<code>list</code>) and a basic print method.</li>
-<li>
-<code><a href="../reference/evaluate.html">evaluate()</a></code> now correctly captures plots created before messages/warnings/errors (<a href="https://github.com/r-lib/evaluate/issues/28" class="external-link">#28</a>).</li>
-<li>The package now again supports on R 3.6.0.</li>
+<p>Handler improvements:</p>
+<ul><li><p>The default <code>value</code> handler now evaluates <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> in a child of the evaluation environment. This largely makes evaluate easier to test, but should make defining S3 methods for print a little easier (<a href="https://github.com/r-lib/evaluate/issues/192" class="external-link">#192</a>).</p></li>
+<li><p>The <code>source</code> output handler is now passed the entire complete input expression, not just the first component.</p></li>
+</ul></li>
+<li><p><code>evalute(include_timing)</code> has been deprecated. I can’t find any use of it on GitHub, and it adds substantial code complexity for little gain.</p></li>
+<li><p><code>is.value()</code> has been removed since it tests for an object that evaluate never creates.</p></li>
+<li><p>New <code><a href="../reference/local_reproducible_output.html">local_reproducible_output()</a></code> helper that sets various options and env vars to help ensure consistency of output across environments.</p></li>
+<li><p><code><a href="../reference/parse_all.html">parse_all()</a></code> adds a <code>\n</code> to the end of every line, even the last one if it didn’t have one in the input. Additionally, it no longer has a default method, which will generate better errors if you pass in something unexpected.</p></li>
+<li><p>New <code><a href="../reference/trim_intermediate_plots.html">trim_intermediate_plots()</a></code> drops intermediate plots to reveal the complete/final plot (<a href="https://github.com/r-lib/evaluate/issues/206" class="external-link">#206</a>).</p></li>
+<li><p><code>watchout()</code> is no longer exported; it’s really an implementation detail that should never have been leaked to the public interface.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.24.0" id="evaluate-0240">evaluate 0.24.0<a class="anchor" aria-label="anchor" href="#evaluate-0240"></a></h2><p class="text-muted">CRAN release: 2024-06-10</p>
