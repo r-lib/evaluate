@@ -1,20 +1,50 @@
 # evaluate (development version)
 
-* New `trim_intermediate_plots()` drops intermediate plots to reveal the complete/final plot (#206).
-* The default `value` handler now evaluates print in a child environment of the evaluation environment. This largely makes evaluate easier to test, but should make defining S3 methods for print a little easier (#192).
-* `parse_all()` adds a `\n` to the end of every line, even the last one if it didn't have one in the input.
-* Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will automatically set `log_echo` and `log_warning` to `TRUE` (#175).
-* New `local_reproducible_output()` helper that sets various options and env vars to help ensure consistency of output across environments.
-* The `source` output handler is now passed the entire complete input expression, not just the first component.
-* `evaluate()` now terminates on the first error in a multi-expression input, i.e. `1;stop('2');3` will no longer evaluate the third component. This matches console behaviour more closely.
-* `is.value()` has been removed since it tests for an object that evaluate never creates.
-* `parse_all()` no longer has a default method, which will generate better errors if you pass in something unexpectected.
-* `evaluate()` automatically strips calls from conditions emitted by top-level code (these incorrectly get calls because they're wrapped inside `eval()`) (#150).
-* `evalute(include_timing)` has been deprecated. I can't find any use of it on GitHub, and it adds substantial code complexity for little gain.
-* `watchout()` is no longer exported; it's really an implementation detail that should never have been leaked to the public interface.
-* `evaluate()` gains an output class (`evaluate_evaluation`/`list`) and a basic print method.
-* `evaluate()` now correctly captures plots created before messages/warnings/errors (#28).
-* The package now again supports on R 3.6.0.
+* Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will
+  automatically set `log_echo` and `log_warning` to `TRUE` (#175).
+
+* evaluate works on R 3.6.0 once again.
+
+* `evaluate()` improvements:
+
+  * Now terminates on the first error in a multi-expression input, i.e.
+    `1;stop('2');3` will no longer evaluate the third component. This
+    matches console behaviour more closely.
+
+  * Calls from conditions emitted by top-level code are automatically stripped
+    (#150).
+
+  * Result has a class (`evaluate_evaluation`/`list`) with a basic print method.
+
+  * Plots created before messages/warnings/errors are correctly captured (#28).
+
+* Handler improvements:
+
+  * The default `value` handler now evaluates `print()` in a child of the
+    evaluation environment. This largely makes evaluate easier to test, but
+    should make defining S3 methods for print a little easier (#192).
+
+  * The `source` output handler is now passed the entire complete input
+    expression, not just the first component.
+
+* `evalute(include_timing)` has been deprecated. I can't find any use of it on
+  GitHub, and it adds substantial code complexity for little gain.
+
+* `is.value()` has been removed since it tests for an object that evaluate
+  never creates.
+
+* New `local_reproducible_output()` helper that sets various options and env
+  vars to help ensure consistency of output across environments.
+
+* `parse_all()` adds a `\n` to the end of every line, even the last one if it
+  didn't have one in the input. Additionally, it no longer has a default
+  method, which will generate better errors if you pass in something unexpected.
+
+* New `trim_intermediate_plots()` drops intermediate plots to reveal the
+  complete/final plot (#206).
+
+* `watchout()` is no longer exported; it's really an implementation detail that
+  should never have been leaked to the public interface.
 
 # evaluate 0.24.0
 
