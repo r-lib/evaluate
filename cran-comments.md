@@ -1,9 +1,7 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* The maintainer has changed from Yihui to Hadley
+0 errors | 0 warnings | 0 notes
 
 ## revdep checks
 
-We ran revdep checks on all knitr dependencies.
+I did not re-check revdeps as this change only affects Rmd/qmd files with errors, which obviously don't exist on CRAN.
