@@ -1,5 +1,7 @@
 # evaluate (development version)
 
+* Fix buglet revealed when by using `rlang::abort()` inside of `evaluate()`.
+
 # evaluate 1.0.0
 
 * Setting `ACTIONS_STEP_DEBUG=1` (as in a failing GHA workflow) will
