@@ -2,7 +2,7 @@
 
 # evaluate 1.0.1
 
-* Fix buglet revealed when by using `rlang::abort()` inside of `evaluate()`.
+* Fix buglet revealed when using `rlang::abort()` inside of `evaluate()`.
 
 # evaluate 1.0.0
 
