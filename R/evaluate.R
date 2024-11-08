@@ -152,7 +152,7 @@ evaluate <- function(input,
       ),
       eval_continue = function() TRUE,
       eval_stop = function() FALSE,
-      eval_error = function(cnd) {signalCondition(cnd); stop(cnd)}
+      eval_error = signal_error
     )
     watcher$check_devices()
 
@@ -165,6 +165,15 @@ evaluate <- function(input,
   watcher$capture_plot(TRUE)
 
   watcher$get()
+}
+
+signal_error <- function(cnd) {
+  signalCondition(cnd)
+  if (has_rlang) {
+    rlang::entrace(cnd)
+  } else {
+    stop(cnd)
+  }
 }
 
 check_stop_on_error <- function(x) {
