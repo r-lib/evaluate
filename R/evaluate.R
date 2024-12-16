@@ -170,10 +170,9 @@ evaluate <- function(input,
 signal_error <- function(cnd) {
   signalCondition(cnd)
   if (has_rlang) {
-    rlang::entrace(cnd)
-  } else {
-    stop(cnd)
+    cnd <- rlang::cnd_entrace(cnd)
   }
+  stop(cnd)
 }
 
 check_stop_on_error <- function(x) {
