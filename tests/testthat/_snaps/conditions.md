@@ -13,4 +13,15 @@
     Condition
       Error:
       ! 1
+    Output
+      <evaluation>
+      Source code: 
+        stop("1")
+      Condition: 
+        Error:
+        1
+      Source code: 
+        2
+      Text output: 
+        [1] 2
 
