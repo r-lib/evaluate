@@ -6,22 +6,11 @@
       Warning in `f()`:
       Hi!
 
-# all three starts of stop_on_error work as expected
+# all three values of stop_on_error work as expected
 
     Code
-      evaluate("stop(\"1\")\n2", stop_on_error = 2L)
+      ev <- evaluate("stop(\"1\")\n2", stop_on_error = 2L)
     Condition
       Error:
       ! 1
-    Output
-      <evaluation>
-      Source code: 
-        stop("1")
-      Condition: 
-        Error:
-        1
-      Source code: 
-        2
-      Text output: 
-        [1] 2
 
