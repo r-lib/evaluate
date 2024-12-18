@@ -34,7 +34,8 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
       switch(on_error,
         continue = invokeRestart("eval_continue"),
         stop = invokeRestart("eval_stop"),
-        error = invokeRestart("eval_error", cnd)
+        # No need to invoke a restart as we want the error to be thrown in this case.
+        error = NULL
       )
     }
   )
