@@ -1,0 +1,14 @@
+---
+title: document with error
+---
+
+```{r}
+rlang::global_entrace()
+```
+
+```{r}
+f <- function() g()
+g <- function() h()
+h <- function() stop("!")
+f()
+```
