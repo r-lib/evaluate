@@ -1,0 +1,12 @@
+
+
+processing file: with-abort-error.Rmd
+Error in `h()`:
+! !
+Backtrace:
+ 1. global f()
+ 2. global g()
+ 3. global h()
+
+Quitting from lines 11-15 [unnamed-chunk-2] (with-abort-error.Rmd)
+Execution halted

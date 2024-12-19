@@ -136,3 +136,24 @@ test_that("errors during printing are captured", {
   ev <- evaluate("a")
   expect_output_types(ev, c("source", "error"))
 })
+
+test_that("Entraced error does not loose their backtrace when render errors", {
+  skip_if_not_installed("rlang")
+  skip_if_not_installed("rmarkdown")
+  skip_if_not_installed("callr")
+  skip_on_cran()
+  # install dev version of package in temp directory
+  withr::local_temp_libpaths()
+  quick_install(pkgload::pkg_path("."), lib = .libPaths()[1])
+
+  out <- withr::local_tempfile(fileext = "txt")
+  
+  rscript <- withr::local_tempfile(fileext = "R")
+  writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-stop-error.Rmd"), FALSE)), con = rscript)
+  callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error.txt')
+
+  writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-abort-error.Rmd"), FALSE)), con = rscript)
+  callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'abort-error.txt')
+})

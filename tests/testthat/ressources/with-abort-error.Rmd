@@ -1,0 +1,15 @@
+---
+title: document with error
+---
+
+```{r}
+rlang::global_entrace()
+options(rlang_backtrace_on_error_report = "full")
+```
+
+```{r}
+f <- function() g()
+g <- function() h()
+h <- function() rlang::abort("!")
+f()
+```
