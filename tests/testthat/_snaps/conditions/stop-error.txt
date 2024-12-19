@@ -8,5 +8,5 @@ Backtrace:
  2. global g()
  3. global h()
 
-Quitting from lines 11-15 [unnamed-chunk-2] (with-stop-error.Rmd)
+Quitting from lines 10-14 [unnamed-chunk-2] (with-stop-error.Rmd)
 Execution halted

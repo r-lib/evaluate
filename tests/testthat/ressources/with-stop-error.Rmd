@@ -4,7 +4,6 @@ title: document with error
 
 ```{r}
 rlang::global_entrace()
-options(rlang_backtrace_on_error_report = "full")
 ```
 
 ```{r}
