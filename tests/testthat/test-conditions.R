@@ -137,16 +137,16 @@ test_that("errors during printing are captured", {
   expect_output_types(ev, c("source", "error"))
 })
 
-test_that("Error can be entraced and are shown correctly when stop_on_error = 2L.", {
+test_that("Error can be entraced and correctly handled in outputs", {
   skip_if_not_installed("rlang")
-  skip_if_not_installed("rmarkdown")
+  skip_if_not_installed("knitr")
   skip_if_not_installed("callr")
   skip_on_cran()
   # install dev version of package in temp directory
   withr::local_temp_libpaths()
   quick_install(pkgload::pkg_path("."), lib = .libPaths()[1])
 
-  out <- withr::local_tempfile(fileext = "txt")
+  out <- withr::local_tempfile(fileext = ".txt")
 
   # Checking different way to entrace with evaluate
   callr::rscript(test_path("ressources/with-stop-error-no-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
@@ -164,13 +164,36 @@ test_that("Error can be entraced and are shown correctly when stop_on_error = 2L
   callr::rscript(test_path("ressources/with-abort-error.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'abort-error.txt')
 
-  # Checking error in rmarkdown and knitr context
-  rscript <- withr::local_tempfile(fileext = "R")
-  writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-stop-error-auto-entrace.Rmd"), FALSE)), con = rscript)
+  # Checking error thrown when in rmarkdown and knitr context
+  rscript <- withr::local_tempfile(fileext = ".R")
+  out2 <- normalizePath(withr::local_tempfile(fileext = ".md"), winslash = "/", mustWork = FALSE)
+  writeLines(c(
+    "options(knitr.chunk.error = FALSE)",
+    sprintf('knitr::knit("%s", output = "%s")', test_path("ressources/with-stop-error-auto-entrace.Rmd"), out2)
+    ), con = rscript)
   callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
-  expect_snapshot_file(out, name = 'stop-error-auto-entrace.txt')
+  expect_snapshot_file(out, name = 'rmd-stop-error-auto-entrace.txt')
 
-  writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-abort-error.Rmd"), FALSE)), con = rscript)
+  writeLines(c(
+      "options(knitr.chunk.error = FALSE)",
+      sprintf('res <- knitr::knit("%s", output = "%s")', test_path("ressources/with-abort-error.Rmd"), out2)
+    ), con = rscript)
   callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
-  expect_snapshot_file(out, name = 'abort-error.txt')
+  expect_snapshot_file(out, name = 'rmd-abort-error.txt')
+
+  # Checking error captured in cell output in rmarkdown and knitr context
+  withr::with_options(list(options(knitr.chunk.error = TRUE)), {
+    expect_snapshot_file(
+      knitr::knit(test_path("ressources/with-stop-error-auto-entrace.Rmd"), output = out, quiet = TRUE),
+      name = "rmd-stop-error.md"
+    )
+    expect_snapshot_file(
+      knitr::knit(test_path("ressources/with-stop-error-sewed.Rmd"), output = out, quiet = TRUE),
+      name = "rmd-stop-error-entrace-sewed.md"
+    )
+    expect_snapshot_file(
+      knitr::knit(test_path("ressources/with-abort-error.Rmd"), output = out, quiet = TRUE),
+      name = "rmd-abort-error.md"
+    )
+  })
 })
