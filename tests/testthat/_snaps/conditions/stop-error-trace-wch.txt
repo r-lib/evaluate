@@ -1,22 +1,6 @@
 Error in `g()`:
 ! could not find function "g"
 Backtrace:
-     ▆
-  1. ├─base::withCallingHandlers(...)
-  2. ├─evaluate::evaluate(...)
-  3. │ ├─base::withRestarts(...)
-  4. │ │ └─base (local) withRestartList(expr, restarts)
-  5. │ │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
-  6. │ │   │ └─base (local) doWithOneRestart(return(expr), restart)
-  7. │ │   └─base (local) withRestartList(expr, restarts[-nr])
-  8. │ │     └─base (local) withOneRestart(expr, restarts[[1L]])
-  9. │ │       └─base (local) doWithOneRestart(return(expr), restart)
- 10. │ ├─evaluate:::with_handlers(...)
- 11. │ │ ├─base::eval(call)
- 12. │ │ │ └─base::eval(call)
- 13. │ │ └─base::withCallingHandlers(...)
- 14. │ ├─base::withVisible(eval(expr, envir))
- 15. │ └─base::eval(expr, envir)
- 16. │   └─base::eval(expr, envir)
- 17. └─global f()
+    ▆
+ 1. └─global f()
 Execution halted

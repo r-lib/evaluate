@@ -121,6 +121,11 @@ evaluate <- function(input,
   }
   local_inject_funs(envir)
 
+  if (is.null(getOption("rlang_trace_top_env"))) {
+    # If not already set, indicate the top environment to trim traceback
+    options(rlang_trace_top_env = envir)
+  }
+
   # Handlers for warnings, errors and messages
   user_handlers <- output_handler$calling_handlers
   evaluate_handlers <- condition_handlers(
