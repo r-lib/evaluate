@@ -1,0 +1,23 @@
+Error in `h()`:
+! !
+Backtrace:
+     ▆
+  1. ├─evaluate::evaluate(...)
+  2. │ ├─base::withRestarts(...)
+  3. │ │ └─base (local) withRestartList(expr, restarts)
+  4. │ │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+  5. │ │   │ └─base (local) doWithOneRestart(return(expr), restart)
+  6. │ │   └─base (local) withRestartList(expr, restarts[-nr])
+  7. │ │     └─base (local) withOneRestart(expr, restarts[[1L]])
+  8. │ │       └─base (local) doWithOneRestart(return(expr), restart)
+  9. │ ├─evaluate:::with_handlers(...)
+ 10. │ │ ├─base::eval(call)
+ 11. │ │ │ └─base::eval(call)
+ 12. │ │ └─base::withCallingHandlers(...)
+ 13. │ ├─base::withVisible(eval(expr, envir))
+ 14. │ └─base::eval(expr, envir)
+ 15. │   └─base::eval(expr, envir)
+ 16. └─global f()
+ 17.   └─global g()
+ 18.     └─global h()
+Execution halted

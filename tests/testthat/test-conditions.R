@@ -137,7 +137,7 @@ test_that("errors during printing are captured", {
   expect_output_types(ev, c("source", "error"))
 })
 
-test_that("Entraced error does not loose their backtrace when render errors", {
+test_that("Error can be entraced and are shown correctly when stop_on_error = 2L.", {
   skip_if_not_installed("rlang")
   skip_if_not_installed("rmarkdown")
   skip_if_not_installed("callr")
@@ -147,11 +147,28 @@ test_that("Entraced error does not loose their backtrace when render errors", {
   quick_install(pkgload::pkg_path("."), lib = .libPaths()[1])
 
   out <- withr::local_tempfile(fileext = "txt")
-  
+
+  # Checking different way to entrace with evaluate
+  callr::rscript(test_path("ressources/with-stop-error-no-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-no-trace.txt')
+
+  callr::rscript(test_path("ressources/with-stop-error-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-calling-handler.txt')
+
+  callr::rscript(test_path("ressources/with-stop-error-wch.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-wch.txt')
+
+  callr::rscript(test_path("ressources/with-stop-error-trace-trimmed.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-trimmed.txt')
+
+  callr::rscript(test_path("ressources/with-abort-error.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'abort-error.txt')
+
+  # Checking error in rmarkdown and knitr context
   rscript <- withr::local_tempfile(fileext = "R")
-  writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-stop-error.Rmd"), FALSE)), con = rscript)
+  writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-stop-error-auto-entrace.Rmd"), FALSE)), con = rscript)
   callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
-  expect_snapshot_file(out, name = 'stop-error.txt')
+  expect_snapshot_file(out, name = 'stop-error-auto-entrace.txt')
 
   writeLines(sprintf("rmarkdown::render(%s)", dQuote(test_path("ressources/with-abort-error.Rmd"), FALSE)), con = rscript)
   callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
