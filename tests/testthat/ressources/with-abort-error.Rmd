@@ -1,0 +1,10 @@
+---
+title: document with error
+---
+
+```{r}
+f <- function() g()
+g <- function() h()
+h <- function() rlang::abort("!")
+f()
+```
