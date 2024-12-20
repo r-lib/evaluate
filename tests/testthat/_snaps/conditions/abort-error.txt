@@ -1,9 +1,10 @@
 Error in `h()`:
 ! !
 Backtrace:
-    ▆
- 1. └─global f()
- 2.   └─global g()
- 3.     └─global h()
- 4.       └─rlang::abort("!")
+    x
+ 1. \-global f()
+ 2.   \-global g()
+ 3.     \-global h()
+ 4.       \-rlang::abort("!")
 Execution halted
+Ran 8/8 deferred expressions

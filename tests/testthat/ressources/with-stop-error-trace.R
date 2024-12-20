@@ -1,3 +1,4 @@
+testthat::local_reproducible_output()
 handlers <- evaluate::new_output_handler(
   calling_handlers = list(error = function(cnd) rlang::entrace(cnd))
 )

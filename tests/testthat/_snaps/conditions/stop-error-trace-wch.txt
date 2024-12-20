@@ -1,6 +1,7 @@
 Error in `g()`:
 ! could not find function "g"
 Backtrace:
-    ▆
- 1. └─global f()
+    x
+ 1. \-global f()
 Execution halted
+Ran 8/8 deferred expressions
