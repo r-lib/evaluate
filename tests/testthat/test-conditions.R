@@ -118,14 +118,14 @@ test_that("an error terminates evaluation of multi-expression input", {
   expect_output_types(ev, c("source", "error"))
 })
 
-test_that("all three starts of stop_on_error work as expected", {
+test_that("all three values of stop_on_error work as expected", {
   ev <- evaluate('stop("1")\n2', stop_on_error = 0L)
   expect_output_types(ev, c("source", "error", "source", "text"))
 
   ev <- evaluate('stop("1")\n2', stop_on_error = 1L)
   expect_output_types(ev, c("source", "error"))
 
-  expect_snapshot(evaluate('stop("1")\n2', stop_on_error = 2L), error = TRUE)
+  expect_snapshot(ev <- evaluate("stop(\"1\")\n2", stop_on_error = 2L), error = TRUE)
 })
 
 test_that("errors during printing are captured", {
@@ -135,4 +135,71 @@ test_that("errors during printing are captured", {
 
   ev <- evaluate("a")
   expect_output_types(ev, c("source", "error"))
+})
+
+test_that("Error can be entraced and correctly handled in outputs", {
+  skip_if_not_installed("rlang")
+  skip_if_not_installed("knitr")
+  skip_if_not_installed("callr")
+  skip_on_cran()
+  # install dev version of package in temp directory
+  withr::local_temp_libpaths()
+  quick_install(pkgload::pkg_path("."), lib = .libPaths()[1])
+
+  out <- withr::local_tempfile(fileext = ".txt")
+
+  # Checking different way to entrace with evaluate
+  ## No trace
+  callr::rscript(test_path("ressources/with-stop-error-no-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-no-trace.txt')
+
+  ## Using calling.handler in evaluate's output handler
+  callr::rscript(test_path("ressources/with-stop-error-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-calling-handler.txt')
+
+  ## Using withCallingHandler()
+  callr::rscript(test_path("ressources/with-stop-error-wch.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-wch.txt')
+
+  ## Using abort() in evaluated code
+  callr::rscript(test_path("ressources/with-abort-error.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'abort-error.txt')
+
+  # setting option rlang_trace_top_env modified opt-out default evaluate trace trimming
+  callr::rscript(test_path("ressources/with-stop-error-trace-trim.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-trim.txt',
+                       transform = function(lines) gsub("\\s*at evaluate/R/.*\\.R(:\\d+)*", "", lines))
+
+  # Checking error thrown when in rmarkdown and knitr context
+  rscript <- withr::local_tempfile(fileext = ".R")
+  out2 <- normalizePath(withr::local_tempfile(fileext = ".md"), winslash = "/", mustWork = FALSE)
+  writeLines(c(
+    "options(knitr.chunk.error = FALSE)",
+    sprintf('knitr::knit("%s", output = "%s")', test_path("ressources/with-stop-error-auto-entrace.Rmd"), out2)
+    ), con = rscript)
+  callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'rmd-stop-error-auto-entrace.txt')
+
+  writeLines(c(
+      "options(knitr.chunk.error = FALSE)",
+      sprintf('res <- knitr::knit("%s", output = "%s")', test_path("ressources/with-abort-error.Rmd"), out2)
+    ), con = rscript)
+  callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'rmd-abort-error.txt')
+
+  # Checking error captured in cell output in rmarkdown and knitr context
+  withr::with_options(list(options(knitr.chunk.error = TRUE)), {
+    expect_snapshot_file(
+      knitr::knit(test_path("ressources/with-stop-error-auto-entrace.Rmd"), output = out, quiet = TRUE),
+      name = "rmd-stop-error.md"
+    )
+    expect_snapshot_file(
+      knitr::knit(test_path("ressources/with-stop-error-sewed.Rmd"), output = out, quiet = TRUE),
+      name = "rmd-stop-error-entrace-sewed.md"
+    )
+    expect_snapshot_file(
+      knitr::knit(test_path("ressources/with-abort-error.Rmd"), output = out, quiet = TRUE),
+      name = "rmd-abort-error.md"
+    )
+  })
 })
