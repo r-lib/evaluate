@@ -167,7 +167,8 @@ test_that("Error can be entraced and correctly handled in outputs", {
 
   # setting option rlang_trace_top_env modified opt-out default evaluate trace trimming
   callr::rscript(test_path("ressources/with-stop-error-trace-trim.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
-  expect_snapshot_file(out, name = 'stop-error-trace-trim.txt')
+  expect_snapshot_file(out, name = 'stop-error-trace-trim.txt',
+                       transform = function(lines) gsub("\\s*at evaluate/R/evaluate.R(:\\d+)*", "", lines))
 
   # Checking error thrown when in rmarkdown and knitr context
   rscript <- withr::local_tempfile(fileext = ".R")
