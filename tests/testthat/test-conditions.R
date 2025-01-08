@@ -149,20 +149,25 @@ test_that("Error can be entraced and correctly handled in outputs", {
   out <- withr::local_tempfile(fileext = ".txt")
 
   # Checking different way to entrace with evaluate
+  ## No trace
   callr::rscript(test_path("ressources/with-stop-error-no-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-no-trace.txt')
 
+  ## Using calling.handler in evaluate's output handler
   callr::rscript(test_path("ressources/with-stop-error-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-trace-calling-handler.txt')
 
+  ## Using withCallingHandler()
   callr::rscript(test_path("ressources/with-stop-error-wch.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-trace-wch.txt')
 
-  callr::rscript(test_path("ressources/with-stop-error-trace-trimmed.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
-  expect_snapshot_file(out, name = 'stop-error-trace-trimmed.txt')
-
+  ## Using abort() in evaluated code
   callr::rscript(test_path("ressources/with-abort-error.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'abort-error.txt')
+
+  # setting option rlang_trace_top_env modified opt-out default evaluate trace trimming
+  callr::rscript(test_path("ressources/with-stop-error-trace-trim.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  expect_snapshot_file(out, name = 'stop-error-trace-trim.txt')
 
   # Checking error thrown when in rmarkdown and knitr context
   rscript <- withr::local_tempfile(fileext = ".R")

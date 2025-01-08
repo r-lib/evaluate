@@ -2,8 +2,9 @@ testthat::local_reproducible_output()
 handlers <- evaluate::new_output_handler(
   calling_handlers = list(error = function(cnd) rlang::entrace(cnd))
 )
-options(rlang_trace_top_env = parent.frame())
-evaluate::evaluate(function() {
+library(evaluate)
+options(rlang_trace_top_env = rlang::pkg_env("evaluate"))
+evaluate(function() {
   f <- function() g()
   g <- function() h()
   h <- function() stop("!")
