@@ -2,6 +2,9 @@
 
 0 errors | 0 warnings | 0 notes
 
-## revdep checks
+## revdepcheck results
 
-I did not re-check revdeps as this change only affects Rmd/qmd files with errors, which obviously don't exist on CRAN.
+We checked 21 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 0 new problems
+ * We failed to check 0 packages
