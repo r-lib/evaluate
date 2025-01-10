@@ -1,4 +1,4 @@
-# evaluate (development version)
+# evaluate 1.0.2
 
 * Restore correct traceback behaviour (#232).
 
