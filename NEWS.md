@@ -1,5 +1,7 @@
 # evaluate (development version)
 
+* Restore correct traceback behaviour (#232).
+
 # evaluate 1.0.1
 
 * Fix buglet revealed when using `rlang::abort()` inside of `evaluate()`.
