@@ -1,5 +1,7 @@
 # evaluate (development version)
 
+* `evaluate()` once again doesn't open a device if `new_device = FALSE` (#234)
+
 # evaluate 1.0.3
 
 # evaluate 1.0.2
