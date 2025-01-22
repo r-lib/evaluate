@@ -4,11 +4,12 @@ processing file: ressources/with-abort-error.Rmd
 Error in `h()`:
 ! !
 Backtrace:
-    ▆
- 1. └─global f()
- 2.   └─global g()
- 3.     └─global h()
- 4.       └─rlang::abort("!")
+    x
+ 1. \-global f()
+ 2.   \-global g()
+ 3.     \-global h()
+ 4.       \-rlang::abort("!")
 
 Quitting from lines 6-10 [unnamed-chunk-1] (ressources/with-abort-error.Rmd)
 Execution halted
+Ran 8/8 deferred expressions

@@ -4,10 +4,11 @@ processing file: ressources/with-stop-error-auto-entrace.Rmd
 Error in `h()`:
 ! !
 Backtrace:
-    ▆
- 1. └─global f()
- 2.   └─global g()
- 3.     └─global h()
+    x
+ 1. \-global f()
+ 2.   \-global g()
+ 3.     \-global h()
 
 Quitting from lines 6-10 [unnamed-chunk-1] (ressources/with-stop-error-auto-entrace.Rmd)
 Execution halted
+Ran 8/8 deferred expressions
