@@ -31,7 +31,7 @@ Suggests:
     lattice,
     methods,
     pkgload,
-    rlang,
+    rlang (>= 1.1.5),
     knitr,
     testthat (>= 3.0.0),
     withr

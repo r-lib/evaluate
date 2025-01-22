@@ -174,6 +174,7 @@ test_that("Error can be entraced and correctly handled in outputs", {
   rscript <- withr::local_tempfile(fileext = ".R")
   out2 <- normalizePath(withr::local_tempfile(fileext = ".md"), winslash = "/", mustWork = FALSE)
   writeLines(c(
+    "testthat::local_reproducible_output()",
     "options(knitr.chunk.error = FALSE)",
     sprintf('knitr::knit("%s", output = "%s")', test_path("ressources/with-stop-error-auto-entrace.Rmd"), out2)
     ), con = rscript)
@@ -181,6 +182,7 @@ test_that("Error can be entraced and correctly handled in outputs", {
   expect_snapshot_file(out, name = 'rmd-stop-error-auto-entrace.txt')
 
   writeLines(c(
+      "testthat::local_reproducible_output()",
       "options(knitr.chunk.error = FALSE)",
       sprintf('res <- knitr::knit("%s", output = "%s")', test_path("ressources/with-abort-error.Rmd"), out2)
     ), con = rscript)
