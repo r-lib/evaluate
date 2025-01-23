@@ -121,6 +121,15 @@ test_that("check_keep can integrate log option", {
   expect_false(check_keep(FALSE, log = TRUE)$silence)
 })
 
+test_that("new_device = FALSE doesn't open any devices", {
+  graphics.off()
+  skip_if_not(is.null(dev.list()))
+
+  ev <- evaluate("1", new_device = FALSE)
+  expect_equal(dev.list(), NULL)
+})
+
+
 test_that("check_keep errors with bad inputs", {
   expect_snapshot(error = TRUE, {
     check_keep(1, "keep_message")

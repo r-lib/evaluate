@@ -2,6 +2,7 @@ watchout <- function(handler = new_output_handler(),
                      new_device = TRUE,
                      debug = FALSE,
                      frame = parent.frame()) {
+
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
     # one that's available on all platforms and doesn't write to disk
@@ -43,6 +44,11 @@ watchout <- function(handler = new_output_handler(),
   sink_con <- local_persistent_sink_connection(debug, frame)
 
   capture_plot <- function(incomplete = FALSE) {
+    # no plots open; par("page") will open a device
+    if (is.null(dev.list())) {
+      return()
+    }
+
     # only record plots for our graphics device
     if (!identical(dev.cur(), dev)) {
       return()

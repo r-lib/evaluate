@@ -142,9 +142,12 @@ test_that("Error can be entraced and correctly handled in outputs", {
   skip_if_not_installed("knitr")
   skip_if_not_installed("callr")
   skip_on_cran()
-  # install dev version of package in temp directory
-  withr::local_temp_libpaths()
-  quick_install(pkgload::pkg_path("."), lib = .libPaths()[1])
+
+  # if not inside of R CMD check, install dev version into temp directory
+  if (Sys.getenv("_R_CHECK_TIMINGS_") == "") {
+    withr::local_temp_libpaths()
+    quick_install(pkgload::pkg_path("."), lib = .libPaths()[1])
+  }
 
   out <- withr::local_tempfile(fileext = ".txt")
 
