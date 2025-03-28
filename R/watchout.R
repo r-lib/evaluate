@@ -5,8 +5,14 @@ watchout <- function(handler = new_output_handler(),
 
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
-    # one that's available on all platforms and doesn't write to disk
-    pdf(file = NULL)
+    # one that's available on all platforms and doesn't write to disk.
+    # `ragg::agg_record()` is preferable to `pdf(file = NULL)`.
+    if (requireNamespace("ragg", quietly = TRUE) &&
+        packageVersion("ragg") >= "1.3.3.9000") {
+        ragg::agg_record()
+    } else {
+        pdf(file = NULL)
+    }
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     defer(dev.off(dev), frame)
