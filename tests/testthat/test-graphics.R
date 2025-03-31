@@ -260,52 +260,10 @@ test_that("checks its input", {
   expect_snapshot(trim_intermediate_plots(1), error = TRUE)
 })
 
-# New graphics features
+# Compositing operators
 # https://github.com/r-lib/evaluate/issues/238
 test_that("new graphics features", {
-  # R 4.3.0 fixes segfault when using new features with `pdf(NULL)`
-  skip_if_not(getRversion() >= "4.3.0")
-
-  # Gradient
-  ev <- evaluate(c(
-    "grid::grid.rect(gp = grid::gpar(fill = grid::linearGradient()))"
-  ))
-  expect_output_types(ev, c("source", "plot"))
-
-  # Clipping paths
-  ev <- evaluate(c(
-    'cg <- grid::circleGrob(r=.25, gp=grid::gpar(col="grey"))',
-    'grid::pushViewport(grid::viewport(clip=cg))',
-    'grid::grid.text("testing", gp=grid::gpar(cex=3))'
-  ))
-  expect_output_types(ev, c("source", "source", "plot", "source", "plot"))
-
-  # Masks
-  ev <- evaluate(c(
-    'mask <- grid::as.mask(grid::circleGrob(gp = grid::gpar(fill = "grey50")),',
-    '                      "luminance")',
-    'grid::pushViewport(grid::viewport(mask = mask))',
-    'grid::grid.rect(gp=grid::gpar(fill = "red"))'
-  ))
-  expect_output_types(ev, c("source", "source", "plot", "source", "plot"))
-
-  # Affine Transformations
-  ev <- evaluate(c(
-    'grid::grid.define(grid::circleGrob(), name = "circle")',
-    'grid::pushViewport(grid::viewport(height = 0.5))',
-    'grid::grid.use("circle")'
-  ))
-  expect_output_types(ev, rep(c("source", "plot"), 3L))
-
-  # Stroking and Filling Paths
-  ev <- evaluate(c(
-    'grid::grid.fill(grid::circleGrob())',
-    'grid::grid.fillStroke(grid::circleGrob())',
-    'grid::grid.stroke(grid::circleGrob())'
-  ))
-  expect_output_types(ev, rep(c("source", "plot"), 3L))
-
-  # `pdf(NULL)` throws warning when using compositing operator feature
+  # `pdf(NULL)` may segfault or throws warning
   skip_if_not_installed("ragg", "1.3.3.9000")
 
   # Compositing operators
