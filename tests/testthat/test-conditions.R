@@ -143,6 +143,12 @@ test_that("Error can be entraced and correctly handled in outputs", {
   skip_if_not_installed("callr")
   skip_on_cran()
 
+  # pretend that we're never running inside of R CMD check
+  withr::local_envvar(
+    `_R_CHECK_PACKAGE_NAME_` = NA,
+    `_R_CHECK_LICENSE_` = NA,
+  )
+
   # if not inside of R CMD check, install dev version into temp directory
   if (Sys.getenv("_R_CHECK_TIMINGS_") == "") {
     withr::local_temp_libpaths()
