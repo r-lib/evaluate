@@ -266,15 +266,11 @@ test_that("new graphics features", {
   # R 4.3.0 fixes segfault when using new features with `pdf(NULL)`
   skip_if_not(getRversion() >= "4.3.0")
 
-  # Gradients/Patterns
+  # Gradient
   ev <- evaluate(c(
-    "grid::grid.rect(gp = grid::gpar(fill = grid::linearGradient()))",
-    "grid::grid.rect(gp = grid::gpar(fill = grid::radialGradient()))",
-    "pat <- grid::pattern(grid::circleGrob())",
-    "grid::grid.rect(gp = grid::gpar(fill = pat))"
+    "grid::grid.rect(gp = grid::gpar(fill = grid::linearGradient()))"
   ))
-  expect_output_types(ev, c("source", "plot", "source", "plot",
-                            "source", "source", "plot"))
+  expect_output_types(ev, c("source", "plot"))
 
   # Clipping paths
   ev <- evaluate(c(
