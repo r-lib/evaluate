@@ -143,6 +143,9 @@ test_that("Error can be entraced and correctly handled in outputs", {
   skip_if_not_installed("callr")
   skip_on_cran()
 
+  # traceback is different in old R
+  skip_if_not(getRversion() >= "4.0.0")
+
   # pretend that we're never running inside of R CMD check
   withr::local_envvar(
     `_R_CHECK_PACKAGE_NAME_` = NA,
