@@ -9,6 +9,6 @@ Backtrace:
  2.   \-global g()
  3.     \-global h()
 
-Quitting from lines 6-10 [unnamed-chunk-1] (ressources/with-stop-error-auto-entrace.Rmd)
+Quitting from ressources/with-stop-error-auto-entrace.Rmd:5-10 [unnamed-chunk-1]
 Execution halted
 Ran 8/8 deferred expressions

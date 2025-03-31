@@ -10,6 +10,6 @@ Backtrace:
  3.     \-global h()
  4.       \-rlang::abort("!")
 
-Quitting from lines 6-10 [unnamed-chunk-1] (ressources/with-abort-error.Rmd)
+Quitting from ressources/with-abort-error.Rmd:5-10 [unnamed-chunk-1]
 Execution halted
 Ran 8/8 deferred expressions
