@@ -263,7 +263,9 @@ test_that("checks its input", {
 # Compositing operators
 # https://github.com/r-lib/evaluate/issues/238
 test_that("new graphics features", {
-  # `pdf(NULL)` may segfault or throws warning
+  # Compositing operators were introduced in R 4.2
+  skip_if_not(getRversion() >= "4.2.0")
+  # `pdf(NULL)` may segfault or throw warning
   skip_if_not_installed("ragg", "1.3.3.9000")
 
   # Compositing operators
