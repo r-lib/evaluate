@@ -143,6 +143,15 @@ test_that("Error can be entraced and correctly handled in outputs", {
   skip_if_not_installed("callr")
   skip_on_cran()
 
+  # traceback is different in old R
+  skip_if_not(getRversion() >= "4.0.0")
+
+  # pretend that we're never running inside of R CMD check
+  withr::local_envvar(
+    `_R_CHECK_PACKAGE_NAME_` = NA,
+    `_R_CHECK_LICENSE_` = NA,
+  )
+
   # if not inside of R CMD check, install dev version into temp directory
   if (Sys.getenv("_R_CHECK_TIMINGS_") == "") {
     withr::local_temp_libpaths()
@@ -153,23 +162,23 @@ test_that("Error can be entraced and correctly handled in outputs", {
 
   # Checking different way to entrace with evaluate
   ## No trace
-  callr::rscript(test_path("ressources/with-stop-error-no-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  callr::rscript(test_path("resources/with-stop-error-no-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-no-trace.txt')
 
   ## Using calling.handler in evaluate's output handler
-  callr::rscript(test_path("ressources/with-stop-error-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  callr::rscript(test_path("resources/with-stop-error-trace.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-trace-calling-handler.txt')
 
   ## Using withCallingHandler()
-  callr::rscript(test_path("ressources/with-stop-error-wch.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  callr::rscript(test_path("resources/with-stop-error-wch.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-trace-wch.txt')
 
   ## Using abort() in evaluated code
-  callr::rscript(test_path("ressources/with-abort-error.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  callr::rscript(test_path("resources/with-abort-error.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'abort-error.txt')
 
   # setting option rlang_trace_top_env modified opt-out default evaluate trace trimming
-  callr::rscript(test_path("ressources/with-stop-error-trace-trim.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
+  callr::rscript(test_path("resources/with-stop-error-trace-trim.R"), fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'stop-error-trace-trim.txt',
                        transform = function(lines) gsub("\\s*at evaluate/R/.*\\.R(:\\d+)*", "", lines))
 
@@ -179,7 +188,7 @@ test_that("Error can be entraced and correctly handled in outputs", {
   writeLines(c(
     "testthat::local_reproducible_output()",
     "options(knitr.chunk.error = FALSE)",
-    sprintf('knitr::knit("%s", output = "%s")', test_path("ressources/with-stop-error-auto-entrace.Rmd"), out2)
+    sprintf('knitr::knit("%s", output = "%s")', test_path("resources/with-stop-error-auto-entrace.Rmd"), out2)
     ), con = rscript)
   callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'rmd-stop-error-auto-entrace.txt')
@@ -187,7 +196,7 @@ test_that("Error can be entraced and correctly handled in outputs", {
   writeLines(c(
       "testthat::local_reproducible_output()",
       "options(knitr.chunk.error = FALSE)",
-      sprintf('res <- knitr::knit("%s", output = "%s")', test_path("ressources/with-abort-error.Rmd"), out2)
+      sprintf('res <- knitr::knit("%s", output = "%s")', test_path("resources/with-abort-error.Rmd"), out2)
     ), con = rscript)
   callr::rscript(rscript, fail_on_status = FALSE, show = FALSE, stderr = out)
   expect_snapshot_file(out, name = 'rmd-abort-error.txt')
@@ -195,15 +204,15 @@ test_that("Error can be entraced and correctly handled in outputs", {
   # Checking error captured in cell output in rmarkdown and knitr context
   withr::with_options(list(options(knitr.chunk.error = TRUE)), {
     expect_snapshot_file(
-      knitr::knit(test_path("ressources/with-stop-error-auto-entrace.Rmd"), output = out, quiet = TRUE),
+      knitr::knit(test_path("resources/with-stop-error-auto-entrace.Rmd"), output = out, quiet = TRUE),
       name = "rmd-stop-error.md"
     )
     expect_snapshot_file(
-      knitr::knit(test_path("ressources/with-stop-error-sewed.Rmd"), output = out, quiet = TRUE),
+      knitr::knit(test_path("resources/with-stop-error-sewed.Rmd"), output = out, quiet = TRUE),
       name = "rmd-stop-error-entrace-sewed.md"
     )
     expect_snapshot_file(
-      knitr::knit(test_path("ressources/with-abort-error.Rmd"), output = out, quiet = TRUE),
+      knitr::knit(test_path("resources/with-abort-error.Rmd"), output = out, quiet = TRUE),
       name = "rmd-abort-error.md"
     )
   })
