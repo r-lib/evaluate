@@ -9,9 +9,9 @@ watchout <- function(handler = new_output_handler(),
     # `ragg::agg_record()` is preferable to `pdf(file = NULL)`.
     if (requireNamespace("ragg", quietly = TRUE) &&
         packageVersion("ragg") >= "1.3.3.9000") {
-        ragg::agg_record()
+      ragg::agg_record()
     } else {
-        pdf(file = NULL)
+      pdf(file = NULL)
     }
     dev.control(displaylist = "enable")
     dev <- dev.cur()
