@@ -1,6 +1,6 @@
 
 
-processing file: ressources/with-stop-error-auto-entrace.Rmd
+processing file: resources/with-stop-error-auto-entrace.Rmd
 Error in `h()`:
 ! !
 Backtrace:
@@ -9,6 +9,6 @@ Backtrace:
  2.   \-global g()
  3.     \-global h()
 
-Quitting from ressources/with-stop-error-auto-entrace.Rmd:5-10 [unnamed-chunk-1]
+Quitting from resources/with-stop-error-auto-entrace.Rmd:5-10 [unnamed-chunk-1]
 Execution halted
 Ran 8/8 deferred expressions
