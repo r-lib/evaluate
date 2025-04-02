@@ -35,6 +35,8 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="evaluate-development-version">evaluate (development version)<a class="anchor" aria-label="anchor" href="#evaluate-development-version"></a></h2>
 <ul><li>
+<code><a href="../reference/evaluate.html">evaluate()</a></code> uses <code><a href="https://ragg.r-lib.org/reference/agg_capture.html" class="external-link">ragg::agg_capture()</a></code> this supports more modern graphics capabilities than <code><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">pdf()</a></code>, and should generally be faster (<a href="https://github.com/r-lib/evaluate/issues/238" class="external-link">#238</a>).</li>
+<li>
 <code><a href="../reference/evaluate.html">evaluate()</a></code> once again doesn’t open a device if <code>new_device = FALSE</code> (<a href="https://github.com/r-lib/evaluate/issues/234" class="external-link">#234</a>)</li>
 </ul></div>
     <div class="section level2">
