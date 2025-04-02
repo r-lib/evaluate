@@ -1,5 +1,7 @@
 # evaluate (development version)
 
+* `evaluate()` uses `ragg::agg_capture()` this supports more modern graphics
+  capabilities than `pdf()`, and should generally be faster (#238).
 * `evaluate()` once again doesn't open a device if `new_device = FALSE` (#234)
 
 # evaluate 1.0.3
