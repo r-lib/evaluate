@@ -279,12 +279,16 @@ test_that("can capture new graphics features (compositing operators) (#238)", {
 })
 
 test_that("falls back to pdf() if ragg not available", {
+  # Compositing operators were introduced in R 4.2
+  skip_if_not(getRversion() >= "4.2.0")
   # some buglet in grid
   local_options(warnPartialMatchDollar = FALSE)
-  local_mocked_bindings(has_ragg = function() FALSE)
 
+  local_mocked_bindings(has_ragg = function() FALSE)
   ev <- evaluate(function() {
     grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
   })
+  # Warning in drawDetails.GridGroup(x, recording = FALSE):
+  # Group definition failed
   expect_output_types(ev, c("source", "warning", "plot"))
 })
