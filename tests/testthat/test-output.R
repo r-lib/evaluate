@@ -11,7 +11,10 @@ test_that("handles various numbers of arguments", {
 
   # One argument
   f1 <- function(src) signal_condition("handler_called")
-  expect_condition(out <- new_source("x", quote(x), f1), class = "handler_called")
+  expect_condition(
+    out <- new_source("x", quote(x), f1),
+    class = "handler_called"
+  )
   expect_equal(out, expected)
 
   # Two arguments
@@ -19,7 +22,10 @@ test_that("handles various numbers of arguments", {
     signal_condition("handler_called")
     NULL
   }
-  expect_condition(out <- new_source("x", quote(x), f2), class = "handler_called")
+  expect_condition(
+    out <- new_source("x", quote(x), f2),
+    class = "handler_called"
+  )
   expect_equal(out, NULL)
 
   # Three arguments

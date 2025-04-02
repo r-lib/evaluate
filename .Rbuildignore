@@ -10,3 +10,5 @@
 ^pkgdown$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^[\.]?air\.toml$
+^\.vscode$

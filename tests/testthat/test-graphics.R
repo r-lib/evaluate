@@ -136,6 +136,7 @@ test_that("changes in parameters don't generate new plots", {
 })
 
 test_that("multiple plots are captured even if calls in DL are the same", {
+  # fmt: skip
   ev <- evaluate(function() {
     barplot(1)
     barplot(2); barplot(3)
@@ -245,7 +246,10 @@ test_that("can trim off intermediate plots", {
     "text(1, 1, 'y')"
   ))
   ev <- trim_intermediate_plots(ev)
-  expect_output_types(ev, c("source", "source", "plot", "source", "source", "plot"))
+  expect_output_types(
+    ev,
+    c("source", "source", "plot", "source", "source", "plot")
+  )
 })
 
 test_that("works with empty output", {

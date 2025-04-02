@@ -65,19 +65,21 @@
 #' # of the R console
 #' evaluate("1;stop(2);3")
 #' evaluate(c("1", "stop(2)", "3"))
-evaluate <- function(input,
-                     envir = parent.frame(),
-                     enclos = NULL,
-                     debug = FALSE,
-                     stop_on_error = 0L,
-                     keep_warning = TRUE,
-                     keep_message = TRUE,
-                     log_echo = FALSE,
-                     log_warning = FALSE,
-                     new_device = TRUE,
-                     output_handler = NULL,
-                     filename = NULL,
-                     include_timing = FALSE) {
+evaluate <- function(
+  input,
+  envir = parent.frame(),
+  enclos = NULL,
+  debug = FALSE,
+  stop_on_error = 0L,
+  keep_warning = TRUE,
+  keep_message = TRUE,
+  log_echo = FALSE,
+  log_warning = FALSE,
+  new_device = TRUE,
+  output_handler = NULL,
+  filename = NULL,
+  include_timing = FALSE
+) {
   on_error <- check_stop_on_error(stop_on_error)
 
   # if this env var is set to true, always bypass messages
@@ -113,7 +115,8 @@ evaluate <- function(input,
   # "Transpose" parsed so we get a list that's easier to iterate over
   tles <- Map(
     function(src, exprs) list(src = src, exprs = exprs),
-    parsed$src, parsed$expr
+    parsed$src,
+    parsed$expr
   )
 
   if (is.list(envir)) {
