@@ -61,7 +61,10 @@
 #' parsed <- parse_all(source)
 #' lengths(parsed$expr)
 #' parsed$src
-parse_all <- function(x, filename = NULL, allow_error = FALSE) UseMethod("parse_all")
+parse_all <- function(x, filename = NULL, allow_error = FALSE) {
+  UseMethod("parse_all")
+}
+
 
 #' @export
 parse_all.character <- function(x, filename = NULL, allow_error = FALSE) {

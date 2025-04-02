@@ -134,6 +134,7 @@ test_that("dedents function body", {
 })
 
 test_that("preserves src if possible", {
+  # fmt: skip
   f <- function() {
     1 +  1 # hi
   }
@@ -156,6 +157,7 @@ test_that("works if no parens", {
   f <- function() 1 + 1
   expect_equal(find_function_body(f), "1 + 1")
 
+  # fmt: skip
   f <- function() (
     1 + 1
   )
@@ -163,6 +165,7 @@ test_that("works if no parens", {
 })
 
 test_that("can handle empty body", {
+  # fmt: skip
   f <- function() {}
   expect_equal(find_function_body(f), character())
 })

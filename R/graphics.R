@@ -35,11 +35,13 @@ makes_visual_change <- function(plot) {
   xs <- lapply(plot, function(x) x[[2]][[1]])
 
   for (x in xs) {
-    if (hasName(x, "name")) { # base graphics
+    if (hasName(x, "name")) {
+      # base graphics
       if (!x$name %in% non_visual_calls) {
         return(TRUE)
       }
-    } else if (is.call(x)) { # grid graphics
+    } else if (is.call(x)) {
+      # grid graphics
       if (as.character(x[[1]]) != "requireNamespace") {
         return(TRUE)
       }
@@ -53,8 +55,10 @@ non_visual_calls <- c(
   "C_layout",
   "C_par",
   "C_plot_window",
-  "C_strHeight", "C_strWidth",
-  "palette", "palette2"
+  "C_strHeight",
+  "C_strWidth",
+  "palette",
+  "palette2"
 )
 
 # plot trimming ----------------------------------------------------------

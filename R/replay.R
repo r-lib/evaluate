@@ -87,7 +87,11 @@ format_condition <- function(x) {
 #' @param continue prompt for subsequent lines
 #' @keywords internal
 #' @return a string
-line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("continue")) {
+line_prompt <- function(
+  x,
+  prompt = getOption("prompt"),
+  continue = getOption("continue")
+) {
   lines <- strsplit(x, "\n")[[1]]
   n <- length(lines)
 

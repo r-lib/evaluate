@@ -1,8 +1,9 @@
-watchout <- function(handler = new_output_handler(),
-                     new_device = TRUE,
-                     debug = FALSE,
-                     frame = parent.frame()) {
-
+watchout <- function(
+  handler = new_output_handler(),
+  new_device = TRUE,
+  debug = FALSE,
+  frame = parent.frame()
+) {
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
     # one that's available on all platforms and doesn't write to disk.
@@ -25,7 +26,8 @@ watchout <- function(handler = new_output_handler(),
     output[i] <<- list(value)
     i <<- i + 1
 
-    switch(output_type(value),
+    switch(
+      output_type(value),
       plot = handler$graphics(value),
       text = handler$text(value),
       message = handler$message(value),
@@ -132,8 +134,10 @@ watchout <- function(handler = new_output_handler(),
 
 # Persistent way to capture output ---------------------------------------------
 
-local_persistent_sink_connection <- function(debug = FALSE,
-                                             frame = parent.frame()) {
+local_persistent_sink_connection <- function(
+  debug = FALSE,
+  frame = parent.frame()
+) {
   con <- file("", "w+b")
   defer(if (isValid(con)) close(con), frame)
 
