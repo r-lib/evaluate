@@ -263,3 +263,33 @@ test_that("works with empty output", {
 test_that("checks its input", {
   expect_snapshot(trim_intermediate_plots(1), error = TRUE)
 })
+
+test_that("can capture new graphics features (compositing operators) (#238)", {
+  # Compositing operators were introduced in R 4.2
+  skip_if_not(getRversion() >= "4.2.0")
+  # `pdf(NULL)` may segfault or throw warning
+  skip_if_not_installed("ragg", "1.3.3.9000")
+  # some buglet in grid
+  local_options(warnPartialMatchDollar = FALSE)
+
+  ev <- evaluate(function() {
+    grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
+  })
+  expect_output_types(ev, c("source", "plot"))
+})
+
+test_that("falls back to pdf() if ragg not available", {
+  # Compositing operators were introduced in R 4.2, but pdf() crashes with
+  # them up to R 4.3.0
+  skip_if_not(getRversion() >= "4.3.0")
+  # some buglet in grid
+  local_options(warnPartialMatchDollar = FALSE)
+
+  local_mocked_bindings(has_ragg = function() FALSE)
+  ev <- evaluate(function() {
+    grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
+  })
+  # Warning in drawDetails.GridGroup(x, recording = FALSE):
+  # Group definition failed
+  expect_output_types(ev, c("source", "warning", "plot"))
+})
