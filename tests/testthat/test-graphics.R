@@ -264,21 +264,27 @@ test_that("checks its input", {
   expect_snapshot(trim_intermediate_plots(1), error = TRUE)
 })
 
-# Compositing operators
-# https://github.com/r-lib/evaluate/issues/238
-test_that("new graphics features", {
+test_that("can capture new graphics features (compositing operators) (#238)", {
   # Compositing operators were introduced in R 4.2
   skip_if_not(getRversion() >= "4.2.0")
   # `pdf(NULL)` may segfault or throw warning
   skip_if_not_installed("ragg", "1.3.3.9000")
+  # some buglet in grid
+  local_options(warnPartialMatchDollar = FALSE)
 
-  # Compositing operators
-  ev <- evaluate(c(
-    "src <- grid::rectGrob(x = 2/3, y = 1/3, width = 0.5, height = 0.5,",
-    "                      gp = grid::gpar(col = NA, fill = rgb(0, 0, .9)))",
-    "dst <- grid::rectGrob(x = 1/3, y = 2/3, width = 0.5, height = 0.5,",
-    "                      gp = grid::gpar(col = NA, fill = rgb(.7, 0, 0)))",
-    'grid::grid.group(src, "over", dst)'
-  ))
-  expect_output_types(ev, c("source", "source", "source", "plot"))
+  ev <- evaluate(function() {
+    grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
+  })
+  expect_output_types(ev, c("source", "plot"))
+})
+
+test_that("falls back to pdf() if ragg not available", {
+  # some buglet in grid
+  local_options(warnPartialMatchDollar = FALSE)
+  local_mocked_bindings(has_ragg = function() FALSE)
+
+  ev <- evaluate(function() {
+    grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
+  })
+  expect_output_types(ev, c("source", "warning", "plot"))
 })

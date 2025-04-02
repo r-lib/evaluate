@@ -7,9 +7,7 @@ watchout <- function(
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
     # one that's available on all platforms and doesn't write to disk.
-    # `ragg::agg_record()` is preferable to `pdf(file = NULL)`.
-    if (requireNamespace("ragg", quietly = TRUE) &&
-        packageVersion("ragg") >= "1.3.3.9000") {
+    if (has_ragg()) {
       ragg::agg_record()
     } else {
       pdf(file = NULL)
@@ -190,4 +188,9 @@ isValid <- function(con) {
     identical(getConnection(con), con),
     error = function(cnd) FALSE
   )
+}
+
+has_ragg <- function() {
+  requireNamespace("ragg", quietly = TRUE) &&
+    exists("agg_record", getNamespace("ragg"))
 }
