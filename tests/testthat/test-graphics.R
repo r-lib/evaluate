@@ -279,8 +279,9 @@ test_that("can capture new graphics features (compositing operators) (#238)", {
 })
 
 test_that("falls back to pdf() if ragg not available", {
-  # Compositing operators were introduced in R 4.2
-  skip_if_not(getRversion() >= "4.2.0")
+  # Compositing operators were introduced in R 4.2, but pdf() crashes with
+  # them up to R 4.3.0
+  skip_if_not(getRversion() >= "4.3.0")
   # some buglet in grid
   local_options(warnPartialMatchDollar = FALSE)
 
