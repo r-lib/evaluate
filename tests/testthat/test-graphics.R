@@ -293,3 +293,20 @@ test_that("falls back to pdf() if ragg not available", {
   # Group definition failed
   expect_output_types(ev, c("source", "warning", "plot"))
 })
+
+
+test_that("makes_visual_change() helper can handle stack traces with complex expressions", {
+  # A mocked recordPlot() data structure with a complex expression in the stack trace
+  mocked_plot_record <- list(
+    list(
+      list(),
+      list(
+        rlang::expr(pkg::foo())
+      )
+    )
+  )
+
+  expect_no_error(
+    makes_visual_change(mocked_plot_record)
+  )
+})
