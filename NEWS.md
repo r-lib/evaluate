@@ -1,5 +1,6 @@
 # evaluate (development version)
 
+* Interrupts are now suspended for all cleanup operations. This should ensure that `evaluate()` works more reliably if you are using `setTimeout()`.
 * `evaluate()` uses `ragg::agg_capture()` this supports more modern graphics
   capabilities than `pdf()`, and should generally be faster (#238).
 * `evaluate()` once again doesn't open a device if `new_device = FALSE` (#234)
