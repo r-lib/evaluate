@@ -42,7 +42,7 @@ makes_visual_change <- function(plot) {
       }
     } else if (is.call(x)) {
       # grid graphics
-      if (as.character(x[[1]]) != "requireNamespace") {
+      if (!identical(as.character(x[[1]]), "requireNamespace")) {
         return(TRUE)
       }
     }
