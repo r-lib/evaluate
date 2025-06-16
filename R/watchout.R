@@ -166,7 +166,9 @@ read_con <- function(con, buffer = 32 * 1024) {
   bytes <- raw()
   repeat {
     new <- readBin(con, "raw", n = buffer)
-    if (length(new) == 0) break
+    if (length(new) == 0) {
+      break
+    }
     bytes <- c(bytes, new)
   }
   if (length(bytes) == 0) {
