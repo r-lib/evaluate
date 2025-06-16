@@ -18,7 +18,7 @@ test_that("conditions get calls stripped", {
   expect_equal(evaluate("stop('x')")[[2]]$call, NULL)
 
   # including errors emitted by C
-  expect_equal(evaluate("mpg")[[2]]$call, NULL)
+  expect_equal(evaluate("abcdef")[[2]]$call, NULL)
   expect_equal(evaluate("3()")[[2]]$call, NULL)
 })
 
@@ -210,8 +210,9 @@ test_that("Error can be entraced and correctly handled in outputs", {
   expect_snapshot_file(
     out,
     name = 'stop-error-trace-trim.txt',
-    transform = function(lines)
+    transform = function(lines) {
       gsub("\\s*at evaluate/R/.*\\.R(:\\d+)*", "", lines)
+    }
   )
 
   # Checking error thrown when in rmarkdown and knitr context
