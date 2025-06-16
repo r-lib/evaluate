@@ -12,21 +12,12 @@ local_plot_hooks <- function(f, frame = parent.frame()) {
 # visual changes ---------------------------------------------------------
 
 looks_different <- function(old_dl, new_dl) {
-  if (identical(old_dl, new_dl)) {
-    return(FALSE)
-  }
-
-  # If the new plot has fewer calls, it must be a visual change
-  if (length(new_dl) < length(old_dl)) {
+  # If the old dl doesn't start with the new dl, then the plot must be different
+  if (!old_dl %is_prefix_of% new_dl) {
     return(TRUE)
   }
 
-  # If the initial calls are different, it must be a visual change
-  if (!identical(old_dl[], new_dl[seq_along(old_dl)])) {
-    return(TRUE)
-  }
-
-  # If the last calls involve visual changes then it's a visual change
+  # If the last calls in the dl make visual changes then the plot is different
   added_dl <- new_dl[-seq_along(old_dl)]
   makes_visual_change(added_dl)
 }
