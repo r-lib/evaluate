@@ -12,10 +12,6 @@ local_plot_hooks <- function(f, frame = parent.frame()) {
 # visual changes ---------------------------------------------------------
 
 looks_different <- function(old_dl, new_dl) {
-  if (identical(old_dl, new_dl)) {
-    return(FALSE)
-  }
-
   # If the new plot has fewer calls, it must be a visual change
   if (length(new_dl) < length(old_dl)) {
     return(TRUE)
