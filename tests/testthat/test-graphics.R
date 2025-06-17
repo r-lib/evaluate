@@ -136,6 +136,7 @@ test_that("changes in parameters don't generate new plots", {
 })
 
 test_that("multiple plots are captured even if calls in DL are the same", {
+  # fmt: skip
   ev <- evaluate(function() {
     barplot(1)
     barplot(2); barplot(3)
@@ -262,7 +263,10 @@ test_that("can trim off intermediate plots", {
     "text(1, 1, 'y')"
   ))
   ev <- trim_intermediate_plots(ev)
-  expect_output_types(ev, c("source", "source", "plot", "source", "source", "plot"))
+  expect_output_types(
+    ev,
+    c("source", "source", "plot", "source", "source", "plot")
+  )
 })
 
 test_that("works with empty output", {
@@ -275,4 +279,51 @@ test_that("works with empty output", {
 
 test_that("checks its input", {
   expect_snapshot(trim_intermediate_plots(1), error = TRUE)
+})
+
+test_that("can capture new graphics features (compositing operators) (#238)", {
+  # Compositing operators were introduced in R 4.2
+  skip_if_not(getRversion() >= "4.2.0")
+  # `pdf(NULL)` may segfault or throw warning
+  skip_if_not_installed("ragg", "1.3.3.9000")
+  # some buglet in grid
+  local_options(warnPartialMatchDollar = FALSE)
+
+  ev <- evaluate(function() {
+    grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
+  })
+  expect_output_types(ev, c("source", "plot"))
+})
+
+test_that("falls back to pdf() if ragg not available", {
+  # Compositing operators were introduced in R 4.2, but pdf() crashes with
+  # them up to R 4.3.0
+  skip_if_not(getRversion() >= "4.3.0")
+  # some buglet in grid
+  local_options(warnPartialMatchDollar = FALSE)
+
+  local_mocked_bindings(has_ragg = function() FALSE)
+  ev <- evaluate(function() {
+    grid::grid.group(grid::rectGrob(), "over", grid::rectGrob())
+  })
+  # Warning in drawDetails.GridGroup(x, recording = FALSE):
+  # Group definition failed
+  expect_output_types(ev, c("source", "warning", "plot"))
+})
+
+
+test_that("makes_visual_change() helper can handle stack traces with complex expressions", {
+  # A mocked recordPlot() data structure with a complex expression in the stack trace
+  mocked_plot_record <- list(
+    list(
+      list(),
+      list(
+        rlang::expr(pkg::foo())
+      )
+    )
+  )
+
+  expect_no_error(
+    makes_visual_change(mocked_plot_record)
+  )
 })

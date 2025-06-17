@@ -43,14 +43,16 @@
 #' @return A new `output_handler` object
 #' @aliases output_handler
 #' @export
-new_output_handler <- function(source = identity,
-                               text = identity,
-                               graphics = identity,
-                               message = identity,
-                               warning = identity,
-                               error = identity,
-                               value = render,
-                               calling_handlers = list()) {
+new_output_handler <- function(
+  source = identity,
+  text = identity,
+  graphics = identity,
+  message = identity,
+  warning = identity,
+  error = identity,
+  value = render,
+  calling_handlers = list()
+) {
   source <- match.fun(source)
   stopifnot(length(formals(source)) >= 1)
   text <- match.fun(text)

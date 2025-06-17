@@ -31,7 +31,8 @@ condition_handlers <- function(watcher, on_error, on_warning, on_message) {
       cnd <- sanitize_call(cnd)
       watcher$push(cnd)
 
-      switch(on_error,
+      switch(
+        on_error,
         continue = invokeRestart("eval_continue"),
         stop = invokeRestart("eval_stop"),
         # No need to invoke a restart as we want the error to be thrown in this case.
