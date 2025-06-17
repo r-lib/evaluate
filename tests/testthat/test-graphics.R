@@ -226,6 +226,23 @@ test_that("evaluate ignores plots created in new device", {
   expect_output_types(ev, c("source", "source", "source", "source", "plot"))
 })
 
+test_that("evaluate keeps identical plots", {
+  ev <- evaluate(function() {
+    plot(1)
+    plot(1)
+  })
+  expect_output_types(ev, c("source", "plot", "source", "plot"))
+
+  skip_if_not_installed("ggplot2")
+  library(ggplot2)
+  df <- data.frame(x = 1, y = 1)
+  ev <- evaluate(function() {
+    ggplot(df) + geom_point(aes(x, y))
+    ggplot(df) + geom_point(aes(x, y))
+  })
+  expect_output_types(ev, c("source", "plot", "source", "plot"))
+})
+
 
 # trim_intermediate_plots ------------------------------------------------
 
