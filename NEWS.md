@@ -1,3 +1,5 @@
+# evaluate (development version)
+
 # evaluate 1.0.4
 
 * `evaluate()` once again doesn't open a device if `new_device = FALSE` (#234)
