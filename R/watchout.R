@@ -57,11 +57,22 @@ watchout <- function(
     }
 
     plot <- recordPlot()
+
+    # Detect visual change on the new plot
     if (!makes_visual_change(plot[[1]])) {
       return()
     }
 
-    if (!looks_different(last_plot[[1]], plot[[1]])) {
+    # Are recorded plots identical?
+    if (identical(last_plot, plot)) {
+      return()
+    }
+
+    # Compare the display lists for differences
+    # when they are not identical
+    old_dl <- last_plot[[1]]
+    new_dl <- plot[[1]]
+    if (!identical(old_dl, new_dl) && !looks_different(old_dl, new_dl)) {
       return()
     }
 
