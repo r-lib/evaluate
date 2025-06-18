@@ -5,16 +5,7 @@ watchout <- function(
   frame = parent.frame()
 ) {
   if (new_device) {
-    # Ensure we have a graphics device available for recording, but choose
-    # one that's available on all platforms and doesn't write to disk.
-    if (has_ragg()) {
-      ragg::agg_record()
-    } else {
-      pdf(file = NULL)
-    }
-    dev.control(displaylist = "enable")
-    dev <- dev.cur()
-    defer(dev.off(dev), frame)
+    local_new_device(frame)
   }
 
   # Maintain a list of outputs that we'll grow over time
@@ -190,6 +181,22 @@ isValid <- function(con) {
     identical(getConnection(con), con),
     error = function(cnd) FALSE
   )
+}
+
+local_new_device <- function(frame) {
+  # Ensure we have a graphics device available for recording, using something
+  # that's available on all platforms and doesn't write to disk.
+  if (has_ragg()) {
+    ragg::agg_record()
+  } else {
+    pdf(file = NULL)
+  }
+  dev.control(displaylist = "enable")
+
+  dev <- dev.cur()
+  defer(dev.off(dev), frame)
+
+  invisible()
 }
 
 has_ragg <- function() {
