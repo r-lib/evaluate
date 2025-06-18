@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">evaluate</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.0.3.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.0.4.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="evaluate-development-version">evaluate (development version)<a class="anchor" aria-label="anchor" href="#evaluate-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.4" id="evaluate-104">evaluate 1.0.4<a class="anchor" aria-label="anchor" href="#evaluate-104"></a></h2><p class="text-muted">CRAN release: 2025-06-18</p>
 <ul><li><p><code><a href="../reference/evaluate.html">evaluate()</a></code> once again doesn’t open a device if <code>new_device = FALSE</code> (<a href="https://github.com/r-lib/evaluate/issues/234" class="external-link">#234</a>)</p></li>
 <li><p><code><a href="../reference/evaluate.html">evaluate()</a></code> uses <code><a href="https://ragg.r-lib.org/reference/agg_capture.html" class="external-link">ragg::agg_capture()</a></code> if ragg is installed. This supports more modern graphics capabilities than <code><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">pdf()</a></code> and should generally be faster (<a href="https://github.com/r-lib/evaluate/issues/238" class="external-link">#238</a>).</p></li>
 <li><p><code><a href="../reference/evaluate.html">evaluate()</a></code> now runs cleanup with interrupts suspended. This should ensure it works more reliably if you are using <code>setTimeout()</code>.</p></li>
