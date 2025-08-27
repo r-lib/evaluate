@@ -60,6 +60,8 @@ output_type <- function(x) {
     "plot"
   } else if (is.source(x)) {
     "source"
+  } else if (inherits(x, "gg") || inherits(x, "ggplot2::ggplot")) {
+    "gg"
   } else {
     class(x)[[1]]
   }
